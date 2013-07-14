@@ -2,3 +2,7 @@
 *.root
 *.d
 *.so
+*.gif
+*.eps
+*.pdf
+*.png

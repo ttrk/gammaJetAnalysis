@@ -7,14 +7,17 @@
 #include "TTree.h"
 #include "TNtuple.h"
 #include "TEntryList.h"
+#include <set>
 
 void uniquePhotons()
 {
   TFile *inFile = TFile::Open("gammaJets_inclusive_dphi7pi8_data.root");
   TNtuple *inTuple = (TNtuple*)inFile->Get("gammaJets");
 
-  set<int> eventIds; // keep track of already seen event numbers
-  int EVENT;
+  std::set<int> eventIds; // keep track of already seen event numbers
+  Float_t EVENT;
+  Int_t EVENT_int;
+  Float_t epsilon = 0.01;
   int nEntries = inTuple->GetEntries();
 
   inTuple->SetBranchAddress("event",&EVENT); // grab the event number from the tree
@@ -28,9 +31,10 @@ void uniquePhotons()
 
 // if we have not seen this event yet, add it to the set
 // and to the entry list
-    if (eventIds.count(EVENT) == 0)
+    EVENT_int = (int) (EVENT+epsilon);
+    if (eventIds.count(EVENT_int) == 0)
     {
-      eventIds.insert(EVENT);
+      eventIds.insert(EVENT_int);
       tlist->Enter(j,inTuple);
     }
   }
