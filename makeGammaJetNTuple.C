@@ -11,7 +11,7 @@
 #include "../HiForest_V3/hiForest.h"
 
 
-void makeGammaGetNTuple()
+void makeGammaJetNTuple()
 { 
   TString inFile;
 
