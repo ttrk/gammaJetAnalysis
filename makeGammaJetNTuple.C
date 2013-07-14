@@ -117,7 +117,7 @@ void makeGammaGetNTuple()
       Float_t sigmaIetaIeta = c->photon.sigmaIetaIeta[leadingIndex];
       Float_t run = c->evt.run;
       Float_t r9 = c->photon.r9[leadingIndex];
-      Float_t event = c->photon.eventt;
+      Float_t event = c->photon.event;
 
       if(!montecarlo)
       {
