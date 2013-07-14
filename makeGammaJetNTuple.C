@@ -15,13 +15,13 @@ void makeGammaJetNTuple()
 { 
   TString inFile;
 
-  // inFile = "/mnt/hadoop/cms/store/user/luck/PA2013_pyquen_allQCDPhoton_forest_v85/pA_Pyquen_allQCDPhoton280_hiForest2_v85.root";
-  inFile = "/mnt/hadoop/cms/store/user/luck/pA_photonSkimForest_v85/pA_photonSkimForest_v85.root";
+  inFile = "/mnt/hadoop/cms/store/user/luck/PA2013_pyquen_allQCDPhoton_forest_v85/pA_Pyquen_allQCDPhoton280_hiForest2_v85.root";
+  // inFile = "/mnt/hadoop/cms/store/user/luck/pA_photonSkimForest_v85/pA_photonSkimForest_v85.root";
   
-  bool montecarlo = false;
+  bool montecarlo = true;
 
   TString name;
-  name = "gammaJets_inclusive_dphi7pi8_data.root";
+  name = "gammaJets_inclusive_dphi7pi8_allQCDPhoton280.root";
 
   TFile *outfile = new TFile(name,"RECREATE");
 
