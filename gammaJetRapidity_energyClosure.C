@@ -29,8 +29,8 @@ void gammaJetRapidity_energyClosure()
   Int_t notMatched = 0;
 
   //loop over events in each file
-  int nentries = c->GetEntries();
-  for(int jentry = 0; jentry<nentries; jentry++)
+  Long64_t nentries = c->GetEntries();
+  for(Long64_t jentry = 0; jentry<nentries; ++jentry)
   {
     if (jentry% 1000 == 0)  {
       printf("%d / %d\n",jentry,nentries);
@@ -48,7 +48,7 @@ void gammaJetRapidity_energyClosure()
     //loop over photons in the event
     Float_t leadingPt = 0;
     Int_t leadingIndex = -1;
-    for(int i = 0; i<c->photon.nPhotons; i++)
+    for(Int_t i = 0; i<c->photon.nPhotons; ++i)
     {
       if(c->photon.pt[i] > leadingPt)
       {

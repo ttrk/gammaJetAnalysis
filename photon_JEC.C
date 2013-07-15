@@ -14,7 +14,7 @@
 //const Int_t nptbins = 7;
 const Double_t ptbins[] = {0,1000};
 const Int_t nptbins = 2;
-int returnPtBin(double pt);
+Int_t returnPtBin(Double_t pt);
 
 void photon_JEC()
 {
@@ -25,7 +25,7 @@ void photon_JEC()
   TH1D *RdRmcalpha[nptbins];
   TProfile *Ratio[2][nptbins];
 
-  for(int i = 0; i < nptbins; i++)
+  for(Int_t i = 0; i < nptbins; ++i)
   {
     TString name;
     name = "RdRmcalpha_";
@@ -68,18 +68,18 @@ void photon_JEC()
   files[0] = "/mnt/hadoop/cms/store/user/luck/pA2013_forests/PA2013_HiForest_PromptReco_HLT_Photon40.root";
   files[1] = "/mnt/hadoop/cms/store/user/luck/pA2013_MC/HiForest2_QCDPhoton30_5020GeV_100k.root";
 
-  bool montecarlo[2] = {false, true};
+  Bool_t montecarlo[2] = {false, true};
 
   //loop over files
   //do the smaller MC file first, for some reason I have segfaults when I process the MC second.
-  for(int ii = 1; ii > -1; ii--)
+  for(Int_t ii = 1; ii > -1; --ii)
   {
     HiForest *c = new HiForest(files[ii], "Forest", cPPb, montecarlo[ii]);
     c->InitTree();
 
     //loop over events in each file
-    int nentries = c->GetEntries();
-    for(int jentry = 0; jentry<nentries; jentry++)
+    Long64_t nentries = c->GetEntries();
+    for(Long64_t jentry = 0; jentry<nentries; ++jentry)
     {
       if (jentry% 1000 == 0)  {
 	printf("%d / %d\n",jentry,nentries);
@@ -97,7 +97,7 @@ void photon_JEC()
       //loop over photons in the event
       Float_t leadingPt = 40; //minPt is 40GeV
       Int_t leadingIndex = -1;
-      for(int i = 0; i<c->photon.nPhotons; i++)
+      for(Int_t i = 0; i<c->photon.nPhotons; ++i)
       {
 	if(c->photon.pt[i] > leadingPt)
 	{
@@ -124,11 +124,11 @@ void photon_JEC()
 	continue;
 
       //loop over 'away' jets
-      int jet2index = -1;
-      double jet2pt = 0;
-      int jet3index = -1;
-      double jet3pt = 0;
-      for(int i = 0; i<c->akPu3PF.nref; i++)
+      Int_t jet2index = -1;
+      Double_t jet2pt = 0;
+      Int_t jet3index = -1;
+      Double_t jet3pt = 0;
+      for(Int_t i = 0; i<c->akPu3PF.nref; ++i)
       {
 	if( TMath::Abs(c->akPu3PF.jteta[i]) > 3.0)
 	  continue;
@@ -160,7 +160,7 @@ void photon_JEC()
       Double_t alpha = jet3pt/leadingPt;
       Double_t ratio = jet2pt/leadingPt;
 
-      int ptbin = returnPtBin(leadingPt);
+      Int_t ptbin = returnPtBin(leadingPt);
       if(ptbin != -1)
 	Ratio[ii][ptbin]->Fill(alpha,ratio);
       
@@ -175,7 +175,7 @@ void photon_JEC()
   }
 
   TCanvas *canvas[nptbins];
-  for(int i = 0; i < nptbins; i++)
+  for(Int_t i = 0; i < nptbins; ++i)
   {
     TH1D *hRatiod = Ratio[0][i]->ProjectionX();
     TH1D *hRatiomc = Ratio[1][i]->ProjectionX();
@@ -253,9 +253,9 @@ void photon_JEC()
 }
 
 
-int returnPtBin(double pt)
+Int_t returnPtBin(Double_t pt)
 {
-  for(int i = 0; i < nptbins; i++)
+  for(Int_t i = 0; i < nptbins; ++i)
   {
     if( pt < ptbins[i] )
       return(i-1);

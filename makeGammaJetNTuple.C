@@ -12,7 +12,7 @@
 
 
 void makeGammaJetNTuple(TString inFile="/mnt/hadoop/cms/store/user/luck/pp_photonSkimForest_v85/pp_photonSKimForest_v85.root",
-			bool montecarlo=false,
+			Bool_t montecarlo=false,
 			TString outName="gammaJets_inclusive_dphi7pi8_pp2013Data.root")
 {
   // pA montecarlo
@@ -35,10 +35,10 @@ void makeGammaJetNTuple(TString inFile="/mnt/hadoop/cms/store/user/luck/pp_photo
   c->InitTree();
 
   //loop over events in each file
-  int nentries = c->GetEntries();
-  for(int jentry = 0; jentry<nentries; jentry++)
+  Long64_t nentries = c->GetEntries();
+  for(Long64_t jentry = 0; jentry<nentries; ++jentry)
   {
-    if (jentry% 1000 == 0)  {
+    if (jentry % 1000 == 0)  {
       printf("%d / %d\n",jentry,nentries);
     }
     
@@ -61,7 +61,7 @@ void makeGammaJetNTuple(TString inFile="/mnt/hadoop/cms/store/user/luck/pp_photo
     //loop over photons in the event
     Float_t leadingPt = 0;
     Int_t leadingIndex = -1;
-    for(int i = 0; i<c->photon.nPhotons; i++)
+    for(Int_t i = 0; i<c->photon.nPhotons; ++i)
     {
       if(c->photon.pt[i] > leadingPt)
       {
@@ -74,9 +74,7 @@ void makeGammaJetNTuple(TString inFile="/mnt/hadoop/cms/store/user/luck/pp_photo
       continue;
 
     //loop over 'away' jets
-    //int jet2index = -1;
-    //double jet2pt = 0;
-    for(int i = 0; i<c->akPu3PF.nref; i++)
+    for(Int_t i = 0; i<c->akPu3PF.nref; ++i)
     {
       if( TMath::Abs(c->akPu3PF.jteta[i]) > 3.0)
 	continue;
@@ -87,18 +85,6 @@ void makeGammaJetNTuple(TString inFile="/mnt/hadoop/cms/store/user/luck/pp_photo
       if( dphi < 7.*TMath::Pi()/8. )
 	continue;
 	
-      //   if(c->akPu3PF.jtpt[i] > jet2pt)
-      //   {
-      // 	jet2pt = c->akPu3PF.jtpt[i];
-      // 	jet2index = i;
-      //   }
-      // }
-
-      // if(jet2index == -1)
-      //   continue;
-
-      //Double_t dphi = TMath::ACos(TMath::Cos(c->photon.phi[leadingIndex] - c->akPu3PF.jtphi[i]));
-
       Float_t gPt = c->photon.pt[leadingIndex];
       Float_t gEta = c->photon.eta[leadingIndex];
       Float_t gPhi = c->photon.phi[leadingIndex];
@@ -124,7 +110,28 @@ void makeGammaJetNTuple(TString inFile="/mnt/hadoop/cms/store/user/luck/pp_photo
 
       if(!montecarlo)
       {
-	Float_t x[] = {gPt,gEta,gPhi,jPt,jEta,jPhi,HF,HFplusEta4,HFminusEta4,avgEta,dPhi,cc4,cr4,ct4PtCut20,hadronicOverEm,sigmaIetaIeta,run,r9,event,ecalRecHitSumEtConeDR04,hcalTowerSumEtConeDR04,trkSumPtHollowConeDR04};
+	Float_t x[] = {gPt,
+		       gEta,
+		       gPhi,
+		       jPt,
+		       jEta,
+		       jPhi,
+		       HF,
+		       HFplusEta4,
+		       HFminusEta4,
+		       avgEta,
+		       dPhi,
+		       cc4,
+		       cr4,
+		       ct4PtCut20,
+		       hadronicOverEm,
+		       sigmaIetaIeta,
+		       run,
+		       r9,
+		       event,
+		       ecalRecHitSumEtConeDR04,
+		       hcalTowerSumEtConeDR04,
+		       trkSumPtHollowConeDR04};
 	outTuple->Fill(x);
       }
       else
@@ -136,7 +143,35 @@ void makeGammaJetNTuple(TString inFile="/mnt/hadoop/cms/store/user/luck/pp_photo
 	Float_t matchedGPt = c->photon.genMatchedPt[leadingIndex];
 	Float_t matchedJPt = c->akPu3PF.matchedPt[i];
 
-	Float_t x[] = {gPt,gEta,gPhi,jPt,jEta,jPhi,HF,HFplusEta4,HFminusEta4,avgEta,dPhi,cc4,cr4,ct4PtCut20,hadronicOverEm,sigmaIetaIeta,run,r9,event,ecalRecHitSumEtConeDR04,hcalTowerSumEtConeDR04,trkSumPtHollowConeDR04,genMomId,genCalIsoDR04,genTrkIsoDR04,ptHat,matchedGPt,matchedJPt};
+	Float_t x[] = {gPt,
+		       gEta,
+		       gPhi,
+		       jPt,
+		       jEta,
+		       jPhi,
+		       HF,
+		       HFplusEta4,
+		       HFminusEta4,
+		       avgEta,
+		       dPhi,
+		       cc4,
+		       cr4,
+		       ct4PtCut20,
+		       hadronicOverEm,
+		       sigmaIetaIeta,
+		       run,
+		       r9,
+		       event,
+		       ecalRecHitSumEtConeDR04,
+		       hcalTowerSumEtConeDR04,
+		       trkSumPtHollowConeDR04,
+		       // mc stuff
+		       genMomId,
+		       genCalIsoDR04,
+		       genTrkIsoDR04,
+		       ptHat,
+		       matchedGPt,
+		       matchedJPt};
 	outTuple->Fill(x);
       }
     }
@@ -144,7 +179,6 @@ void makeGammaJetNTuple(TString inFile="/mnt/hadoop/cms/store/user/luck/pp_photo
   }
 
   outfile->cd();
-
   outTuple->Write();
   outfile->Close();
 

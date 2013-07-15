@@ -12,7 +12,7 @@
 #include "../HiForest_V3/hiForest.h"
 
 
-void gammaJet_diphotonMass(bool doMC = false)
+void gammaJet_diphotonMass(Bool_t doMC = false)
 {
   TH1::SetDefaultSumw2();
   
@@ -22,7 +22,7 @@ void gammaJet_diphotonMass(bool doMC = false)
 
   TH1D *invariantMass = new TH1D("invariantMass",";M_{diphoton}",100,50,150);
   
-  int ii = 0;
+  Int_t ii = 0;
   if(doMC)
     ii = 1;  
   
@@ -30,11 +30,11 @@ void gammaJet_diphotonMass(bool doMC = false)
   c->InitTree();
 
   //loop over events in each file
-  int nentries = c->GetEntries();
-  for(int jentry = 0; jentry<nentries; jentry++)
+  Long64_t nentries = c->GetEntries();
+  for(Long64_t jentry = 0; jentry<nentries; ++jentry)
   {
     if (jentry% 1000 == 0)  {
-      printf("%d / %d\n",jentry,nentries);
+      prInt_tf("%d / %d\n",jentry,nentries);
     }
     
     c->GetEntry(jentry);
@@ -46,10 +46,10 @@ void gammaJet_diphotonMass(bool doMC = false)
     if(c->photon.nPhotons == 0)
       continue;
 
-    for(int i = 0; i < c->photon.nPhotons-1; i++) {
+    for(Int_t i = 0; i < c->photon.nPhotons-1; ++i) {
       Double_t sumIso_i = c->photon.cc4[i] + c->photon.cr4[i] + c->photon.ct4PtCut20[i];
       if(sumIso_i > 1.0) continue;
-      for(int j = i+1; j < c->photon.nPhotons; j++) {
+      for(Int_t j = i+1; j < c->photon.nPhotons; ++j) {
 	Double_t sumIso_j = c->photon.cc4[j] + c->photon.cr4[j] + c->photon.ct4PtCut20[j];
 	if(sumIso_j > 1.0) continue;
 

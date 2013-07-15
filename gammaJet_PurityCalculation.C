@@ -29,10 +29,10 @@ TString mc_file = "gammaJets_inclusive_dphi7pi8_MC_v2.root";
 
 class fitResult {
 public:
-  double nSig;
-  double nSigErr;
-  double purity010;
-  double chisq;
+  Double_t nSig;
+  Double_t nSigErr;
+  Double_t purity010;
+  Double_t chisq;
 };
 
 class histFunction2
@@ -44,7 +44,7 @@ public:
     delete histSig;
   };
   
-  //      int GetBinNumber(double c);
+  //      Int_t GetBinNumber(Double_t c);
   Double_t evaluate(Double_t *x, Double_t *par);
   TH1D *histSig;
   TH1D *histBck;
@@ -83,7 +83,7 @@ void sbStyle(TH1* h=0) {
 Double_t histFunction2::evaluate(Double_t *x, Double_t *par) {
      
   Double_t xx = x[0];
-  int binNum=histSig->FindBin(xx);  //
+  Int_t binNum=histSig->FindBin(xx);  //
    
   return par[0]*(histSig->GetBinContent(binNum)*par[1]+histBck->GetBinContent(binNum)*(1-par[1]));
 }
@@ -91,11 +91,11 @@ Double_t histFunction2::evaluate(Double_t *x, Double_t *par) {
 const Double_t hfBins[] = {0, 20, 30, 1000}; //last entry is upper bound on last bin
 const Int_t nhfBins = 3;
 
-fitResult getPurity(TCut evtSeltCut, TCut sbEvtCut, TString canvasName = "results.gif", int minpt = 0, int maxpt = 80000000);
+fitResult getPurity(TCut evtSeltCut, TCut sbEvtCut, TString canvasName = "results.gif", Int_t minpt = 0, Int_t maxpt = 80000000);
 
-fitResult doFit(TH1D* hSig=0, TH1D* hBkg=0, TH1D* hData1=0, float varLow=0.001, float varHigh=0.028, bool drawLeg=true);
+fitResult doFit(TH1D* hSig=0, TH1D* hBkg=0, TH1D* hData1=0, Float_t varLow=0.001, Float_t varHigh=0.028, Bool_t drawLeg=true);
 
-//int returnHFBin(double hf);
+//Int_t returnHFBin(Double_t hf);
 
 void gammaJet_PurityCalculation()
 {
@@ -120,14 +120,14 @@ void gammaJet_PurityCalculation()
   TString canvasName = "purityResults_empty.gif";
   
   // get purity with the current jet cut ! 
-  float purity(0);
+  Float_t purity(0);
   
   fitResult fitr = getPurity(evtSeltCut, sbSeltCut, canvasName);
   purity = fitr.purity010;
 }
 
-fitResult getPurity(TCut evtSeltCut, TCut sbEvtCut, TString canvasName, int minpt, int maxpt) {
-  double purity(0);
+fitResult getPurity(TCut evtSeltCut, TCut sbEvtCut, TString canvasName, Int_t minpt, Int_t maxpt) {
+  Double_t purity(0);
   
   TFile *dataFile = TFile::Open(data_file);
   TNtuple *dataTuple = (TNtuple*)dataFile->Get("gammaJets");
@@ -146,7 +146,7 @@ fitResult getPurity(TCut evtSeltCut, TCut sbEvtCut, TString canvasName, int minp
   fitResult fitr = doFit ( hSig, hBkg, hCand, 0.005, 0.035);
   //if(minpt !=0 && maxpt != 0)
   //  drawText( Form("%d < photon E_{T} < %d", minpt,maxpt), 0.568,0.8);
-  //drawText(Form("Purity : %.2f", (float)fitr.purity010), 0.5680963,0.529118);
+  //drawText(Form("Purity : %.2f", (Float_t)fitr.purity010), 0.5680963,0.529118);
   drawText("Barrel",0.5680963,0.529118);
   //cPurity->SaveAs(canvasName);
 
@@ -162,10 +162,10 @@ fitResult getPurity(TCut evtSeltCut, TCut sbEvtCut, TString canvasName, int minp
 }
 
 
-fitResult doFit(TH1D* hSig, TH1D* hBkg, TH1D* hData1, float varLow, float varHigh, bool drawLeg) {
+fitResult doFit(TH1D* hSig, TH1D* hBkg, TH1D* hData1, Float_t varLow, Float_t varHigh, Bool_t drawLeg) {
    
   TH1D* hDatatmp = (TH1D*)hData1->Clone(Form("%s_datatmp",hData1->GetName()));
-  int nBins = hDatatmp->GetNbinsX();
+  Int_t nBins = hDatatmp->GetNbinsX();
   histFunction2 *myFits = new histFunction2(hSig,hBkg);
   TF1 *f = new TF1("f",myFits,&histFunction2::evaluate,varLow,varHigh,2);
   f->SetParameters( hDatatmp->Integral(1,nBins+1), 0.3);
@@ -175,12 +175,12 @@ fitResult doFit(TH1D* hSig, TH1D* hBkg, TH1D* hData1, float varLow, float varHig
 
   fitResult res;
   res.nSig =0;
-  double nev = f->GetParameter(0);
-  double ratio = f->GetParameter(1);
-  double ratioErr = f->GetParError(1);
+  Double_t nev = f->GetParameter(0);
+  Double_t ratio = f->GetParameter(1);
+  Double_t ratioErr = f->GetParError(1);
   res.nSig    = nev * ratio;
   res.nSigErr = nev * ratioErr;
-  res.chisq = (double)f->GetChisquare()/ f->GetNDF();
+  res.chisq = (Double_t)f->GetChisquare()/ f->GetNDF();
    
   TH1F *hSigPdf = (TH1F*)hSig->Clone(Form("%s_tmp",hSig->GetName()));
   hSigPdf->Scale(res.nSig/hSigPdf->Integral(1,nBins+1));
@@ -188,8 +188,8 @@ fitResult doFit(TH1D* hSig, TH1D* hBkg, TH1D* hData1, float varLow, float varHig
   TH1F *hBckPdf = (TH1F*)hBkg->Clone(Form("%s_tmp",hBkg->GetName()));
   hBckPdf->Scale((nev-res.nSig)/hBckPdf->Integral(1,nBins+1));
 
-  double ss1 = hSigPdf->Integral(1, hSigPdf->FindBin(0.00999),"width");
-  double bb1 = hBckPdf->Integral(1, hBckPdf->FindBin(0.00999),"width");
+  Double_t ss1 = hSigPdf->Integral(1, hSigPdf->FindBin(0.00999),"width");
+  Double_t bb1 = hBckPdf->Integral(1, hBckPdf->FindBin(0.00999),"width");
   //   cout <<"  hte bin = " <<hSigPdf->FindBin(0.00999) << endl;
   res.purity010 = ss1/(ss1+bb1);
   cout << "purity = " << res.purity010 << endl;

@@ -43,7 +43,7 @@ void gammaJetRapidity_plotting()
   TLegend *leg = new TLegend(0.65,0.65,0.9,0.9);
   leg->SetFillColor(0);
   
-  for(int i = 0; i < nhfBins; i++)
+  for(Int_t i = 0; i < nhfBins; ++i)
   {
     TString name = "gammaJetEta";
     name += i;
@@ -125,7 +125,7 @@ void gammaJetRapidity_plotting()
   Double_t x[nhfBins];// = {10, 25, 40};
   Double_t y[nhfBins];
   Double_t ye[nhfBins];
-  for(int i = 0; i < nhfBins; i++)
+  for(Int_t i = 0; i < nhfBins; i++)
   {
     x[i] = hfEnergy[i]->GetMean();
     y[i] = gammaJetEta[i]->GetMean();

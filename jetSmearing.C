@@ -18,7 +18,7 @@ using namespace std;
  * usePu    - true means use akPu3PF jet algo, false means use ak3PF jet algo
  *
  ******************************************************************************/
-void run(bool autosave = false, int collType = 0, bool usePu = true)
+void run(Bool_t autosave = false, Int_t Colltype = 0, Bool_t usePu = true)
 {
     //===========================================================
     // INPUTS - Set pt,eta,centrality bins and fit function here.

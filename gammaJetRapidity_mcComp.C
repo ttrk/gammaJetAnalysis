@@ -53,7 +53,7 @@ void gammaJetRapidity_mcComp()
 
   const Double_t maxVal[nVars] = {150, 3.5, TMath::Pi(), 200, 3.5, TMath::Pi(), 100, 40, 3.5, TMath::Pi(), 20, 20, 20, 0.5, 0.06, 1.5};			       
   
-  for(int i = 0; i < nVars; i++)
+  for(Int_t i = 0; i < nVars; ++i)
   {
     hist[i][0] = new TH1D(name[i],name[i]+";"+name[i],nBins, minVal[i], maxVal[i]);
     hist[i][1] = (TH1D*)hist[i][0]->Clone(name[i]+"mc");
