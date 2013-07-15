@@ -27,7 +27,7 @@ void makeGammaJetNTuple()
   TFile *outfile = new TFile(name,"RECREATE");
 
   TString varList;
-  varList = "gPt:gEta:gPhi:jPt:jEta:jPhi:HF:HFeta4:avgEta:dPhi:cc4:cr4:ct4PtCut20:hadronicOverEm:sigmaIetaIeta:run:r9:event";
+  varList = "gPt:gEta:gPhi:jPt:jEta:jPhi:HF:HFplusEta4:HFminusEta4:avgEta:dPhi:cc4:cr4:ct4PtCut20:hadronicOverEm:sigmaIetaIeta:run:r9:event:ecalRecHitSumEtConeDR04:hcalTowerSumEtConeDR04:trkSumPtHollowConeDR04";
   if(montecarlo)
     varList += ":genMomId:genCalIsoDR04:genTrkIsoDR04:ptHat:matchedGPt:matchedJPt";
   
@@ -108,7 +108,8 @@ void makeGammaJetNTuple()
       Float_t jEta = c->akPu3PF.jteta[i];
       Float_t jPhi = c->akPu3PF.jtphi[i];
       Float_t HF = c->evt.hiHF;
-      Float_t HFeta4 = c->evt.hiHFplusEta4 + c->evt.hiHFminusEta4;
+      Float_t HFplusEta4 = c->evt.hiHFplusEta4;
+      Float_t HFminusEta4 = c->evt.hiHFminusEta4;
       Float_t avgEta = (c->photon.eta[leadingIndex] + c->akPu3PF.jteta[i])/2.0;
       Float_t dPhi = dphi;
       Float_t cc4 = c->photon.cc4[leadingIndex];
@@ -119,10 +120,13 @@ void makeGammaJetNTuple()
       Float_t run = c->evt.run;
       Float_t r9 = c->photon.r9[leadingIndex];
       Float_t event = c->photon.event;
+      Float_t ecalRecHitSumEtConeDR04 = c->photon.ecalRecHitSumEtConeDR04[leadingIndex];
+      Float_t hcalTowerSumEtConeDR04 = c->photon.hcalTowerSumEtConeDR04[leadingIndex];
+      Float_t trkSumPtHollowConeDR04 = c->photon.trkSumPtHollowConeDR04[leadingIndex];
 
       if(!montecarlo)
       {
-	Float_t x[] = {gPt,gEta,gPhi,jPt,jEta,jPhi,HF,HFeta4,avgEta,dPhi,cc4,cr4,ct4PtCut20,hadronicOverEm,sigmaIetaIeta,run,r9,event};
+	Float_t x[] = {gPt,gEta,gPhi,jPt,jEta,jPhi,HF,HFplusEta4,HFminusEta4,avgEta,dPhi,cc4,cr4,ct4PtCut20,hadronicOverEm,sigmaIetaIeta,run,r9,event,ecalRecHitSumEtConeDR04,hcalTowerSumEtConeDR04,trkSumPtHollowConeDR04};
 	outTuple->Fill(x);
       }
       else
@@ -134,7 +138,7 @@ void makeGammaJetNTuple()
 	Float_t matchedGPt = c->photon.genMatchedPt[leadingIndex];
 	Float_t matchedJPt = c->akPu3PF.matchedPt[i];
 
-	Float_t x[] = {gPt,gEta,gPhi,jPt,jEta,jPhi,HF,HFeta4,avgEta,dPhi,cc4,cr4,ct4PtCut20,hadronicOverEm,sigmaIetaIeta,run,r9,event,genMomId,genCalIsoDR04,genTrkIsoDR04,ptHat,matchedGPt,matchedJPt};
+	Float_t x[] = {gPt,gEta,gPhi,jPt,jEta,jPhi,HF,HFplusEta4,HFminusEta4,avgEta,dPhi,cc4,cr4,ct4PtCut20,hadronicOverEm,sigmaIetaIeta,run,r9,event,ecalRecHitSumEtConeDR04,hcalTowerSumEtConeDR04,trkSumPtHollowConeDR04,genMomId,genCalIsoDR04,genTrkIsoDR04,ptHat,matchedGPt,matchedJPt};
 	outTuple->Fill(x);
       }
     }
