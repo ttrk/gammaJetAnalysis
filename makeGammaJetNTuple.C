@@ -11,20 +11,18 @@
 #include "../HiForest_V3/hiForest.h"
 
 
-void makeGammaJetNTuple()
-{ 
-  TString inFile;
-
+void makeGammaJetNTuple(TString inFile="/mnt/hadoop/cms/store/user/luck/pp_photonSkimForest_v85/pp_photonSKimForest_v85.root",
+			bool montecarlo=false,
+			TString outName="gammaJets_inclusive_dphi7pi8_pp2013Data.root")
+{
+  // pA montecarlo
   //inFile = "/mnt/hadoop/cms/store/user/luck/PA2013_pyquen_allQCDPhoton_forest_v85/pA_Pyquen_allQCDPhoton280_hiForest2_v85.root";
+  // pA file
   // inFile = "/mnt/hadoop/cms/store/user/luck/pA_photonSkimForest_v85/pA_photonSkimForest_v85.root";
-  inFile = "/mnt/hadoop/cms/store/user/luck/pp_photonSkimForest_v85/pp_photonSKimForest_v85.root";
+  //pp file
+  // inFile = "/mnt/hadoop/cms/store/user/luck/pp_photonSkimForest_v85/pp_photonSKimForest_v85.root";
   
-  bool montecarlo = false;
-
-  TString name;
-  name = "gammaJets_inclusive_dphi7pi8_pp2013Data.root";
-
-  TFile *outfile = new TFile(name,"RECREATE");
+  TFile *outfile = new TFile(outName,"RECREATE");
 
   TString varList;
   varList = "gPt:gEta:gPhi:jPt:jEta:jPhi:HF:HFplusEta4:HFminusEta4:avgEta:dPhi:cc4:cr4:ct4PtCut20:hadronicOverEm:sigmaIetaIeta:run:r9:event:ecalRecHitSumEtConeDR04:hcalTowerSumEtConeDR04:trkSumPtHollowConeDR04";
@@ -149,6 +147,8 @@ void makeGammaJetNTuple()
 
   outTuple->Write();
   outfile->Close();
+
+  printf("Done.\n");
 }
 
 
