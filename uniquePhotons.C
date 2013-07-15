@@ -18,14 +18,14 @@ void uniquePhotons()
   Float_t EVENT;
   Int_t EVENT_int;
   Float_t epsilon = 0.01;
-  int nEntries = inTuple->GetEntries();
+  Long64_t nEntries = inTuple->GetEntries();
 
   inTuple->SetBranchAddress("event",&EVENT); // grab the event number from the tree
 
   TEntryList *tlist = new TEntryList(inTuple); // initialize entry list for 'TTree* tree'
 
 // loop over the entries in 'tree'
-  for (int j = 0; j < nEntries; ++j)
+  for (Long64_t j = 0; j < nEntries; ++j)
   {
     inTuple->GetEvent(j);
 
