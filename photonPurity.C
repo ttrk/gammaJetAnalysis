@@ -97,7 +97,7 @@ fitResult doFit(TH1D* hSig=0, TH1D* hBkg=0, TH1D* hData1=0, Float_t varLow=0.001
 
 //Int_t returnHFBin(Double_t hf);
 
-void gammaJet_PurityCalculation()
+void photonPurity()
 {
   TH1::SetDefaultSumw2();
 

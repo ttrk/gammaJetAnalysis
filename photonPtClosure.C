@@ -13,7 +13,7 @@
 #include "commonUtility.h"
 
 
-void gammaJetRapidity_energyClosure()
+void photonPtClosure()
 {
   TH1::SetDefaultSumw2();
   
@@ -33,7 +33,7 @@ void gammaJetRapidity_energyClosure()
   for(Long64_t jentry = 0; jentry<nentries; ++jentry)
   {
     if (jentry% 1000 == 0)  {
-      printf("%d / %d\n",jentry,nentries);
+      printf("%lld / %lld\n",jentry,nentries);
     }
     
     c->GetEntry(jentry);

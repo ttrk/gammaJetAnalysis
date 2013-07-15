@@ -20,7 +20,7 @@ const Int_t nhfBins = 3;
 
 //int returnHFBin(double hf);
 
-void gammaJetRapidity_plotting()
+void gammaJetDifferentialxjg()
 {
   TH1::SetDefaultSumw2();
 

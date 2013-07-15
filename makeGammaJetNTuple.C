@@ -32,7 +32,7 @@ void makeGammaJetNTuple(TString inFile="/mnt/hadoop/cms/store/user/luck/pp_photo
   for(Long64_t jentry = 0; jentry<nentries; ++jentry)
   {
     if (jentry % 1000 == 0)  {
-      printf("%d / %d\n",jentry,nentries);
+      printf("%lld / %lld\n",jentry,nentries);
     }
     
     c->GetEntry(jentry);

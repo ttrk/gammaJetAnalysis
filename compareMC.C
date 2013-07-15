@@ -20,7 +20,7 @@
 
 //int returnHFBin(double hf);
 
-void gammaJetRapidity_mcComp()
+void compareMC()
 {
   TH1::SetDefaultSumw2();
 
