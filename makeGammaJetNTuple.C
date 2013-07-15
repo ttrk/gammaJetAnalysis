@@ -15,13 +15,6 @@ void makeGammaJetNTuple(TString inFile="/mnt/hadoop/cms/store/user/luck/pp_photo
 			Bool_t montecarlo=false,
 			TString outName="gammaJets_inclusive_dphi7pi8_pp2013Data.root")
 {
-  // pA montecarlo
-  //inFile = "/mnt/hadoop/cms/store/user/luck/PA2013_pyquen_allQCDPhoton_forest_v85/pA_Pyquen_allQCDPhoton280_hiForest2_v85.root";
-  // pA file
-  // inFile = "/mnt/hadoop/cms/store/user/luck/pA_photonSkimForest_v85/pA_photonSkimForest_v85.root";
-  //pp file
-  // inFile = "/mnt/hadoop/cms/store/user/luck/pp_photonSkimForest_v85/pp_photonSKimForest_v85.root";
-  
   TFile *outfile = new TFile(outName,"RECREATE");
 
   TString varList;
