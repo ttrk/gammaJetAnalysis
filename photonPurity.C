@@ -1,9 +1,10 @@
 // gammaJet_PurityCalculation
 // Author: Alex Barbieri
 // Cobbled together from code written by Yongsun Kim
-// Calculates and plots the photon purity using a sideband estimation of the background
-// and a MC calculation of the signal. This info is used to do a template fit in the
-// sigmaIetaIeta variable.
+
+// Calculates and plots the photon purity using a sideband estimation
+// of the background and a MC calculation of the signal. This info is
+// used to do a template fit in the sigmaIetaIeta variable.
 
 #include "TFile.h"
 #include "TTree.h"
@@ -24,8 +25,8 @@
 using namespace std;
 //last forward run is 211256
 
-TString data_file = "gammaJets_inclusive_dphi7pi8_data_v2.root";
-TString mc_file = "gammaJets_inclusive_dphi7pi8_MC_v2.root";
+TString data_file = "gammaJets_inclusive_dphi7pi8_pPbData_v2.root";
+TString mc_file = "gammaJets_inclusive_dphi7pi8_allQCD_v2.root";
 
 class fitResult {
 public:
@@ -135,7 +136,7 @@ fitResult getPurity(TCut evtSeltCut, TCut sbEvtCut, TString canvasName, Int_t mi
   TFile *mcFile = TFile::Open(mc_file);
   TNtuple *mcTuple = (TNtuple*)mcFile->Get("gammaJets");
 
-  TH1D* hCand = new TH1D("cand","",35,0,0.035);
+  TH1D* hCand = new TH1D("cand","",70,0,0.070);
   TH1D* hBkg = (TH1D*)hCand->Clone("bkg");  TH1D* hSig = (TH1D*)hCand->Clone("sig");
 
   dataTuple->Project(   hCand->GetName(), "sigmaIetaIeta", evtSeltCut && "(run < 211257)", "");
