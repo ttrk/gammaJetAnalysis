@@ -15,6 +15,7 @@
 #include <TGaxis.h>
 #include <TDatime.h>
 #include <iostream>
+#include <TMath.h>
 
 using namespace std;
 
@@ -38,7 +39,7 @@ Double_t getDPHI( Double_t phi1, Double_t phi2) {
   if ( dphi <= -3.141592653589 ) 
     dphi = dphi + 2. * 3.141592653589;
   
-  if ( fabs(dphi) > 3.141592653589 ) {
+  if ( TMath::Abs(dphi) > 3.141592653589 ) {
     cout << " commonUtility::getDPHI error!!! dphi is bigger than 3.141592653589 " << endl;
   }
   
@@ -46,14 +47,14 @@ Double_t getDPHI( Double_t phi1, Double_t phi2) {
 }
 
 Double_t getAbsDphi( Double_t phi1, Double_t phi2) {
-  return fabs( getDPHI(phi1, phi2) ) ;
+  return TMath::Abs( getDPHI(phi1, phi2) ) ;
 }
 
 
 Double_t getDR( Double_t eta1, Double_t phi1, Double_t eta2, Double_t phi2){ 
   Double_t theDphi = getDPHI( phi1, phi2);
   Double_t theDeta = eta1 - eta2;
-  return sqrt ( theDphi*theDphi + theDeta*theDeta);
+  return TMath::Sqrt ( theDphi*theDphi + theDeta*theDeta);
 }
 
 void divideWOerr( TH1* h1, TH1* h2) {  //by Yongsun Jan 26 2012                                                                              
@@ -80,7 +81,7 @@ void divideWOerr( TH1* h1, TH1* h2) {  //by Yongsun Jan 26 2012
 
 void AddBinError( TH1* h=0, Int_t binNumber=0 , Float_t val=0){
   Float_t valO = h->GetBinError(binNumber);
-  Float_t newVal = sqrt( valO*valO + val*val);
+  Float_t newVal = TMath::Sqrt( valO*valO + val*val);
   h->SetBinError(binNumber,newVal);
 }
 
@@ -127,7 +128,7 @@ void drawSysAbs(TH1 *h,TH1 *sys, Int_t theColor= kYellow, Int_t fillStyle = -1, 
    for (Int_t i=1;i<=h->GetNbinsX();i++)
       {
          Double_t val = h->GetBinContent(i);
-         Double_t err = fabs(sys->GetBinContent(i));
+         Double_t err = TMath::Abs(sys->GetBinContent(i));
 	 if (err == 0  ) continue;
 	 TBox *b = new TBox(h->GetBinLowEdge(i),val-err,h->GetBinLowEdge(i+1),val+err);
          b->SetLineColor(theColor);
@@ -375,7 +376,7 @@ void makeEfficiencyCanvas(TCanvas*& canv, const Int_t columns,
       Xlow[i] = Xup[0] + (i-1)*PadWidth;
       Xup[i] = Xup[0] + (i)*PadWidth;
    }
-   Int_t ct = 0;
+   //Int_t ct = 0;
  
 
    TString padName;
@@ -545,7 +546,7 @@ Double_t goodIntegralError( TH1 *a=0, Int_t lower=-123, Int_t upper=-123)
    for ( Int_t j=lower; j<=upper; j++) {
       tempInt = tempInt + a->GetBinError(j) * a->GetBinError(j) * a->GetBinWidth(j) *  a->GetBinWidth(j);
    }
-   return sqrt(tempInt);
+   return TMath::Sqrt(tempInt);
 }
 
 
@@ -808,7 +809,7 @@ Double_t getPolyAreaErr(TH1* h1, TH1* h2, Double_t minX, Double_t maxX) {
     Double_t addErr2 = (h2->GetBinError(ibin)*h2->GetBinError(ibin) + h1->GetBinError(ibin)*h1->GetBinError(ibin)) * (h1->GetBinWidth(ibin)*h1->GetBinWidth(ibin)) ;
     err2 = err2 + addErr2;
   }
-  return sqrt(err2);
+  return TMath::Sqrt(err2);
 }
 
 TH1D* getShiftedTH1D(TH1D* h1, Double_t shift) {

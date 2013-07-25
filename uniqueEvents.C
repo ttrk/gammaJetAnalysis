@@ -9,11 +9,8 @@
 #include "TEntryList.h"
 #include <set>
 
-void uniquePhotons()
+void use_only_unique_events(TNtuple *inTuple)
 {
-  TFile *inFile = TFile::Open("gammaJets_inclusive_dphi7pi8_data.root");
-  TNtuple *inTuple = (TNtuple*)inFile->Get("gammaJets");
-
   std::set<int> eventIds; // keep track of already seen event numbers
   Float_t EVENT;
   Int_t EVENT_int;
@@ -24,7 +21,6 @@ void uniquePhotons()
 
   TEntryList *tlist = new TEntryList(inTuple); // initialize entry list for 'TTree* tree'
 
-// loop over the entries in 'tree'
   for (Long64_t j = 0; j < nEntries; ++j)
   {
     inTuple->GetEvent(j);
@@ -41,9 +37,5 @@ void uniquePhotons()
 
 // apply the entry list to the tree
   inTuple->SetEntryList(tlist);
-
-// histogram of the variable 'var' will be drawn only with the
-// entries specified by the entry list.
-  inTuple->Draw("gPt");
 
 }

@@ -60,11 +60,7 @@ void gammaJetDifferentialxjg()
     //TCut showerShapeCut = "(sigmaIetaIeta < 0.035)";
     TCut etaShowerCut = "((abs(gEta) < 1.479) && (sigmaIetaIeta < 0.01) || (abs(gEta) > 1.479) && (sigmaIetaIeta < 0.035))";
     TCut ptCut = "(jPt > 30) && (gPt > 50)";
-    TString hfCut = "((HFplusEta4+HFminusEta4) > ";
-    hfCut += hfBins[i];
-    hfCut += " ) && ( (HFplusEta4+HFminusEta4) < ";
-    hfCut += hfBins[i+1];
-    hfCut += " )";
+    TString hfCut = Form("((HFplusEta4+HFminusEta4) > %f) && ((HFplusEta4+HFminusEta4) > %f)", hfBins[i], hfBins[i+1]);
     //TCut cut = isolationCut && etaCut && showerShapeCut && ptCut && hfCut;
     TCut cut = isolationCut && etaShowerCut && ptCut && hfCut;
     //printf("cut: %s\n",(const char*)cut);
