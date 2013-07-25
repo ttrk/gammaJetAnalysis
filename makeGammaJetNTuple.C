@@ -8,7 +8,7 @@
 #include "TLegend.h"
 #include "TString.h"
 #include "stdio.h"
-#include "../HiForest_V3/hiForest.h"
+#include "../HiForestAnalysis/hiForest.h"
 
 
 void makeGammaJetNTuple(TString inFile="/mnt/hadoop/cms/store/user/luck/pp_photonSkimForest_v85/pp_photonSKimForest_v85.root",
@@ -179,3 +179,8 @@ void makeGammaJetNTuple(TString inFile="/mnt/hadoop/cms/store/user/luck/pp_photo
 }
 
 
+int main()
+{
+  makeGammaJetNTuple();
+  return 0;
+}
