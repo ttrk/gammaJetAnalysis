@@ -18,7 +18,7 @@ using namespace std;
  * usePu    - true means use akPu3PF jet algo, false means use ak3PF jet algo
  *
  ******************************************************************************/
-void jetResolution(Bool_t autosave = false, Int_t Colltype = 0, Bool_t usePu = true)
+void jetResolution(Bool_t autosave = false, Int_t collType = 0, Bool_t usePu = true)
 {
     //===========================================================
     // INPUTS - Set pt,eta,centrality bins and fit function here.
