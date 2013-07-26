@@ -1,6 +1,6 @@
 // Author Aleksey Strelnikov
 
-#include "../HiForest_V3/hiForest.h"
+#include "../HiForestAnalysis/hiForest.h"
 #include "commonUtility.h"
 #include <TMath.h>
 #include <iostream>

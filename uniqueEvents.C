@@ -9,15 +9,15 @@
 #include "TEntryList.h"
 #include <set>
 
-void use_only_unique_events(TNtuple *inTuple)
+void use_only_unique_events(TNtuple *inTuple, TString key="event")
 {
   std::set<int> eventIds; // keep track of already seen event numbers
-  Float_t EVENT;
-  Int_t EVENT_int;
+  Float_t KEY;
+  Int_t KEY_int;
   Float_t epsilon = 0.01;
   Long64_t nEntries = inTuple->GetEntries();
 
-  inTuple->SetBranchAddress("event",&EVENT); // grab the event number from the tree
+  inTuple->SetBranchAddress(key,&KEY); // grab the event number from the tree
 
   TEntryList *tlist = new TEntryList(inTuple); // initialize entry list for 'TTree* tree'
 
@@ -27,10 +27,10 @@ void use_only_unique_events(TNtuple *inTuple)
 
 // if we have not seen this event yet, add it to the set
 // and to the entry list
-    EVENT_int = (int) (EVENT+epsilon);
-    if (eventIds.count(EVENT_int) == 0)
+    KEY_int = (int) (KEY+epsilon);
+    if (eventIds.count(KEY_int) == 0)
     {
-      eventIds.insert(EVENT_int);
+      eventIds.insert(KEY_int);
       tlist->Enter(j,inTuple);
     }
   }

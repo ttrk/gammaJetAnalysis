@@ -11,21 +11,23 @@
 #include "../HiForestAnalysis/hiForest.h"
 
 
-void makeGammaJetNTuple(TString inFile="/mnt/hadoop/cms/store/user/luck/pp_photonSkimForest_v85/pp_photonSKimForest_v85.root",
-			Bool_t montecarlo=false,
-			TString outName="gammaJets_inclusive_dphi7pi8_pp2013Data.root")
+void makeGammaJetNTuple(TString inFile="/mnt/hadoop/cms/store/user/luck/PbPb2011_photons_MC/qcdAllPhoton50_allCent.root",
+			collisionType cType = cPbPb,
+			Bool_t montecarlo=true,
+			TString outName="gammaJets_inclusive_dphi7pi8_PbPb2011_MC_allQCDPhoton50.root")
 {
   TFile *outfile = new TFile(outName,"RECREATE");
 
   TString varList;
   varList = "gPt:gEta:gPhi:jPt:jEta:jPhi:HF:HFplusEta4:HFminusEta4:avgEta:dPhi:cc4:cr4:ct4PtCut20:hadronicOverEm:sigmaIetaIeta:run:r9:event:ecalRecHitSumEtConeDR04:hcalTowerSumEtConeDR04:trkSumPtHollowConeDR04";
   if(montecarlo)
-    varList += ":genMomId:genCalIsoDR04:genTrkIsoDR04:ptHat:matchedGPt:matchedJPt";
+    varList += ":genMomId:genCalIsoDR04:genTrkIsoDR04:ptHat:matchedGPt:matchedJPt:jentry";
   
   TNtuple *outTuple = new TNtuple("gammaJets","gammaJets",varList);
   
-  HiForest *c = new HiForest(inFile, "Forest", cPPb, montecarlo);
-  c->InitTree();
+  HiForest *c = new HiForest(inFile, "Forest", cType, montecarlo);
+  if(cType != cPbPb) //for some reason only PbPb is init when created
+    c->InitTree();
 
   //loop over events in each file
   Long64_t nentries = c->GetEntries();
@@ -38,15 +40,20 @@ void makeGammaJetNTuple(TString inFile="/mnt/hadoop/cms/store/user/luck/pp_photo
     c->GetEntry(jentry);
 
     //event selection
-    if( !(
+    if( cType != cPbPb &&
+	!(
 	  (montecarlo || c->skim.pHBHENoiseFilter)
 	  && c->skim.phfPosFilter1
 	  && c->skim.phfNegFilter1
 	  && c->skim.phltPixelClusterShapeFilter
 	  && c->skim.pprimaryvertexFilter
 	  )
-      )
+      ) {
       continue;
+    } else if ( cType == cPbPb && !montecarlo &&
+		!(c->skim.pcollisionEventSelection)){
+      continue;
+    }
 
     if(c->photon.nPhotons == 0)
       continue;
@@ -164,7 +171,8 @@ void makeGammaJetNTuple(TString inFile="/mnt/hadoop/cms/store/user/luck/pp_photo
 		       genTrkIsoDR04,
 		       ptHat,
 		       matchedGPt,
-		       matchedJPt};
+		       matchedJPt,
+		       jentry};
 	outTuple->Fill(x);
       }
     }

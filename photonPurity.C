@@ -1,4 +1,4 @@
-// gammaJet_PurityCalculation
+// photonPurity.C
 // Author: Alex Barbieri
 // Cobbled together from code written by Yongsun Kim
 
@@ -26,13 +26,16 @@
 using namespace std;
 //last forward run is 211256
 
-TString data_file = "gammaJets_inclusive_dphi7pi8_pPbData_v2.root";
-TString mc_file = "gammaJets_inclusive_dphi7pi8_allQCD_v2.root";
+//TString data_file = "gammaJets_inclusive_dphi7pi8_pp2013Data_v2.root";
+//TString mc_file = "gammaJets_inclusive_dphi7pi8_allQCD_v2.root";
+
+TString data_file = "gammaJets_inclusive_dphi7pi8_PbPb2011_Data.root";
+TString mc_file = "gammaJets_inclusive_dphi7pi8_PbPb2011_MC_allQCDPhoton50.root";
 
 const Double_t hfBins[] = {0,1000};//, 20, 30, 1000}; //last entry is upper bound on last bin
 const Int_t nhfBins = sizeof(hfBins)/sizeof(Double_t) -1;
 
-const Double_t ptBins[] = {50,1000};//, 60, 80, 1000};
+const Double_t ptBins[] = {60, 1000};//60, 80, 1000};
 const Int_t nptBins = sizeof(ptBins)/sizeof(Double_t) -1;
 
 class fitResult {
@@ -112,7 +115,7 @@ void photonPurity()
 
   TFile *mcFile = TFile::Open(mc_file);
   TNtuple *mcTuple = (TNtuple*)mcFile->Get("gammaJets");
-  use_only_unique_events(mcTuple);
+  use_only_unique_events(mcTuple,"jentry"); //private MC has bad event numbers
 
   TCut etaCut = "(abs(gEta) < 1.479)";
   TCut sampleIsolation = "(cc4+cr4+ct4PtCut20<1) && hadronicOverEm<0.1";
@@ -122,13 +125,17 @@ void photonPurity()
   TCanvas *cPurity[nhfBins*nptBins];  
   for(Int_t i = 0; i < nptBins; ++i) {
     for(Int_t j = 0; j < nhfBins; ++j) {      
-      TString ptCut = Form("(gPt > %f) && (gPt < %f)",
+      TString ptCut = Form("(gPt >= %f) && (gPt < %f)",
 			   ptBins[i], ptBins[i+1]);
-      TString hfCut = Form("((HFplusEta4+HFminusEta4) > %f) && ((HFplusEta4+HFminusEta4) < %f)", hfBins[j], hfBins[j+1]);
+      TString hfCut = Form("((HFplusEta4+HFminusEta4) >= %f) && ((HFplusEta4+HFminusEta4) < %f)", hfBins[j], hfBins[j+1]);
 
       TCut dataCandidateCut = etaCut && ptCut && hfCut && sampleIsolation;
       TCut sidebandCut = etaCut && ptCut && hfCut && sidebandIsolation;
       TCut mcSignalCut = dataCandidateCut && mcIsolation;
+
+      cout << "dataCandidateCut: " << dataCandidateCut << endl;
+      cout << "sidebandCut: " << sidebandCut << endl;
+      cout << "mcSignalCut: " << mcSignalCut << endl;
 
       TString label = "pPb #sqrt{s}_{_{NN}}=5.02 TeV";
 
@@ -145,8 +152,8 @@ void photonPurity()
 	       0.5680963,0.84);
       drawText(Form("Purity : %.2f", (Float_t)fitr.purity010),
 	       0.5680963,0.529118);
-      cPurity[i*nhfBins+j]->SaveAs(Form("purityCanvas_pt%.0f_hf%.0f.C",
-					ptBins[i], hfBins[j]));
+      //cPurity[i*nhfBins+j]->SaveAs(Form("purityCanvas_pt%.0f_hf%.0f.C",
+      //				ptBins[i], hfBins[j]));
     }
   }
 }
@@ -159,9 +166,13 @@ fitResult getPurity(TNtuple *dataTuple, TNtuple *mcTuple,
   TH1D* hBkg = (TH1D*)hCand->Clone("bkg");
   TH1D* hSig = (TH1D*)hCand->Clone("sig");
 
-  dataTuple->Project(hCand->GetName(), "sigmaIetaIeta", dataCandidateCut, "");
-  dataTuple->Project(hBkg->GetName(), "sigmaIetaIeta", sidebandCut, "");
-  mcTuple->Project(hSig->GetName(), "sigmaIetaIeta", mcSignalCut, "");
+  Int_t dEntries = dataTuple->Project(hCand->GetName(), "sigmaIetaIeta", dataCandidateCut, "");
+  Int_t sbEntries = dataTuple->Project(hBkg->GetName(), "sigmaIetaIeta", sidebandCut, "");
+  Int_t mcEntries = mcTuple->Project(hSig->GetName(), "sigmaIetaIeta", mcSignalCut, "");
+
+  cout << "dEntries: " << dEntries << endl;
+  cout << "sbEntries: " << sbEntries << endl;
+  cout << "mcEntries: " << mcEntries << endl;
 
   fitResult fitr = doFit ( hSig, hBkg, hCand, 0.005, 0.035, true, label);
 
