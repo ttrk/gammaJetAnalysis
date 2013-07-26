@@ -1,8 +1,17 @@
+# text output or external binary names
 *.out
+*.log
 *.bin
+*.exe
+
+# output data
 *.root
-*.d
+
+# ROOT offal
+*_C.d
 *.so
+
+# plots
 *.gif
 *.eps
 *.pdf
