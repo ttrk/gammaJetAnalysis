@@ -18,10 +18,40 @@ void makeGammaJetNTuple(TString inFile="/mnt/hadoop/cms/store/user/luck/PbPb2011
 {
   TFile *outfile = new TFile(outName,"RECREATE");
 
-  TString varList;
-  varList = "gPt:gEta:gPhi:jPt:jEta:jPhi:HF:HFplusEta4:HFminusEta4:avgEta:dPhi:cc4:cr4:ct4PtCut20:hadronicOverEm:sigmaIetaIeta:run:r9:event:ecalRecHitSumEtConeDR04:hcalTowerSumEtConeDR04:trkSumPtHollowConeDR04";
+  TString varList = "";
+  varList += "gPt";
+  varList += ":gEta";
+  varList += ":gPhi";
+  varList += ":jPt";
+  varList += ":jEta";
+  varList += ":jPhi";
+  varList += ":HF";
+  varList += ":HFplusEta4";
+  varList += ":HFminusEta4";
+  varList += ":avgEta";
+  varList += ":dPhi";
+  varList += ":cc4";
+  varList += ":cr4";
+  varList += ":ct4PtCut20";
+  varList += ":hadronicOverEm";
+  varList += ":sigmaIetaIeta";
+  varList += ":run";
+  varList += ":r9";
+  varList += ":event";
+  varList += ":ecalRecHitSumEtConeDR04";
+  varList += ":hcalTowerSumEtConeDR04";
+  varList += ":trkSumPtHollowConeDR04";
+  
   if(montecarlo)
-    varList += ":genMomId:genCalIsoDR04:genTrkIsoDR04:ptHat:matchedGPt:matchedJPt:jentry";
+  {
+    varList += ":genMomId";
+    varList += ":genCalIsoDR04";
+    varList += ":genTrkIsoDR04";
+    varList += ":ptHat";
+    varList += ":matchedGPt";
+    varList += ":matchedJPt";
+    varList += ":jentry";
+  }
   
   TNtuple *outTuple = new TNtuple("gammaJets","gammaJets",varList);
   
@@ -61,7 +91,7 @@ void makeGammaJetNTuple(TString inFile="/mnt/hadoop/cms/store/user/luck/PbPb2011
     //loop over photons in the event
     Float_t leadingPt = 0;
     Int_t leadingIndex = -1;
-    for(Int_t i = 0; i<c->photon.nPhotons; ++i)
+    for(Int_t i = 0; i < c->photon.nPhotons; ++i)
     {
       if(c->photon.pt[i] > leadingPt)
       {
