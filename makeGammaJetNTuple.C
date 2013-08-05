@@ -11,10 +11,10 @@
 #include "../HiForestAnalysis/hiForest.h"
 
 
-void makeGammaJetNTuple(TString inFile="/mnt/hadoop/cms/store/user/luck/PbPb2011_photons_MC/qcdAllPhoton50_allCent.root",
-			collisionType cType = cPbPb,
+void makeGammaJetNTuple(TString inFile="/mnt/hadoop/cms/store/user/luck/PA2013_pyquen_allQCDPhoton_forestv78/PA2013_pyquen_allQCDPhoton50_forestv78.root",
+			collisionType cType = cPPb,
 			Bool_t montecarlo=true,
-			TString outName="gammaJets_inclusive_dphi7pi8_PbPb2011_MC_allQCDPhoton50.root")
+			TString outName="gammaJets_inclusive_dphi7pi8_pA_allQCDPhoton50.root")
 {
   TFile *outfile = new TFile(outName,"RECREATE");
 
@@ -100,7 +100,7 @@ void makeGammaJetNTuple(TString inFile="/mnt/hadoop/cms/store/user/luck/PbPb2011
       }
     }
       
-    if(leadingIndex == -1) 
+    if(leadingIndex == -1)
       continue;
 
     //loop over 'away' jets

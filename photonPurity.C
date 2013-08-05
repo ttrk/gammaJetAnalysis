@@ -26,23 +26,38 @@
 using namespace std;
 //last forward run is 211256
 
-//TString data_file = "gammaJets_inclusive_dphi7pi8_pp2013Data_v2.root";
-//TString mc_file = "gammaJets_inclusive_dphi7pi8_allQCD_v2.root";
+//pp
+//const TString DATA_FILE = "gammaJets_inclusive_dphi7pi8_pp2013Data_v2.root";
+//const TString MC_FILE = "gammaJets_inclusive_dphi7pi8_allQCD_v2.root";
+//const TString LABEL = "pp #sqrt{s}_{_{NN}}=2.76 TeV";
 
-TString data_file = "gammaJets_inclusive_dphi7pi8_PbPb2011_Data.root";
-TString mc_file = "gammaJets_inclusive_dphi7pi8_PbPb2011_MC_allQCDPhoton50.root";
+//PbPb
+//const TString DATA_FILE = "gammaJets_inclusive_dphi7pi8_PbPb2011_Data.root";
+//const TString MC_FILE = "gammaJets_inclusive_dphi7pi8_PbPb2011_MC_allQCDPhoton50.root";
+//const TString LABEL = "PbPb #sqrt{s}_{_{NN}}=2.76 TeV";
 
-const Double_t hfBins[] = {0,1000};//, 20, 30, 1000}; //last entry is upper bound on last bin
-const Int_t nhfBins = sizeof(hfBins)/sizeof(Double_t) -1;
+//pPb
+const TString DATA_FILE = "gammaJets_inclusive_dphi7pi8_pPbData_v2.root";
+const TString MC_FILE = "gammaJets_inclusive_dphi7pi8_pA_allQCDPhoton50.root";
+const TString LABEL = "pPb #sqrt{s}_{_{NN}}=5.02 TeV";
 
-const Double_t ptBins[] = {60, 1000};//60, 80, 1000};
-const Int_t nptBins = sizeof(ptBins)/sizeof(Double_t) -1;
+// the bin which holds this value is considered the largest bin when
+// computing the purity
+//const Double_t PURITY_BIN_VAL = 0.00999;
+const Double_t PURITY_BIN_VAL = 0.02699;
+
+// last entry is upper bound on last bin
+const Double_t HFBINS[] = {0,1000};//, 20, 30, 1000};
+const Int_t nHFBINS = sizeof(HFBINS)/sizeof(Double_t) -1;
+
+const Double_t PTBINS[] = {50, 60, 80, 1000};
+const Int_t nPTBINS = sizeof(PTBINS)/sizeof(Double_t) -1;
 
 class fitResult {
 public:
   Double_t nSig;
   Double_t nSigErr;
-  Double_t purity010;
+  Double_t purity;
   Double_t chisq;
 };
 
@@ -101,66 +116,72 @@ Double_t histFunction2::evaluate(Double_t *x, Double_t *par) {
 
 fitResult getPurity(TNtuple *dataTuple, TNtuple *mcTuple,
 		    TCut dataCandidateCut, TCut sidebandCut,
-		    TCut mcSignalCut, TString label);
+		    TCut mcSignalCut);
 
-fitResult doFit(TH1D* hSig=0, TH1D* hBkg=0, TH1D* hData1=0, Float_t varLow=0.001, Float_t varHigh=0.028, Bool_t drawLeg=true, TString label = "");
+fitResult doFit(TH1D* hSig=0, TH1D* hBkg=0, TH1D* hData1=0,
+		Float_t varLow=0.001, Float_t varHigh=0.028,
+		Bool_t drawLeg=true);
 
 void photonPurity()
 {
   TH1::SetDefaultSumw2();
 
-  TFile *dataFile = TFile::Open(data_file);
+  TFile *dataFile = TFile::Open(DATA_FILE);
   TNtuple *dataTuple = (TNtuple*)dataFile->Get("gammaJets");
   use_only_unique_events(dataTuple);
 
-  TFile *mcFile = TFile::Open(mc_file);
+  TFile *mcFile = TFile::Open(MC_FILE);
   TNtuple *mcTuple = (TNtuple*)mcFile->Get("gammaJets");
   use_only_unique_events(mcTuple,"jentry"); //private MC has bad event numbers
 
-  TCut etaCut = "(abs(gEta) < 1.479)";
+  //TCut etaCut = "(abs(gEta) < 1.479)";
+  //TCut etaCut = "(abs(gEta) > 1.479)";
+  TCut etaCut = "";
   TCut sampleIsolation = "(cc4+cr4+ct4PtCut20<1) && hadronicOverEm<0.1";
   TCut sidebandIsolation = "(cc4+cr4+ct4PtCut20>10) && (cc4+cr4+ct4PtCut20<20) && hadronicOverEm<0.1";
   TCut mcIsolation = "genCalIsoDR04<5 && abs(genMomId)<=22";
 
-  TCanvas *cPurity[nhfBins*nptBins];  
-  for(Int_t i = 0; i < nptBins; ++i) {
-    for(Int_t j = 0; j < nhfBins; ++j) {      
+  TCanvas *cPurity[nHFBINS*nPTBINS];  
+  for(Int_t i = 0; i < nPTBINS; ++i) {
+    for(Int_t j = 0; j < nHFBINS; ++j) {      
       TString ptCut = Form("(gPt >= %f) && (gPt < %f)",
-			   ptBins[i], ptBins[i+1]);
-      TString hfCut = Form("((HFplusEta4+HFminusEta4) >= %f) && ((HFplusEta4+HFminusEta4) < %f)", hfBins[j], hfBins[j+1]);
+			   PTBINS[i], PTBINS[i+1]);
+      TString hfCut = Form("((HFplusEta4+HFminusEta4) >= %f) && ((HFplusEta4+HFminusEta4) < %f)",
+			   HFBINS[j], HFBINS[j+1]);
 
       TCut dataCandidateCut = etaCut && ptCut && hfCut && sampleIsolation;
       TCut sidebandCut = etaCut && ptCut && hfCut && sidebandIsolation;
       TCut mcSignalCut = dataCandidateCut && mcIsolation;
 
-      cout << "dataCandidateCut: " << dataCandidateCut << endl;
-      cout << "sidebandCut: " << sidebandCut << endl;
-      cout << "mcSignalCut: " << mcSignalCut << endl;
+      // cout << "dataCandidateCut: " << dataCandidateCut << endl;
+      // cout << "sidebandCut: " << sidebandCut << endl;
+      // cout << "mcSignalCut: " << mcSignalCut << endl;
 
-      TString label = "pPb #sqrt{s}_{_{NN}}=5.02 TeV";
-
-      cPurity[i*nhfBins+j] = new TCanvas(Form("cpurity%d",i*nhfBins+j),
+      cPurity[i*nHFBINS+j] = new TCanvas(Form("cpurity%d",i*nHFBINS+j),
 					 "",500,500);
       fitResult fitr = getPurity(dataTuple, mcTuple,
 				 dataCandidateCut, sidebandCut,
-				 mcSignalCut, label);
+				 mcSignalCut);
 
-      drawText(Form("%.0f < p_{T} < %.0f",ptBins[i], ptBins[i+1]),
-	       0.5680963,0.8);
-      drawText(Form("%.0f < E_{T}^{HF[|#eta|>4]} < %.0f",
-		    hfBins[j], hfBins[j+1]),
-	       0.5680963,0.84);
-      drawText(Form("Purity : %.2f", (Float_t)fitr.purity010),
-	       0.5680963,0.529118);
-      //cPurity[i*nhfBins+j]->SaveAs(Form("purityCanvas_pt%.0f_hf%.0f.C",
-      //				ptBins[i], hfBins[j]));
+      drawText("|#eta_{#gamma}| none",0.5680963,0.9);
+      if(nPTBINS != 1)
+	drawText(Form("%.0f < p_{T}^{#gamma} < %.0f",PTBINS[i], PTBINS[i+1]),
+		 0.5680963, 0.8);
+      if(nHFBINS != 1)
+	drawText(Form("%.0f < E_{T}^{HF[|#eta|>4]} < %.0f",
+		      HFBINS[j], HFBINS[j+1]),
+		 0.5680963, 0.84);
+      drawText(Form("Purity : %.2f", (Float_t)fitr.purity),
+      	       0.5680963, 0.529118);
+      cPurity[i*nHFBINS+j]->SaveAs(Form("purityCanvas_pt%.0f_hf%.0f.C",
+					PTBINS[i], HFBINS[j]));
     }
   }
 }
 
 fitResult getPurity(TNtuple *dataTuple, TNtuple *mcTuple,
 		    TCut dataCandidateCut, TCut sidebandCut,
-		    TCut mcSignalCut, TString label)
+		    TCut mcSignalCut)
 {
   TH1D* hCand = new TH1D("cand","",70,0,0.070);
   TH1D* hBkg = (TH1D*)hCand->Clone("bkg");
@@ -170,11 +191,11 @@ fitResult getPurity(TNtuple *dataTuple, TNtuple *mcTuple,
   Int_t sbEntries = dataTuple->Project(hBkg->GetName(), "sigmaIetaIeta", sidebandCut, "");
   Int_t mcEntries = mcTuple->Project(hSig->GetName(), "sigmaIetaIeta", mcSignalCut, "");
 
-  cout << "dEntries: " << dEntries << endl;
-  cout << "sbEntries: " << sbEntries << endl;
-  cout << "mcEntries: " << mcEntries << endl;
+  cout << "# Candidates: " << dEntries << endl;
+  cout << "# Sideband: " << sbEntries << endl;
+  cout << "# MC Signal: " << mcEntries << endl;
 
-  fitResult fitr = doFit ( hSig, hBkg, hCand, 0.005, 0.035, true, label);
+  fitResult fitr = doFit(hSig, hBkg, hCand, 0.005, 0.035, true);
 
   delete hSig;
   delete hBkg;
@@ -184,8 +205,10 @@ fitResult getPurity(TNtuple *dataTuple, TNtuple *mcTuple,
 }
 
 
-fitResult doFit(TH1D* hSig, TH1D* hBkg, TH1D* hData1, Float_t varLow, Float_t varHigh, Bool_t drawLeg, TString label) {
-   
+fitResult doFit(TH1D* hSig, TH1D* hBkg, TH1D* hData1,
+		Float_t varLow, Float_t varHigh,
+		Bool_t drawLeg)
+{   
   TH1D* hDatatmp = (TH1D*)hData1->Clone(Form("%s_datatmp",hData1->GetName()));
   Int_t nBins = hDatatmp->GetNbinsX();
   histFunction2 *myFits = new histFunction2(hSig,hBkg);
@@ -210,11 +233,11 @@ fitResult doFit(TH1D* hSig, TH1D* hBkg, TH1D* hData1, Float_t varLow, Float_t va
   TH1F *hBckPdf = (TH1F*)hBkg->Clone(Form("%s_tmp",hBkg->GetName()));
   hBckPdf->Scale((nev-res.nSig)/hBckPdf->Integral(1,nBins+1));
 
-  Double_t ss1 = hSigPdf->Integral(1, hSigPdf->FindBin(0.00999),"width");
-  Double_t bb1 = hBckPdf->Integral(1, hBckPdf->FindBin(0.00999),"width");
-  //   cout <<"  hte bin = " <<hSigPdf->FindBin(0.00999) << endl;
-  res.purity010 = ss1/(ss1+bb1);
-  //cout << "purity = " << res.purity010 << endl;
+  Double_t ss1 = hSigPdf->Integral(1, hSigPdf->FindBin(PURITY_BIN_VAL),"width");
+  Double_t bb1 = hBckPdf->Integral(1, hBckPdf->FindBin(PURITY_BIN_VAL),"width");
+  //   cout <<"  hte bin = " <<hSigPdf->FindBin(PURITY_BIN_VAL) << endl;
+  res.purity = ss1/(ss1+bb1);
+  //cout << "purity = " << res.purity << endl;
   hSigPdf->Add(hBckPdf);
   handsomeTH1(hSigPdf);
   mcStyle(hSigPdf);
@@ -230,10 +253,10 @@ fitResult doFit(TH1D* hSig, TH1D* hBkg, TH1D* hData1, Float_t varLow, Float_t va
   TH1D* temphSigPdf = (TH1D*)hSigPdf->Clone("temp1");
   TH1D* temphBckPdf = (TH1D*)hBckPdf->Clone("temp2");
   if(drawLeg){
-    TLegend *t3=new TLegend(0.5402006,0.5963235,0.9186019,0.7853466,NULL,"brNDC");
+    TLegend *t3=new TLegend(0.54, 0.60, 0.92, 0.79);
     //t3->AddEntry(hData1,"Pb+Pb  #sqrt{s}_{_{NN}}=2.76 TeV","pl");
     //t3->AddEntry(hData1,"pp  #sqrt{s}_{_{NN}}=2.76 TeV","pl");
-    t3->AddEntry(hData1,label,"pl");
+    t3->AddEntry(hData1,LABEL,"pl");
     t3->AddEntry(temphSigPdf,"Signal","lf");
     t3->AddEntry(temphBckPdf,"Background","lf");
     t3->SetFillColor(0);
