@@ -16,3 +16,4 @@
 *.eps
 *.pdf
 *.png
+*_plot.C

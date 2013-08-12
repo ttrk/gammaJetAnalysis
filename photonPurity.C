@@ -43,8 +43,8 @@ const TString LABEL = "pPb #sqrt{s}_{_{NN}}=5.02 TeV";
 
 // the bin which holds this value is considered the largest bin when
 // computing the purity
-//const Double_t PURITY_BIN_VAL = 0.00999;
-const Double_t PURITY_BIN_VAL = 0.02699;
+const Double_t PURITY_BIN_VAL = 0.00999;
+//const Double_t PURITY_BIN_VAL = 0.02699;
 
 // last entry is upper bound on last bin
 const Double_t HFBINS[] = {0,1000};//, 20, 30, 1000};
@@ -163,7 +163,7 @@ void photonPurity()
 				 dataCandidateCut, sidebandCut,
 				 mcSignalCut);
 
-      drawText("|#eta_{#gamma}| none",0.5680963,0.9);
+      drawText("|#eta_{#gamma}| no cut",0.5680963,0.9);
       if(nPTBINS != 1)
 	drawText(Form("%.0f < p_{T}^{#gamma} < %.0f",PTBINS[i], PTBINS[i+1]),
 		 0.5680963, 0.8);
@@ -171,9 +171,9 @@ void photonPurity()
 	drawText(Form("%.0f < E_{T}^{HF[|#eta|>4]} < %.0f",
 		      HFBINS[j], HFBINS[j+1]),
 		 0.5680963, 0.84);
-      drawText(Form("Purity : %.2f", (Float_t)fitr.purity),
-      	       0.5680963, 0.529118);
-      cPurity[i*nHFBINS+j]->SaveAs(Form("purityCanvas_pt%.0f_hf%.0f.C",
+      // drawText(Form("Purity : %.2f", (Float_t)fitr.purity),
+      // 	       0.5680963, 0.529118);
+      cPurity[i*nHFBINS+j]->SaveAs(Form("purity_pA_combined_pt%.0f_hf%.0f_plot.png",
 					PTBINS[i], HFBINS[j]));
     }
   }
