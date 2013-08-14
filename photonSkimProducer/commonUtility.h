@@ -13,7 +13,7 @@
 #include <TH2D.h>
 #include <TH2F.h>
 #include <TGaxis.h>
-#include <TDatime.h>
+
 
 struct kinem {
   double pt;
@@ -21,7 +21,7 @@ struct kinem {
   double phi;
 };
 
-void cleverCanvasSaving(TCanvas* c, TString s,TString format="gif") {
+void claverCanvasSaving(TCanvas* c, TString s,TString format="gif") {
   TDatime* date = new TDatime();
   c->SaveAs(Form("%s_%d.%s",s.Data(),date->GetDate(), format.Data()));
 }
@@ -194,7 +194,7 @@ void drawErrorBand(TH1* h, double* err, int theColor=kSpring+8)
 
 void drawText(const char *text, float xp, float yp, int textColor=kBlack, int textSize=18){
    TLatex *tex = new TLatex(xp,yp,text);
-   tex->SetTextFont(43);
+   tex->SetTextFont(63);
    //   if(bold)tex->SetTextFont(43);
    tex->SetTextSize(textSize);
    tex->SetTextColor(textColor);
@@ -205,7 +205,7 @@ void drawText(const char *text, float xp, float yp, int textColor=kBlack, int te
 
 void drawText2(const char *text, float xp, float yp, int textSize=18){
    TLatex *tex = new TLatex(xp,yp,text);
-   tex->SetTextFont(43);
+   tex->SetTextFont(63);
    tex->SetTextSize(textSize);
    tex->SetTextColor(kBlack);
    tex->SetLineWidth(1);
@@ -263,10 +263,10 @@ void makeMultiPanelCanvas(TCanvas*& canv, const Int_t columns,
                           const Float_t leftMargin=0.2,
                           const Float_t bottomMargin=0.2,
                           const Float_t edge=0.05) {
-  if (canv==0) {
-    cout << "make MultiPanelCanvas    Got null canvas." << endl<<endl<<endl<<endl;
-    return;
-  }
+   if (canv==0) {
+      Error("makeMultiPanelCanvas","Got null canvas.");
+      return;
+   }
    canv->Clear();
 
    TPad* pad[columns][rows];
@@ -339,7 +339,7 @@ void makeEfficiencyCanvas(TCanvas*& canv, const Int_t columns,
   const Int_t rows = 2;
   
   if (canv==0) {
-    cout <<"makeMultiPanelCanvas              Got null canvas." <<endl<<endl<<endl;
+    Error("makeMultiPanelCanvas","Got null canvas.");
     return;
   }
   canv->Clear();
@@ -371,6 +371,7 @@ void makeEfficiencyCanvas(TCanvas*& canv, const Int_t columns,
       Xlow[i] = Xup[0] + (i-1)*PadWidth;
       Xup[i] = Xup[0] + (i)*PadWidth;
    }
+   Int_t ct = 0;
  
 
    TString padName;
@@ -478,7 +479,7 @@ void handsomeTGraph(TGraphAsymmErrors* a, int col=1)
    a->SetLineColor(col);
    a->SetMarkerColor(col);
    a->SetMarkerSize(1);
-   a->SetMarkerStyle(20);
+   a->SetMarkerStyle(24);
 }
 
 void TH1ScaleByWidth(TH1* h=0) 
@@ -573,7 +574,7 @@ void easyLeg( TLegend *a=0 , TString head="")
 {
   a->SetBorderSize(0);
   a->SetHeader(head);
-  a->SetTextFont(42);
+  a->SetTextFont(62);
   //  a->SetTextSize(17);
   a->SetLineColor(1);
   a->SetLineStyle(1);
