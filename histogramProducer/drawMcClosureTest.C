@@ -13,20 +13,21 @@ void drawMcClosureTest(int xNorm = 1) {
   TH1D* hxjgNorm[7][5][6][4]; // [Collision][centrality][pt][MC level]
   TH1D* meanXjg[7][5][4];      // [Collisi on][centrality][MC level]
   TH1D* rjg[7][5][4];     //  [Collision][centrality][MC level]
-  for (int icoll=0 ; icoll<6 ; icoll++) {  
+  for (int icoll=4 ; icoll<6 ; icoll++) {  
     for (int icent=1 ; icent<=nCentBin ; icent++) {
       for (int imc=0 ; imc<=4 ; imc++) {  
 	meanXjg[icoll][icent][imc] = new TH1D( Form("meanXjg_icoll%d_icent%d_imc%d",icoll,icent,imc), ";p_{T}^{#gamma}; <X_{J#gamma}>",nPtBin,ptBinPaDraw);
-	rjg[icoll][icent][imc] = new TH1D( Form("meanXjg_icoll%d_icent%d_imc%d",icoll,icent,imc), ";p_{T}^{#gamma}; R_{J#gamma}",nPtBin,ptBinPaDraw);
+	rjg[icoll][icent][imc] = new TH1D( Form("rjg_icoll%d_icent%d_imc%d",icoll,icent,imc), ";p_{T}^{#gamma}; R_{J#gamma}",nPtBin,ptBinPaDraw);
       }
     }
   }
   TFile* histFile[7][6];  // [Collision][pt]
 
   for (int ipt=1 ; ipt<=nPtBin ; ipt++) {  
-    for (int icoll=0 ; icoll<6 ; icoll++) {  
+    for (int icoll=4 ; icoll<6 ; icoll++) {  
       TString sampleName = getSampleName( icoll ) ;
-      histFile[icoll][ipt] = new TFile(Form("ffFiles/photonTrackCorr_%s_output_photonPtThr%d_to_%d_jetPtThr30_20130813.root",sampleName.Data(), (int)ptBin[ipt-1], (int)ptBin[ipt]) );
+      histFile[icoll][ipt] = new TFile(Form("ffFiles/photonTrackCorr_%s_output_photonPtThr%d_to_%d_jetPtThr30_20130815.root",sampleName.Data(), (int)ptBin[ipt-1], (int)ptBin[ipt]) );
+      cout << " Reading file : " << Form("ffFiles/photonTrackCorr_%s_output_photonPtThr%d_to_%d_jetPtThr30_20130815.root",sampleName.Data(), (int)ptBin[ipt-1], (int)ptBin[ipt]) << endl;
       if ( histFile[icoll][ipt]->IsZombie()  == false ) {
 	for (int icent=1 ; icent<=nCentBin ; icent++) {  
 	  for (int imc=0 ; imc <4 ; imc++) {
@@ -34,13 +35,16 @@ void drawMcClosureTest(int xNorm = 1) {
 	    if ( imc == 1 )  mcStr = "_genPho";
 	    else if ( imc == 2 )  mcStr = "_genJet";
 	    else if ( imc == 3 )  mcStr = "_genPho_genJet";
-	    hxjg[icoll][icent][ipt][imc] = (TH1D*)histFile[icoll][ipt]->Get(Form("xjg%s_icent%d_phoCand_rawTrk", mcStr.Data(), icent)) ;
+	    //	    hxjg[icoll][icent][ipt][imc] = (TH1D*)histFile[icoll][ipt]->Get(Form("xjg%s_icent%d_phoCand_rawTrk", mcStr.Data(), icent)) ;
+	    hxjg[icoll][icent][ipt][imc] = (TH1D*)histFile[icoll][ipt]->Get(Form("xjg%s_icent%d_final", mcStr.Data(), icent)) ;
+	    cout << " Getting histogram : " << Form("xjg%s_icent%d_final", mcStr.Data(), icent) << endl;
 	    hxjgNorm[icoll][icent][ipt][imc] = (TH1D*)hxjg[icoll][icent][ipt][imc]->Clone(Form("%s_norm", hxjg[icoll][icent][ipt][imc]->GetName() ));
-	    // Mean xjg and Rjg calculation
+	  	    // Mean xjg and Rjg calculation
 	    meanXjg[icoll][icent][imc]->SetBinContent( ipt, hxjg[icoll][icent][ipt][imc]->GetMean() );
 	    meanXjg[icoll][icent][imc]->SetBinError  ( ipt, hxjg[icoll][icent][ipt][imc]->GetMeanError() );
 	    double rVal, rErr;
-	    rVal = hxjg[icoll][icent][ipt][imc]->IntegralAndError(1, hxjg[icoll][icent][ipt][imc]->GetNbinsX(), rErr, "width");                
+	    rVal = hxjg[icoll][icent][ipt][imc]->IntegralAndError(1, hxjg[icoll][icent][ipt][imc]->GetNbinsX(), rErr, "width");             
+
 	    rjg[icoll][icent][imc]->SetBinContent( ipt, rVal );
 	    rjg[icoll][icent][imc]->SetBinError  ( ipt, rErr );
 	  }
