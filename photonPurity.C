@@ -27,9 +27,9 @@ using namespace std;
 //last forward run is 211256
 
 //pp
-const TString DATA_FILE = "gammaJets_inclusive_dphi7pi8_pp2013Data_v2.root";
-const TString MC_FILE = "gammaJets_inclusive_dphi7pi8_allQCD_v2.root";
-const TString LABEL = "pp #sqrt{s}_{_{NN}}=2.76 TeV";
+//const TString DATA_FILE = "gammaJets_inclusive_dphi7pi8_pp2013Data_v2.root";
+//const TString MC_FILE = "gammaJets_inclusive_dphi7pi8_pA_allQCDPhoton50.root";
+//const TString LABEL = "pp #sqrt{s}_{_{NN}}=2.76 TeV";
 
 //PbPb
 //const TString DATA_FILE = "gammaJets_inclusive_dphi7pi8_PbPb2011_Data.root";
@@ -37,9 +37,9 @@ const TString LABEL = "pp #sqrt{s}_{_{NN}}=2.76 TeV";
 //const TString LABEL = "PbPb #sqrt{s}_{_{NN}}=2.76 TeV";
 
 //pPb
-//const TString DATA_FILE = "gammaJets_inclusive_dphi7pi8_pPbData_v2.root";
-//const TString MC_FILE = "gammaJets_inclusive_dphi7pi8_pA_allQCDPhoton50.root";
-//const TString LABEL = "pPb #sqrt{s}_{_{NN}}=5.02 TeV";
+const TString DATA_FILE = "gammaJets_inclusive_dphi7pi8_pPbData_v2.root";
+const TString MC_FILE = "gammaJets_inclusive_dphi7pi8_pA_allQCDPhoton50.root";
+const TString LABEL = "pPb #sqrt{s}_{_{NN}}=5.02 TeV";
 
 // the bin which holds this value is considered the largest bin when
 // computing the purity
@@ -47,7 +47,7 @@ const Double_t PURITY_BIN_VAL = 0.00999;
 //const Double_t PURITY_BIN_VAL = 0.02699;
 
 // last entry is upper bound on last bin
-const Double_t HFBINS[] = {0,20,30,1000};
+const Double_t HFBINS[] = {0,1000};//20,30,1000};
 const Int_t nHFBINS = sizeof(HFBINS)/sizeof(Double_t) -1;
 
 const Double_t PTBINS[] = {40, 50, 60, 80, 120, 1000};
@@ -175,6 +175,7 @@ void photonPurity()
 		 0.57, 0.82);
       drawText(Form("Purity : %.2f", (Float_t)fitr.purity),
       	       0.57, 0.53);
+      cout << "pT: " << PTBINS[i] << " : " << fitr.purity << endl;
       // TString savename = Form("purity_pA_barrel_pt%.0f_hf%.0f_plot",
       // 			     PTBINS[i], HFBINS[j]);
       // cPurity[i*nHFBINS+j]->SaveAs(savename+".C");
