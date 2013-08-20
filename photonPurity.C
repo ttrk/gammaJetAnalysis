@@ -38,7 +38,7 @@ using namespace std;
 
 //pPb
 const TString DATA_FILE = "gammaJets_inclusive_dphi7pi8_pPbData_v2.root";
-const TString MC_FILE = "gammaJets_inclusive_dphi7pi8_pA_allQCDPhoton50.root";
+const TString MC_FILE = "gammaJets_pA_merged_allQCDPhoton_ntuple.root";
 const TString LABEL = "pPb #sqrt{s}_{_{NN}}=5.02 TeV";
 
 // the bin which holds this value is considered the largest bin when
@@ -132,13 +132,13 @@ void photonPurity()
 
   TFile *mcFile = TFile::Open(MC_FILE);
   TNtuple *mcTuple = (TNtuple*)mcFile->Get("gammaJets");
-  use_only_unique_events(mcTuple,"jentry"); //private MC has bad event numbers
+  use_only_unique_events(mcTuple,"mcid"); //private MC has bad event numbers
 
   TCut etaCut = "(abs(gEta) < 1.479)";
   //TCut etaCut = "(abs(gEta) > 1.479)";
   //TCut etaCut = "";
-  TCut sampleIsolation = "(cc4+cr4+ct4PtCut20<1) && hadronicOverEm<0.1";
-  //TCut sampleIsolation = "ecalRecHitSumEtConeDR04 < 4.2  &&  hcalTowerSumEtConeDR04 < 2.2  &&  trkSumPtHollowConeDR04 < 2 && hadronicOverEm<0.1";
+  //TCut sampleIsolation = "(cc4+cr4+ct4PtCut20<1) && hadronicOverEm<0.1";
+  TCut sampleIsolation = "ecalRecHitSumEtConeDR04 < 4.2  &&  hcalTowerSumEtConeDR04 < 2.2  &&  trkSumPtHollowConeDR04 < 2 && hadronicOverEm<0.1";
   TCut sidebandIsolation = "(cc4+cr4+ct4PtCut20>10) && (cc4+cr4+ct4PtCut20<20) && hadronicOverEm<0.1";
   TCut mcIsolation = "genCalIsoDR04<5 && abs(genMomId)<=22";
 
@@ -197,7 +197,7 @@ fitResult getPurity(TNtuple *dataTuple, TNtuple *mcTuple,
 
   Int_t dEntries = dataTuple->Project(hCand->GetName(), "sigmaIetaIeta", dataCandidateCut, "");
   Int_t sbEntries = dataTuple->Project(hBkg->GetName(), "sigmaIetaIeta", sidebandCut, "");
-  Int_t mcEntries = mcTuple->Project(hSig->GetName(), "sigmaIetaIeta", mcSignalCut, "");
+  Int_t mcEntries = mcTuple->Project(hSig->GetName(), "sigmaIetaIeta", "mcweight"*mcSignalCut, "");
 
   cout << "# Candidates: " << dEntries << endl;
   cout << "# Sideband: " << sbEntries << endl;

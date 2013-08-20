@@ -21,7 +21,7 @@ for PTHAT in 30 50 80 120 170 220 280 370
 do
     INFILE="/mnt/hadoop/cms/store/user/luck/PA2013_pyquen_allQCDPhoton_forest_53x_2013-18-14-1922/pA_Pyquen_allQCDPhoton${PTHAT}_hiForest2_53x_2013-18-14-1922.root"
     OUTFILE="gammaJets_pA_pythiaHIJING_allQCDPhoton${PTHAT}_ntuple.root"
-    root -l -b -x -q makeGammaJetNTuple.C+\(\"$INFILE\",1,1,\"$OUTFILE\",${MCWEIGHT[$COUNTER]},$COUNTER\)
+    root -l -b -x -q makeGammaJetNTuple.C+\(\"$INFILE\",2,1,\"$OUTFILE\",${MCWEIGHT[$COUNTER]},$COUNTER\)
     ((COUNTER++))
 done
 
