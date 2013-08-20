@@ -14,7 +14,7 @@ void use_only_unique_events(TNtuple *inTuple, TString key="event")
   std::set<int> eventIds; // keep track of already seen event numbers
   Float_t KEY;
   Int_t KEY_int;
-  Float_t epsilon = 0.01;
+  Float_t epsilon = 0.5;
   Long64_t nEntries = inTuple->GetEntries();
 
   inTuple->SetBranchAddress(key,&KEY); // grab the event number from the tree

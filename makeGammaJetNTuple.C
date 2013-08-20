@@ -14,7 +14,9 @@
 void makeGammaJetNTuple(TString inFile="/mnt/hadoop/cms/store/user/luck/PA2013_pyquen_allQCDPhoton_forestv78/PA2013_pyquen_allQCDPhoton50_forestv78.root",
 			collisionType cType = cPPb,
 			Bool_t montecarlo=true,
-			TString outName="gammaJets_inclusive_dphi7pi8_pA_allQCDPhoton50.root")
+			TString outName="gammaJets_inclusive_dphi7pi8_pA_allQCDPhoton50.root",
+			Double_t mcweight=1,
+			Float_t forestnum=0)
 {
   TFile *outfile = new TFile(outName,"RECREATE");
 
@@ -51,6 +53,8 @@ void makeGammaJetNTuple(TString inFile="/mnt/hadoop/cms/store/user/luck/PA2013_p
     varList += ":matchedGPt";
     varList += ":matchedJPt";
     varList += ":jentry";
+    varList += ":mcweight";
+    varList += ":mcid";
   }
   
   TNtuple *outTuple = new TNtuple("gammaJets","gammaJets",varList);
@@ -172,6 +176,9 @@ void makeGammaJetNTuple(TString inFile="/mnt/hadoop/cms/store/user/luck/PA2013_p
 	Float_t ptHat = c->photon.ptHat;
 	Float_t matchedGPt = c->photon.genMatchedPt[leadingIndex];
 	Float_t matchedJPt = c->akPu3PF.matchedPt[i];
+	//jentry
+	//mcweight
+	Float_t mcid = jentry + 500000*forestnum;
 
 	Float_t x[] = {gPt,
 		       gEta,
@@ -202,7 +209,9 @@ void makeGammaJetNTuple(TString inFile="/mnt/hadoop/cms/store/user/luck/PA2013_p
 		       ptHat,
 		       matchedGPt,
 		       matchedJPt,
-		       jentry};
+		       jentry,
+		       mcweight,
+		       mcid};
 	outTuple->Fill(x);
       }
     }
