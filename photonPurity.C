@@ -53,12 +53,20 @@ const Int_t nHFBINS = sizeof(HFBINS)/sizeof(Double_t) -1;
 const Double_t PTBINS[] = {40, 50, 60, 80, 120, 1000};
 const Int_t nPTBINS = sizeof(PTBINS)/sizeof(Double_t) -1;
 
+const Int_t nSIGMABINS = 75; // number of bins in sigmaIetaIeta dist
+const Double_t maxSIGMA = 0.025; // x-axis max of sigmaIetaIeta dist
+const Double_t SHIFTVAL = 0;//-0.00015; // shift the mean of the signal hist by this much
+
 class fitResult {
 public:
   Double_t nSig;
   Double_t nSigErr;
   Double_t purity;
   Double_t chisq;
+
+  TH1F *sigPdf;
+  TH1F *bckPdf;
+  TH1D *data;
 };
 
 class histFunction2
@@ -142,7 +150,8 @@ void photonPurity()
   TCut sidebandIsolation = "(cc4+cr4+ct4PtCut20>10) && (cc4+cr4+ct4PtCut20<20) && hadronicOverEm<0.1";
   TCut mcIsolation = "genCalIsoDR04<5 && abs(genMomId)<=22";
 
-  TCanvas *cPurity = new TCanvas("c1","c1",1920,1080);
+  TCanvas *cPurity = new TCanvas("c1","c1",1920,1000);
+  
   cPurity->Divide(nPTBINS,nHFBINS,0,0);
   for(Int_t i = 0; i < nPTBINS; ++i) {
     for(Int_t j = 0; j < nHFBINS; ++j) {      
@@ -158,13 +167,42 @@ void photonPurity()
       // cout << "dataCandidateCut: " << dataCandidateCut << endl;
       // cout << "sidebandCut: " << sidebandCut << endl;
       // cout << "mcSignalCut: " << mcSignalCut << endl;
+      
+      fitResult fitr = getPurity(dataTuple, mcTuple,
+				 dataCandidateCut, sidebandCut,
+				 mcSignalCut);
 
       // cPurity[i*nHFBINS+j] = new TCanvas(Form("cpurity%d",i*nHFBINS+j),
       // 					 "",500,500);
       cPurity->cd(j*nPTBINS+i+1);
-      fitResult fitr = getPurity(dataTuple, mcTuple,
-				 dataCandidateCut, sidebandCut,
-				 mcSignalCut);
+
+      TH1F *hSigPdf = fitr.sigPdf;
+      TH1F *hBckPdf = fitr.bckPdf;
+      TH1D *hData1  = fitr.data;
+
+      // plot stacked histos
+      hSigPdf->Add(hBckPdf);
+      handsomeTH1(hSigPdf);
+      mcStyle(hSigPdf);
+      sbStyle(hBckPdf);
+      cleverRange(hSigPdf,1.5);
+      hSigPdf->SetNdivisions(510);      
+      hSigPdf->SetYTitle("Entries");
+      hSigPdf->SetXTitle("#sigma_{#eta #eta}");
+      hSigPdf->DrawCopy("hist");
+      hBckPdf->DrawCopy("same hist");
+      hData1->DrawCopy("same");
+      TLegend *t3=new TLegend(0.54, 0.60, 0.92, 0.79);
+      t3->AddEntry(hData1,LABEL,"pl");
+      t3->AddEntry(hSigPdf,"Signal","lf");
+      t3->AddEntry(hBckPdf,"Background","lf");
+      t3->SetFillColor(0);
+      t3->SetBorderSize(0);
+      t3->SetFillStyle(0);
+      t3->SetTextFont(63);
+      t3->SetTextSize(15);
+      t3->Draw();
+      
 
       //drawText("|#eta_{#gamma}| < 1.479",0.5680963,0.9);
       if(nPTBINS != 1)
@@ -177,6 +215,8 @@ void photonPurity()
       drawText(Form("Purity : %.2f", (Float_t)fitr.purity),
       	       0.57, 0.53);
       cout << "pT: " << PTBINS[i] << " : " << fitr.purity << endl;
+      drawText(Form("#chi^{2}/ndf : %.2f", (Float_t)fitr.chisq),
+	       0.57, 0.45);
       // TString savename = Form("purity_pA_barrel_pt%.0f_hf%.0f_plot",
       // 			     PTBINS[i], HFBINS[j]);
       // cPurity[i*nHFBINS+j]->SaveAs(savename+".C");
@@ -191,13 +231,15 @@ fitResult getPurity(TNtuple *dataTuple, TNtuple *mcTuple,
 		    TCut dataCandidateCut, TCut sidebandCut,
 		    TCut mcSignalCut)
 {
-  TH1D* hCand = new TH1D("cand","",35,0,0.035);
+  TH1D* hCand = new TH1D("cand","",nSIGMABINS,0,maxSIGMA);
   TH1D* hBkg = (TH1D*)hCand->Clone("bkg");
   TH1D* hSig = (TH1D*)hCand->Clone("sig");
 
+  TString shift = "+";
+  shift += SHIFTVAL;
   Int_t dEntries = dataTuple->Project(hCand->GetName(), "sigmaIetaIeta", dataCandidateCut, "");
   Int_t sbEntries = dataTuple->Project(hBkg->GetName(), "sigmaIetaIeta", sidebandCut, "");
-  Int_t mcEntries = mcTuple->Project(hSig->GetName(), "sigmaIetaIeta", "mcweight"*mcSignalCut, "");
+  Int_t mcEntries = mcTuple->Project(hSig->GetName(), "sigmaIetaIeta"+shift, "mcweight"*mcSignalCut, "");
 
   cout << "# Candidates: " << dEntries << endl;
   cout << "# Sideband: " << sbEntries << endl;
@@ -243,50 +285,12 @@ fitResult doFit(TH1D* hSig, TH1D* hBkg, TH1D* hData1,
 
   Double_t ss1 = hSigPdf->Integral(1, hSigPdf->FindBin(PURITY_BIN_VAL),"width");
   Double_t bb1 = hBckPdf->Integral(1, hBckPdf->FindBin(PURITY_BIN_VAL),"width");
-  //   cout <<"  hte bin = " <<hSigPdf->FindBin(PURITY_BIN_VAL) << endl;
   res.purity = ss1/(ss1+bb1);
-  //cout << "purity = " << res.purity << endl;
-  hSigPdf->Add(hBckPdf);
-  handsomeTH1(hSigPdf);
-  mcStyle(hSigPdf);
-  sbStyle(hBckPdf);
-  cleverRange(hSigPdf,1.5);
-  hSigPdf->SetNdivisions(510);
 
-  hSigPdf->SetYTitle("Entries");
-  hSigPdf->SetXTitle("#sigma_{#eta #eta}");
-  hSigPdf->DrawCopy("hist");
-  hBckPdf->DrawCopy("same hist");
-  hData1->DrawCopy("same");
-  TH1D* temphSigPdf = (TH1D*)hSigPdf->Clone("temp1");
-  TH1D* temphBckPdf = (TH1D*)hBckPdf->Clone("temp2");
-  if(drawLeg){
-    TLegend *t3=new TLegend(0.54, 0.60, 0.92, 0.79);
-    //t3->AddEntry(hData1,"Pb+Pb  #sqrt{s}_{_{NN}}=2.76 TeV","pl");
-    //t3->AddEntry(hData1,"pp  #sqrt{s}_{_{NN}}=2.76 TeV","pl");
-    t3->AddEntry(hData1,LABEL,"pl");
-    t3->AddEntry(temphSigPdf,"Signal","lf");
-    t3->AddEntry(temphBckPdf,"Background","lf");
-    t3->SetFillColor(0);
-    t3->SetBorderSize(0);
-    t3->SetFillStyle(0);
-    t3->SetTextFont(63);
-    t3->SetTextSize(15);
-    t3->Draw();
-    //drawCMS2011(0.53,0.9,150,16);
-  }
-   
+  res.sigPdf = (TH1F*)hSigPdf->Clone(Form("%s_sig",hSig->GetName()));
+  res.bckPdf = (TH1F*)hBckPdf->Clone(Form("%s_bck",hBkg->GetName()));
+  res.data = (TH1D*)hData1->Clone(Form("%s_cand",hData1->GetName()));
 
-  //   delete hSigPdf;
-  //   delete hBckPdf;
-   
-//   TFile* hout = new TFile("histo.root","recreate");
-//   hSigPdf->Write();
-//   hBckPdf->Write();
-//   hData1->Write();
-//   hout->Close();
-
-   
   return res;
 
 }
