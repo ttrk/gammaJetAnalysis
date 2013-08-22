@@ -253,10 +253,10 @@ TCut genMatchCutBkg      = "(isGenMatched && abs(genMatchedEta)<1.44 && abs(etCo
 
 TCut genPhotonCut     = Form("( abs(gpEta) < 1.44 && abs(gpId)==22 && abs(gpMomId) <= 22 && gpCollId ==0  && gpIsoDR04 < %.3f)",isolationCut);
 
-TString fnamePAMC_AllQcdPho30  =   "../../forestFiles/yskimmedFiles/yskim_PA2013_pyquen_allQCDPhoton30_forestv78.root";
-TString fnamePAMC_AllQcdPho50  =   "../../forestFiles/yskimmedFiles/yskim_PA2013_pyquen_allQCDPhoton50_forestv78.root";
-TString fnamePAMC_AllQcdPho80  =   "../../forestFiles/yskimmedFiles/yskim_PA2013_pyquen_allQCDPhoton80_forestv78.root";
-TString fnamePAMC_AllQcdPho120  =   "../../forestFiles/yskimmedFiles/yskim_PA2013_pyquen_allQCDPhoton120_forestv78.root";
+TString fnamePAMC_AllQcdPho30  =   "../../forestFiles/yskimmedFiles/yskim_pA_Pyquen_allQCDPhoton30_hiForest2_53x_2013-18-14-1922.root";
+TString fnamePAMC_AllQcdPho50  =   "../../forestFiles/yskimmedFiles/yskim_pA_Pyquen_allQCDPhoton50_hiForest2_53x_2013-18-14-1922.root";
+TString fnamePAMC_AllQcdPho80  =   "../../forestFiles/yskimmedFiles/yskim_pA_Pyquen_allQCDPhoton80_hiForest2_53x_2013-18-14-1922.root";
+TString fnamePAMC_AllQcdPho120  =   "../../forestFiles/yskimmedFiles/yskim_pA_Pyquen_allQCDPhoton120_hiForest2_53x_2013-18-14-1922.root";
 
 TString fnameHIMC_AllQcdPho30  =   "forestFiles/yskimmedFiles/skim_qcdAllPhoton30_allCent.root";
 TString fnameHIMC_AllQcdPho50  =   "forestFiles/yskimmedFiles/skim_qcdAllPhoton50_allCent.root";
@@ -266,7 +266,7 @@ TString fnameDATApPbAk3      = "../../forestFiles/yskimmedFiles/yskim_pA_photonS
 
 TString fnameDATAPbPbAk3     =   "forestFiles/yskimmedFiles/skim_akPu3PF_PbPbData_photon40GeVSkim-OCT-29.root";
 //TString fnameDATAppAk3       =   "forestFiles/yskimmedFiles/skim_akPu3PF_ppData2013_promptSkim_photon40GeV.root";
-TString fnameMCppAk3         =   "forestFiles/yskimmedFiles/skim_akPu3PF_ppMc2013_merged_gammaJet_pp_pt40_2p76_pythia_forest.root";
+TString fnameMCppAk3         =   "forestFiles/yskimmedFiles/skim_ak3PF_ppMc2013_merged_gammaJet_pp_pt40_2p76_pythia_forest.root";
 TString fnameDATAppAk3       =   "forestFiles/yskimmedFiles/skim_ak3PF_ppData2013_promptSkim_photon40GeV.root";
 
 //TString fnameDATAppAk3_qnch10       =   "forestFiles/yskimmedFiles/skim_ak3PF_ppData2013_promptSkim_photon40GeV_quenching1.0.root";
@@ -340,9 +340,9 @@ double centBin1[nCentBin1+1] = {0,4,12,20,40};
 const int nCentBinPa = 3;
 double centBinPa[nCentBinPa+1] = {0,20,30,100};
 
-const int nPtBinPa = 5; 
-double ptBinPa[nPtBinPa+1]    = {40,50,60,80,120,9999}; 
-double ptBinPaDraw[nPtBinPa+1]    = {40,50,60,80,120,200};
+const int nPtBinPa = 4; 
+double ptBinPa[nPtBinPa+1]    = {40,50,60,80,9999}; 
+double ptBinPaDraw[nPtBinPa+1]    = {45,55,70,100,200};
 
 
 float vtxCutPhotonAna = 15;
@@ -809,7 +809,7 @@ fitResult doFit(TH1D* hSig=0, TH1D* hBkg=0, TH1D* hData1=0, float varLow=0.001, 
    mcStyle(hSigPdf);
    sbStyle(hBckPdf);
    cleverRange(hSigPdf,1.5);
-   hSigPdf->SetNdivisions(510);
+   hSigPdf->SetNdivisions(505);
 
    hSigPdf->SetYTitle("Entries");
    hSigPdf->DrawCopy("hist");
@@ -819,7 +819,7 @@ fitResult doFit(TH1D* hSig=0, TH1D* hBkg=0, TH1D* hData1=0, float varLow=0.001, 
    TH1D* temphBckPdf = (TH1D*)hBckPdf->Clone("temp2");
    if(drawLeg){
       TLegend *t3=new TLegend(0.5402006,0.5963235,0.9186019,0.7853466,NULL,"brNDC");
-      t3->AddEntry(hData1,"Pb+Pb  #sqrt{s}_{_{NN}}=2.76 TeV","pl");
+      //      t3->AddEntry(hData1,"Pb+Pb  #sqrt{s}_{_{NN}}=2.76 TeV","pl");
       t3->AddEntry(temphSigPdf,"Signal","lf");
       t3->AddEntry(temphBckPdf,"Background","lf");
       t3->SetFillColor(0);
@@ -828,7 +828,7 @@ fitResult doFit(TH1D* hSig=0, TH1D* hBkg=0, TH1D* hData1=0, float varLow=0.001, 
       t3->SetTextFont(63);
       t3->SetTextSize(15);
       t3->Draw();
-      drawCMS2011(0.53,0.9,150,16);
+      //    drawCMS2011(0.53,0.9,150,16);
    }
    
 
