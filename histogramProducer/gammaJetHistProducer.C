@@ -25,7 +25,7 @@
 #include <TClonesArray.h>
 #include "commonUtility.h"
 #include <TRandom3.h>
-#include "CutAndBinCollection2012.h"
+#include "../CutAndBinCollection2012.h"
 #include "corrFunctionJetTrk.h"
 
 GjSpectra* nullGj;
@@ -112,15 +112,15 @@ void gammaJetHistProducer(sampleType collision = kPADATA, float photonPtThr=60, 
   else if ( collision == kPPDATA)         fname = fnameDATAppAk3;
   else if ( collision == kPADATA)         fname = fnameDATApPbAk3;
   else if ( collision == kPAMC)      {
-    if       (photonPtThr <55 )
+    if       (photonPtThr <45 )
       fname = fnamePAMC_AllQcdPho30;
-    else if  (photonPtThr <79 )
+    else if  (photonPtThr <55 )
+      fname = fnamePAMC_AllQcdPho30;
+    else if  (photonPtThr <65 ) 
       fname = fnamePAMC_AllQcdPho50;
-    else if  (photonPtThr <119 ) 
-      fname = fnamePAMC_AllQcdPho80;
     else
-      fname = fnamePAMC_AllQcdPho120;
-
+      fname = fnamePAMC_AllQcdPho50;
+ 
   }   
   multiTreeUtil* tgj = new multiTreeUtil();
   multiTreeUtil* tgjMC = new multiTreeUtil();
@@ -132,7 +132,12 @@ void gammaJetHistProducer(sampleType collision = kPADATA, float photonPtThr=60, 
   
   TString canvasName = Form("gifs/purity_%s_output_icent%d_photonPtThr%d-%d_jetPtThr%d", stringSampleType.Data(),  (int)icent, (int)photonPtThr, (int)photonPtThrUp, (int)jetPtThr);
   
-  if ( (collision==kHIDATA)||(collision==kPPDATA)||(collision==kPADATA) )  {
+  if ( (collision==kPPDATA) && (photonPtThr < 50 ) ) {
+    purity = 0.86 ;   
+    cout << " !!!!!!!" << endl << endl << " purity is set as  0.86 for this bin because we don't have pp MC low pt sample " << endl;
+    cout << endl << endl << endl << " !!!!!!" << endl;
+  }
+  else if ( (collision==kHIDATA)||(collision==kPPDATA)||(collision==kPADATA) )  {
     fitResult fitr = getPurity(fname, collision, evtSeltCut, sbSeltCut, canvasName, photonPtThr, photonPtThrUp);
     purity = fitr.purity010;
   }
@@ -140,7 +145,7 @@ void gammaJetHistProducer(sampleType collision = kPADATA, float photonPtThr=60, 
     purity = 1;  
     cout << " MC purity = 1" << endl;
   }
-
+  
 
   GjSpectra* gSpec = new GjSpectra();
   gSpec->init(Form("pho%.0f_%.0f", (float)photonPtThr, (float)photonPtThrUp));
@@ -174,7 +179,7 @@ void gammaJetHistProducer(sampleType collision = kPADATA, float photonPtThr=60, 
 		  collision, varJetDphi, jetCut, jetWeight,
 		  phoCandCut, phoDecayCut,  hJetDphi, outName);
   
-  TH1D* hJetPt = new TH1D(Form("jetPt_icent%d",icent),";Jet p_{T} (GeV) ;dN/dp_{T} (GeV^{-1})",10,0,200);
+  TH1D* hJetPt = new TH1D(Form("jetPt_icent%d",icent),";Jet p_{T} (GeV) ;dN/dp_{T} (GeV^{-1})",40,30,230);
   corrFunctionTrk* cJetPt = new corrFunctionTrk();
   TString varJetPt         = Form("pt");
   
@@ -182,15 +187,23 @@ void gammaJetHistProducer(sampleType collision = kPADATA, float photonPtThr=60, 
 		  collision, varJetPt, jetCutDphi, jetWeight,
 		  phoCandCut, phoDecayCut,  hJetPt, outName);
   
-  TH1D* hGenJetPt = new TH1D(Form("genJetPt_icent%d",icent),";Jet p_{T}^{Gen} (GeV) ;dN/dp_{T} (GeV^{-1})",10,0,200);
+  
+  
+  TH1D* hGenJetPt = (TH1D*)hJetPt->Clone(Form("genJetPt_icent%d",icent));
   corrFunctionTrk* cGenJetPt = new corrFunctionTrk();
   TString varGenJetPt         = Form("refPt");
   
   gammaTrkSingle( gSpec,  tObj, cJetPt,  purity, 
-		  collision, varGenJetPt, jetCutDphi, jetWeight,
+		  collision, varGenJetPt, genJetCutDphi, jetWeight,
 		  phoCandCut, phoDecayCut,  hGenJetPt, outName);
   
   
+  TH1D* hDjetPt = new TH1D(Form("dpt_icent%d",icent),";p_{T}^{#gamma} - p_{T}^{Jet} (GeV) ;dN/dp_{T} (GeV^{-1})",30,-150,150);
+  corrFunctionTrk* cDjetPt = new corrFunctionTrk();
+  TString varJetDpt         = Form("pt - photonEt");
+  gammaTrkSingle( gSpec,  tObj, cDjetPt,  purity, 
+		  collision, varJetDpt, jetCutDphi, jetWeight,
+		  phoCandCut, phoDecayCut,  hDjetPt, outName);
   
   
   TH1D* hJetXjg = new TH1D(Form("xjg_icent%d",icent),";p_{T}^{Jet}/p_{T}^{#gamma}  ; ",16,0,2);
@@ -222,35 +235,34 @@ void gammaJetHistProducer(sampleType collision = kPADATA, float photonPtThr=60, 
   gammaTrkSingle( gSpec,  tObj, cGenPhoGenJetXjg,  purity, 
 		  collision, varGenPhoGenJetXjg, genJetCutDphi, jetWeight,
 		  phoCandCut, phoDecayCut,  hGenPhoGenJetXjg, outName);
-
-
-    
   
-  TH1D* hEtaJg = new TH1D(Form("etaJg_icent%d",icent),";#eta_{J,#gamma} ; ",160,-3,3);
-  corrFunctionTrk* cEtaJg = new corrFunctionTrk();
-  TString varEtaJg         = Form("(photonEta+eta)/2.");
-
-  gammaTrkSingle( gSpec,  tObj, cEtaJg,  purity, 
-		  collision, varEtaJg, jetCutDphi, jetWeight,
-		  phoCandCut, phoDecayCut,  hEtaJg, outName);
-
-  TH1D* hEtaJet = new TH1D(Form("etaJet_icent%d",icent),";#eta_{Jet} ; ",160,-3,3);
-  corrFunctionTrk* cEtaJet = new corrFunctionTrk();
-  TString varEtaJet         = Form("eta");
-
-  gammaTrkSingle( gSpec,  tObj, cEtaJet,  purity, 
-		  collision, varEtaJet, jetCutDphi, jetWeight,
-		  phoCandCut, phoDecayCut,  hEtaJet, outName);
-
-  TH1D* hEtaPhoton = new TH1D(Form("etaPhoton_icent%d",icent),";#eta_{#gamma} ; ",160,-3,3);
-  corrFunctionTrk* cEtaPhoton = new corrFunctionTrk();
-  TString varEtaPhoton         = Form("photonEta");
-
-  gammaTrkSingle( gSpec,  tObj, cEtaPhoton,  purity, 
-		  collision, varEtaPhoton, jetCutDphi, jetWeight,
-		  phoCandCut, phoDecayCut,  hEtaPhoton, outName);
-
-
+  
+  /*      Eta distribution
+	  TH1D* hEtaJg = new TH1D(Form("etaJg_icent%d",icent),";#eta_{J,#gamma} ; ",160,-3,3);
+	  corrFunctionTrk* cEtaJg = new corrFunctionTrk();
+	  TString varEtaJg         = Form("(photonEta+eta)/2.");
+	  
+	  gammaTrkSingle( gSpec,  tObj, cEtaJg,  purity, 
+	  collision, varEtaJg, jetCutDphi, jetWeight,
+	  phoCandCut, phoDecayCut,  hEtaJg, outName);
+	  
+	  TH1D* hEtaJet = new TH1D(Form("etaJet_icent%d",icent),";#eta_{Jet} ; ",160,-3,3);
+	  corrFunctionTrk* cEtaJet = new corrFunctionTrk();
+	  TString varEtaJet         = Form("eta");
+	  
+	  gammaTrkSingle( gSpec,  tObj, cEtaJet,  purity, 
+	  collision, varEtaJet, jetCutDphi, jetWeight,
+	  phoCandCut, phoDecayCut,  hEtaJet, outName);
+	  
+	  TH1D* hEtaPhoton = new TH1D(Form("etaPhoton_icent%d",icent),";#eta_{#gamma} ; ",160,-3,3);
+	  corrFunctionTrk* cEtaPhoton = new corrFunctionTrk();
+	  TString varEtaPhoton         = Form("photonEta");
+	  
+	  gammaTrkSingle( gSpec,  tObj, cEtaPhoton,  purity, 
+	  collision, varEtaPhoton, jetCutDphi, jetWeight,
+	  phoCandCut, phoDecayCut,  hEtaPhoton, outName);
+		  
+  */
   
 }
 
@@ -345,7 +357,7 @@ fitResult getPurity(TString fname, sampleType collision, TCut evtSeltCut, TCut s
   handsomeTH1(hBkg,4);
 
   TCanvas* cPurity = new TCanvas("cpurity","",500,500);
-  fitResult fitr = doFit ( hSig, hBkg, hCand, 0.005, 0.025);
+  fitResult  fitr = doFit ( hSig, hBkg, hCand, 0.005, 0.025);
   drawText(Form("Purity : %.2f", (float)fitr.purity010), 0.5680963,0.429118);
   drawText(Form("p_{T}^{#gamma}: %d-%d GeV", (int)photonPtThr, (int)photonPtThrUp), 0.568,0.529118);
   cleverCanvasSaving(cPurity,canvasName);
