@@ -265,20 +265,9 @@ TString fnameHIMC_AllQcdPho80  =   "forestFiles/yskimmedFiles/skim_qcdAllPhoton8
 TString fnameDATApPbAk3      = "../../forestFiles/yskimmedFiles/yskim_pA_photonSkimForest_v85.root";
 
 TString fnameDATAPbPbAk3     =   "forestFiles/yskimmedFiles/skim_akPu3PF_PbPbData_photon40GeVSkim-OCT-29.root";
-//TString fnameDATAppAk3       =   "forestFiles/yskimmedFiles/skim_akPu3PF_ppData2013_promptSkim_photon40GeV.root";
 TString fnameMCppAk3         =   "forestFiles/yskimmedFiles/skim_ak3PF_ppMc2013_merged_gammaJet_pp_pt40_2p76_pythia_forest.root";
 TString fnameDATAppAk3       =   "forestFiles/yskimmedFiles/skim_ak3PF_ppData2013_promptSkim_photon40GeV.root";
 
-//TString fnameDATAppAk3_qnch10       =   "forestFiles/yskimmedFiles/skim_ak3PF_ppData2013_promptSkim_photon40GeV_quenching1.0.root";
-//TString fnameDATAppAk3_qnch08       =   "forestFiles/yskimmedFiles/skim_ak3PF_ppData2013_promptSkim_photon40GeV_quenching0.8.root";
-//TString fnameDATAppAk3_qnch06       =   "forestFiles/yskimmedFiles/skim_ak3PF_ppData2013_promptSkim_photon40GeV_quenching0.6.root";
-//TString fnameDATAppAk3_qnch04       =   "forestFiles/yskimmedFiles/skim_ak3PF_ppData2013_promptSkim_photon40GeV_quenching0.4.root";
-//TString fnameDATAppAk3_qnch02       =   "forestFiles/yskimmedFiles/skim_ak3PF_ppData2013_promptSkim_photon40GeV_quenching0.2.root";
-//TString fnameDATAppAk3_qnch10       =   "forestFiles/yskimmedFiles/skim_ak3PF_ppData2013_promptSkim_photon40GeV_quenching1.0_fixedLpath.root";
-//TString fnameDATAppAk3_qnch08       =   "forestFiles/yskimmedFiles/skim_ak3PF_ppData2013_promptSkim_photon40GeV_quenching0.8_fixedLpath.root";
-//TString fnameDATAppAk3_qnch06       =   "forestFiles/yskimmedFiles/skim_ak3PF_ppData2013_promptSkim_photon40GeV_quenching0.6_fixedLpath.root";
-//TString fnameDATAppAk3_qnch04       =   "forestFiles/yskimmedFiles/skim_ak3PF_ppData2013_promptSkim_photon40GeV_quenching0.4_fixedLpath.root";
-//TString fnameDATAppAk3_qnch02       =   "forestFiles/yskimmedFiles/skim_ak3PF_ppData2013_promptSkim_photon40GeV_quenching0.2_fixedLpath.root";
 
 
 TString swissCrx      = "(1 - (eRight+eLeft+eTop+eBottom)/eMax)";
