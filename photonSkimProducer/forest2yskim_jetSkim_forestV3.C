@@ -15,7 +15,7 @@
 #include <string>
 #include <TMath.h>
 #include "../hiForestV3/hiForest.h"
-#include "CutAndBinCollection2012.h"
+#include "../CutAndBinCollection2012.h"
 #include <time.h>
 #include <TRandom3.h>
 
@@ -474,7 +474,7 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
       if (jetRefPt[nJet] >0)
         jetRefDphi[nJet] = getAbsDphi( jetRefPhi[nJet] , gj.photonPhi) ;
       else
-        jetDphi[nJet] = -1;
+        jetRefDphi[nJet] = -1;
       jetRefPartonPt[nJet] = theJet->refparton_pt[ij];
       jetRefPartonFlv[nJet] = theJet->refparton_flavor[ij];
      
