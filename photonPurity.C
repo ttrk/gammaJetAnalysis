@@ -53,9 +53,9 @@ const Int_t nHFBINS = sizeof(HFBINS)/sizeof(Double_t) -1;
 const Double_t PTBINS[] = {40, 50, 60, 80, 120, 1000};
 const Int_t nPTBINS = sizeof(PTBINS)/sizeof(Double_t) -1;
 
-const Int_t nSIGMABINS = 75; // number of bins in sigmaIetaIeta dist
+const Int_t nSIGMABINS = 100; // number of bins in sigmaIetaIeta dist
 const Double_t maxSIGMA = 0.025; // x-axis max of sigmaIetaIeta dist
-const Double_t SHIFTVAL = 0;//-0.00015; // shift the mean of the signal hist by this much
+const Double_t SHIFTVAL = -0.00015; // shift the mean of the signal hist by this much
 
 class fitResult {
 public:
@@ -127,8 +127,7 @@ fitResult getPurity(TNtuple *dataTuple, TNtuple *mcTuple,
 		    TCut mcSignalCut);
 
 fitResult doFit(TH1D* hSig=0, TH1D* hBkg=0, TH1D* hData1=0,
-		Float_t varLow=0.001, Float_t varHigh=0.028,
-		Bool_t drawLeg=true);
+		Float_t varLow=0.001, Float_t varHigh=0.028);
 
 void photonPurity()
 {
@@ -152,7 +151,8 @@ void photonPurity()
 
   TCanvas *cPurity = new TCanvas("c1","c1",1920,1000);
   
-  cPurity->Divide(nPTBINS,nHFBINS,0,0);
+  cPurity->Divide(nPTBINS,2*nHFBINS,0,0);
+  
   for(Int_t i = 0; i < nPTBINS; ++i) {
     for(Int_t j = 0; j < nHFBINS; ++j) {      
       TString ptCut = Form("(gPt >= %f) && (gPt < %f)",
@@ -167,14 +167,16 @@ void photonPurity()
       // cout << "dataCandidateCut: " << dataCandidateCut << endl;
       // cout << "sidebandCut: " << sidebandCut << endl;
       // cout << "mcSignalCut: " << mcSignalCut << endl;
-      
+
+      TCanvas *fakeCanvas = new TCanvas("fake","fake",1,1);
       fitResult fitr = getPurity(dataTuple, mcTuple,
 				 dataCandidateCut, sidebandCut,
 				 mcSignalCut);
+      delete fakeCanvas;
 
       // cPurity[i*nHFBINS+j] = new TCanvas(Form("cpurity%d",i*nHFBINS+j),
       // 					 "",500,500);
-      cPurity->cd(j*nPTBINS+i+1);
+      cPurity->cd(2*j*nPTBINS+i+1);
 
       TH1F *hSigPdf = fitr.sigPdf;
       TH1F *hBckPdf = fitr.bckPdf;
@@ -202,7 +204,6 @@ void photonPurity()
       t3->SetTextFont(63);
       t3->SetTextSize(15);
       t3->Draw();
-      
 
       //drawText("|#eta_{#gamma}| < 1.479",0.5680963,0.9);
       if(nPTBINS != 1)
@@ -214,7 +215,7 @@ void photonPurity()
 		 0.57, 0.82);
       drawText(Form("Purity : %.2f", (Float_t)fitr.purity),
       	       0.57, 0.53);
-      cout << "pT: " << PTBINS[i] << " : " << fitr.purity << endl;
+      //cout << "pT: " << PTBINS[i] << " : " << fitr.purity << endl;
       drawText(Form("#chi^{2}/ndf : %.2f", (Float_t)fitr.chisq),
 	       0.57, 0.45);
       // TString savename = Form("purity_pA_barrel_pt%.0f_hf%.0f_plot",
@@ -222,7 +223,21 @@ void photonPurity()
       // cPurity[i*nHFBINS+j]->SaveAs(savename+".C");
       // cPurity[i*nHFBINS+j]->SaveAs(savename+".pdf");
       // cPurity[i*nHFBINS+j]->SaveAs(savename+".png");
-      
+
+      //plot ratio
+      cPurity->cd((2*j+1)*nPTBINS+i+1);
+      TH1D* ratio = (TH1D*)hData1->Clone("ratio");
+      ratio->Divide(hData1, hSigPdf, 1, 1);
+      ratio->SetMinimum(0);
+      ratio->SetMaximum(3);
+      ratio->SetXTitle("#sigma_{#eta #eta}");
+      ratio->GetXaxis()->CenterTitle();      
+      ratio->SetYTitle("ratio");
+      ratio->GetYaxis()->CenterTitle();
+      ratio->DrawCopy("E");
+      TLine *line = new TLine(0,1,maxSIGMA,1);
+      line->SetLineStyle(2);
+      line->Draw("same");
     }
   }
 }
@@ -245,7 +260,7 @@ fitResult getPurity(TNtuple *dataTuple, TNtuple *mcTuple,
   cout << "# Sideband: " << sbEntries << endl;
   cout << "# MC Signal: " << mcEntries << endl;
 
-  fitResult fitr = doFit(hSig, hBkg, hCand, 0.005, 0.035, true);
+  fitResult fitr = doFit(hSig, hBkg, hCand, 0.005, 0.035);
 
   delete hSig;
   delete hBkg;
@@ -256,8 +271,7 @@ fitResult getPurity(TNtuple *dataTuple, TNtuple *mcTuple,
 
 
 fitResult doFit(TH1D* hSig, TH1D* hBkg, TH1D* hData1,
-		Float_t varLow, Float_t varHigh,
-		Bool_t drawLeg)
+		Float_t varLow, Float_t varHigh)
 {   
   TH1D* hDatatmp = (TH1D*)hData1->Clone(Form("%s_datatmp",hData1->GetName()));
   Int_t nBins = hDatatmp->GetNbinsX();
@@ -292,7 +306,6 @@ fitResult doFit(TH1D* hSig, TH1D* hBkg, TH1D* hData1,
   res.data = (TH1D*)hData1->Clone(Form("%s_cand",hData1->GetName()));
 
   return res;
-
 }
 
 int main()
