@@ -91,7 +91,7 @@ class Isolation{
   float cr1,cr2,cr3,cr4,cr5;
   float ct1PtCut20,ct2PtCut20,ct3PtCut20,ct4PtCut20,ct5PtCut20;
   float ecalIso,hcalIso,trackIso;
-
+  
   void Set(HiForest * c, int j) {    cc1=c->photon.cc1[j];
     cc2=c->photon.cc2[j];
     cc3=c->photon.cc3[j];
@@ -287,16 +287,16 @@ TCut genMatchCutBkg      = "(isGenMatched && abs(genMatchedEta)<1.44 && abs(etCo
 
 TCut genPhotonCut     = Form("( abs(gpEta) < 1.44 && abs(gpId)==22 && abs(gpMomId) <= 22 && gpCollId ==0  && gpIsoDR04 < %.3f)",isolationCut);
 
-TString fnamePAMC_AllQcdPho30  =   "../../forestFiles/yskimmedFiles/yskim_pA_Pyquen_allQCDPhoton30_hiForest2_53x_2013-18-14-1922.root";
-TString fnamePAMC_AllQcdPho50  =   "../../forestFiles/yskimmedFiles/yskim_pA_Pyquen_allQCDPhoton50_hiForest2_53x_2013-18-14-1922.root";
-TString fnamePAMC_AllQcdPho80  =   "../../forestFiles/yskimmedFiles/yskim_pA_Pyquen_allQCDPhoton80_hiForest2_53x_2013-18-14-1922.root";
-TString fnamePAMC_AllQcdPho120  =   "../../forestFiles/yskimmedFiles/yskim_pA_Pyquen_allQCDPhoton120_hiForest2_53x_2013-18-14-1922.root";
+TString fnamePAMC_AllQcdPho30  =   "forestFiles/yskimmedFiles/yskim_pA_Pyquen_allQCDPhoton30_hiForest2_53x_2013-18-14-1922.root";
+TString fnamePAMC_AllQcdPho50  =   "forestFiles/yskimmedFiles/yskim_pA_Pyquen_allQCDPhoton50_hiForest2_53x_2013-18-14-1922.root";
+TString fnamePAMC_AllQcdPho80  =   "forestFiles/yskimmedFiles/yskim_pA_Pyquen_allQCDPhoton80_hiForest2_53x_2013-18-14-1922.root";
+TString fnamePAMC_AllQcdPho120  =   "forestFiles/yskimmedFiles/yskim_pA_Pyquen_allQCDPhoton120_hiForest2_53x_2013-18-14-1922.root";
 
 TString fnameHIMC_AllQcdPho30  =   "forestFiles/yskimmedFiles/skim_qcdAllPhoton30_allCent.root";
 TString fnameHIMC_AllQcdPho50  =   "forestFiles/yskimmedFiles/skim_qcdAllPhoton50_allCent.root";
 TString fnameHIMC_AllQcdPho80  =   "forestFiles/yskimmedFiles/skim_qcdAllPhoton80_allCent.root";
 
-TString fnameDATApPbAk3      = "../../forestFiles/yskimmedFiles/yskim_pA_photonSkimForest_v85.root";
+TString fnameDATApPbAk3      = "forestFiles/yskimmedFiles/yskim_pA_photonSkimForest_v85.root";
 
 TString fnameDATAPbPbAk3     =   "forestFiles/yskimmedFiles/skim_akPu3PF_PbPbData_photon40GeVSkim-OCT-29.root";
 //TString fnameDATAppAk3       =   "forestFiles/yskimmedFiles/skim_akPu3PF_ppData2013_promptSkim_photon40GeV.root";
