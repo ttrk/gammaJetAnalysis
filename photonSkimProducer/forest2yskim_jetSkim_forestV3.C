@@ -15,7 +15,7 @@
 #include <string>
 #include <TMath.h>
 #include "../hiForestV3/hiForest.h"
-#include "../CutAndBinCollection2012.h"
+#include "CutAndBinCollection2012.h"
 #include <time.h>
 #include <TRandom3.h>
 
@@ -26,34 +26,6 @@ static const int MAXMTRK = 30000;   // Again this is very enough for 10 mixing
 static const int MAXMJET = 2000;
 static const long MAXTREESIZE = 10000000000;
 
-
-class Isolation{
-public:
-  float cc1,cc2,cc3,cc4,cc5;
-  float cr1,cr2,cr3,cr4,cr5;
-  float ct1PtCut20,ct2PtCut20,ct3PtCut20,ct4PtCut20,ct5PtCut20;
-  float ecalIso,hcalIso,trackIso;
-
-  void Set(HiForest * c, int j) {    cc1=c->photon.cc1[j];
-    cc2=c->photon.cc2[j];
-    cc3=c->photon.cc3[j];
-    cc4=c->photon.cc4[j];
-    cc5=c->photon.cc5[j];
-    cr1=c->photon.cr1[j];
-    cr2=c->photon.cr2[j];
-    cr3=c->photon.cr3[j];
-    cr4=c->photon.cr4[j];
-    cr5=c->photon.cr5[j];
-    ct1PtCut20=c->photon.ct1PtCut20[j];
-    ct2PtCut20=c->photon.ct2PtCut20[j];
-    ct3PtCut20=c->photon.ct3PtCut20[j];
-    ct4PtCut20=c->photon.ct4PtCut20[j];
-    ct5PtCut20=c->photon.ct5PtCut20[j];
-    ecalIso = c->photon.ecalRecHitSumEtConeDR04[j];
-    hcalIso = c->photon.hcalTowerSumEtConeDR04[j];
-    trackIso = c->photon.trkSumPtHollowConeDR04[j];
-  }
-};
 
 vector<jetKinem> nullVec;
 
@@ -331,17 +303,17 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
   tgj->SetMaxTreeSize(MAXTREESIZE);
   tgj->Branch("evt",&evt.run,"run/I:evt:cBin:pBin:trig/O:offlSel:noiseFilt:anaEvtSel:vz/F:reweight/F:hf4Pos:hf4Neg:hf4Sum");
   tgj->Branch("lpho",&gj.photonEt,"photonEt/F:photonRawEt:photonEta:photonPhi:hovere:r9:sigmaIetaIeta:sumIso:genIso:genPhotonEt:genMomId/I:lJetPt/F:lJetEta:lJetPhi:lJetDphi:lJetSubid/I");
-  tgj->Branch("isolation",&isol.cc1,"cc1:cc2:cc3:cc4:cc5:cr1:cr2:cr3:cr4:cr5:ct1PtCut20:ct2PtCut20:ct3PtCut20:ct4PtCut20:ct5PtCut20:ecalIso:hcalIso:trackIso");  // ecalIso,hcalIso,trackIso are the pp style isolation
+  tgj->Branch("isolation",&isol.cc1,"cc1:cc2:cc3:cc4:cc5:cr1:cr2:cr3:cr4:cr5:ct1PtCut20:ct2PtCut20:ct3PtCut20:ct4PtCut20:ct5PtCut20:ecalIso:hcalIso:trackIso");  // ecalIso,hcalIso,trackIso are the pp style isolation                                       
+  
+
   
   float vzCut = vtxCutPhotonAna;
-  
   TH1F* hvz = new TH1F("hvz","",nVtxBin,-vzCut,vzCut);
-
+  
   // event plane hitogram   
   TH1F* hEvtPlnBin = new TH1F("hEvtPlnBin", "", nPlnBin, -PI/2., PI/2.);
-  const int theEvtPlNumber = 21;
    
-   // jet algos
+  // jet algos
   
   Jets* theJet;
   theJet = &(c->akPu3PF) ;   cout << "Using akPu3PF Jet Algo" << endl<<endl;
