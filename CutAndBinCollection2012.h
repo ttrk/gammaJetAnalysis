@@ -85,6 +85,35 @@ struct jetMatchVar{
 
 
 
+class Isolation{
+ public:
+  float cc1,cc2,cc3,cc4,cc5;
+  float cr1,cr2,cr3,cr4,cr5;
+  float ct1PtCut20,ct2PtCut20,ct3PtCut20,ct4PtCut20,ct5PtCut20;
+  float ecalIso,hcalIso,trackIso;
+
+  void Set(HiForest * c, int j) {    cc1=c->photon.cc1[j];
+    cc2=c->photon.cc2[j];
+    cc3=c->photon.cc3[j];
+    cc4=c->photon.cc4[j];
+    cc5=c->photon.cc5[j];
+    cr1=c->photon.cr1[j];
+    cr2=c->photon.cr2[j];
+    cr3=c->photon.cr3[j];
+    cr4=c->photon.cr4[j];
+    cr5=c->photon.cr5[j];
+    ct1PtCut20=c->photon.ct1PtCut20[j];
+    ct2PtCut20=c->photon.ct2PtCut20[j];
+    ct3PtCut20=c->photon.ct3PtCut20[j];
+    ct4PtCut20=c->photon.ct4PtCut20[j];
+    ct5PtCut20=c->photon.ct5PtCut20[j];
+    ecalIso = c->photon.ecalRecHitSumEtConeDR04[j];
+    hcalIso = c->photon.hcalTowerSumEtConeDR04[j];
+    trackIso = c->photon.trkSumPtHollowConeDR04[j];
+  }
+};
+
+
 
 class GammaJet {
  public:
@@ -226,6 +255,7 @@ class EvtSel {
   
 };
 
+
 class fitResult {
  public:
   double nSig;
@@ -233,6 +263,10 @@ class fitResult {
   double purity010;
   double chisq;
 };
+
+
+
+
 
 TCut isoSumCut  = "(cc4+cr4+ct4PtCut20)/0.9 <1";
 
@@ -265,9 +299,20 @@ TString fnameHIMC_AllQcdPho80  =   "forestFiles/yskimmedFiles/skim_qcdAllPhoton8
 TString fnameDATApPbAk3      = "../../forestFiles/yskimmedFiles/yskim_pA_photonSkimForest_v85.root";
 
 TString fnameDATAPbPbAk3     =   "forestFiles/yskimmedFiles/skim_akPu3PF_PbPbData_photon40GeVSkim-OCT-29.root";
+//TString fnameDATAppAk3       =   "forestFiles/yskimmedFiles/skim_akPu3PF_ppData2013_promptSkim_photon40GeV.root";
 TString fnameMCppAk3         =   "forestFiles/yskimmedFiles/skim_ak3PF_ppMc2013_merged_gammaJet_pp_pt40_2p76_pythia_forest.root";
 TString fnameDATAppAk3       =   "forestFiles/yskimmedFiles/skim_ak3PF_ppData2013_promptSkim_photon40GeV.root";
 
+//TString fnameDATAppAk3_qnch10       =   "forestFiles/yskimmedFiles/skim_ak3PF_ppData2013_promptSkim_photon40GeV_quenching1.0.root";
+//TString fnameDATAppAk3_qnch08       =   "forestFiles/yskimmedFiles/skim_ak3PF_ppData2013_promptSkim_photon40GeV_quenching0.8.root";
+//TString fnameDATAppAk3_qnch06       =   "forestFiles/yskimmedFiles/skim_ak3PF_ppData2013_promptSkim_photon40GeV_quenching0.6.root";
+//TString fnameDATAppAk3_qnch04       =   "forestFiles/yskimmedFiles/skim_ak3PF_ppData2013_promptSkim_photon40GeV_quenching0.4.root";
+//TString fnameDATAppAk3_qnch02       =   "forestFiles/yskimmedFiles/skim_ak3PF_ppData2013_promptSkim_photon40GeV_quenching0.2.root";
+//TString fnameDATAppAk3_qnch10       =   "forestFiles/yskimmedFiles/skim_ak3PF_ppData2013_promptSkim_photon40GeV_quenching1.0_fixedLpath.root";
+//TString fnameDATAppAk3_qnch08       =   "forestFiles/yskimmedFiles/skim_ak3PF_ppData2013_promptSkim_photon40GeV_quenching0.8_fixedLpath.root";
+//TString fnameDATAppAk3_qnch06       =   "forestFiles/yskimmedFiles/skim_ak3PF_ppData2013_promptSkim_photon40GeV_quenching0.6_fixedLpath.root";
+//TString fnameDATAppAk3_qnch04       =   "forestFiles/yskimmedFiles/skim_ak3PF_ppData2013_promptSkim_photon40GeV_quenching0.4_fixedLpath.root";
+//TString fnameDATAppAk3_qnch02       =   "forestFiles/yskimmedFiles/skim_ak3PF_ppData2013_promptSkim_photon40GeV_quenching0.2_fixedLpath.root";
 
 
 TString swissCrx      = "(1 - (eRight+eLeft+eTop+eBottom)/eMax)";
@@ -319,8 +364,26 @@ int ycolorEt[9]= {0,1,2,4,8,20,1,1,1};
 
 // temporar.y!!!
 
+const int theEvtPlNumber = 21;
+
 
 int nCentBinSkim = 40;
+int nCentBinSkimPA = 10;
+int getHfBin( float hf4Sum=-1 ) { 
+  if ( hf4Sum < -1 )   return -1;
+  else if ( hf4Sum < 10 )   return 0;
+  else if ( hf4Sum < 20 )   return 1;
+  else if ( hf4Sum < 30 )   return 2;
+  else if ( hf4Sum < 40 )   return 3;
+  else if ( hf4Sum < 50 )   return 4;
+  else if ( hf4Sum < 60 )   return 5;
+  else if ( hf4Sum < 70 )   return 6;
+  else if ( hf4Sum < 80 )   return 7;
+  else if ( hf4Sum < 90 )   return 8;
+  else   return 9;
+}
+
+
 
 const int nCentBin1 = 4;
 double centBin1[nCentBin1+1] = {0,4,12,20,40};
@@ -339,6 +402,7 @@ float jetDPhiCut = PI * 7./8.;
 
 const int nVtxBin =1;
 const int nPlnBin = 1;
+
 
 
 
@@ -368,6 +432,8 @@ double getNoEmc (TString theFname="", TCut theCut="") {
    cout << "number of events of " << theCut.GetTitle() << "    : " << ana->GetEntries( theCut ) << endl;
    return ana->GetEntries( theCut ) ;
 }
+
+
 
 
 void setupMTU(multiTreeUtil* photon1=0 , sampleType collision = kHIDATA){
