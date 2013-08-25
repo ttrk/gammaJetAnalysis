@@ -322,7 +322,8 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
   int nentries = c->GetEntries();
   //  nentries = 5000;
   cout << "number of entries = " << nentries << endl;
-  for (Long64_t jentry = 0 ; jentry < nentries; jentry++) {
+    for (Long64_t jentry = 0 ; jentry < nentries; jentry++) {
+  //  for (Long64_t jentry = 2000000 ; jentry < nentries; jentry++) {
      eTot++;
      if (jentry% 1000 == 0)  {
        cout <<jentry<<" / "<<nentries<<" "<<setprecision(2)<<(double)jentry/nentries*100<<endl;
@@ -432,6 +433,12 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
 	continue;
       
       jetEta[nJet] = theJet->jteta[ij];
+      if ( (colli==kPADATA) && ( evt.run > 211256 ) )  {
+	jetEta[nJet] = -theJet->jteta[ij];
+	//	cout << " reflect eta" << endl;
+      }
+      
+      
       jetPhi[nJet] = theJet->jtphi[ij];
       if (jetPt[nJet] >0) 
 	jetDphi[nJet] = getAbsDphi( theJet->jtphi[ij], gj.photonPhi) ;
@@ -454,7 +461,7 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
       nJet++ ; 
     }
     //////// Leading jet kinematics
-    float maxJpt = 0;
+    /*    float maxJpt = 0;
     int jetLeadingIndex = -1;
     
     for (int ij=0; ij< nJet ; ij++) {
@@ -481,39 +488,35 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
       gj.lJetDphi = 0;
       gj.lJetSubid=  -99;
     }
+    */
     
     //////////////////////////////////////////// New collection of tracks                                                 
-     nTrk = 0;
-     // Forget about the tracks at the moment
-     /* 
-	for (int it=0; it < c->track.nTrk; it++ ) {
+    nTrk = 0;
+    // Forget about the tracks at the moment
+    /* 
+       for (int it=0; it < c->track.nTrk; it++ ) {
        if ( c->track.highPurity[it] == 0 )
-         continue;   // only high purity high pt tracks and all pixel track          
+       continue;   // only high purity high pt tracks and all pixel track          
        if ( c->track.trkPt[it] < cuttrkPt )
-	 continue;
+       continue;
        if ( fabs( c->track.trkEta[it]  ) > cuttrkEtaSkim )
-         continue;
-       
+       continue;
        trkPt[nTrk]  = c->track.trkPt[it];
        trkEta[nTrk] = c->track.trkEta[it];
        trkPhi[nTrk] = c->track.trkPhi[it];
-       
        if  (trkPt[nTrk] > 0 )
-	 trkDphi[nTrk] = getAbsDphi ( trkPhi[nTrk], gj.photonPhi) ;
+       trkDphi[nTrk] = getAbsDphi ( trkPhi[nTrk], gj.photonPhi) ;
        else
-         trkDphi[nTrk] = -1;
-
-       
+       trkDphi[nTrk] = -1;
        trkWeight[nTrk] = c->getTrackCorrection(it);
-       
        nTrk++;
-     }
-     */
-     
-     /// Gen Particle 
-     nGp = 0;
-     // Forget about the gen particle information 
-     /*  if ( isMC ) {
+       }
+    */
+    
+    /// Gen Particle 
+    nGp = 0;
+    // Forget about the gen particle information 
+    /*  if ( isMC ) {
 	 for ( int ig = 0 ; ig < c->genparticle.mult ; ig++) {
 	 if ( c->genparticle.pt[ig] < cuttrkPt )  /// not possibly though..                                 
 	 continue;
@@ -534,8 +537,8 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
 	 nGp++;
 	 }
 	 }
-     */
-     
+    */
+    
      // now let's mix minbias tracks
      
      int iCounter=0;
