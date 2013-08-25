@@ -14,7 +14,7 @@
 #include <iomanip>
 #include <string>
 #include <TMath.h>
-#include "../hiForestV3/hiForest.h"
+#include "../../hiForestV3/hiForest.h"
 #include "../CutAndBinCollection2012.h"
 #include <time.h>
 #include <TRandom3.h>
