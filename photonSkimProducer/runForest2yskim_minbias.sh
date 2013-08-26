@@ -6,4 +6,5 @@
 #enum sampleType { kHIDATA, kHIMC, kPPDATA, kPPMC, kPADATA, kPAMC};                                                          
 #                   0 (X)    1 (x)  2       3       4        5                                                  
 
-root -l -q -b 'forest2yskim_minbias_forestV3.C++("forestFiles/pA/MergedForest_withCones_MinBiasUPC_v71_1.root",                                                "minbiasSkim_MergedForest_withCones_MinBiasUPC_v71_1.root",   2 )'
+root -l -q -b 'forest2yskim_minbias_forestV3.C+("forestFiles/pA/H02_merged_hiforest_v68_prod12.root",                                                         "minbiasSkim_H02_merged_hiforest_v68_prod12.root",            5 , -1)'
+root -l -q -b 'forest2yskim_minbias_forestV3.C+("forestFiles/pA/MergedForest_withCones_MinBiasUPC_v71_1.root",                                                "minbiasSkim_MergedForest_withCones_MinBiasUPC_v71_1.root",   4 , -1)'

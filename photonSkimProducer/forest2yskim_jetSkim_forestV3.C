@@ -33,11 +33,12 @@ vector<jetKinem> nullVec;
 
 
 void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonSkimForest_v85_skimPhotonPt50_eta1.5.root",
-			  std::string MinbiasFname = "skim_trackJet_minbiasTrackJet_mc.root",
-			  float cutphotonPt  = 50, 
-			  std::string outname = "testPhotonSkim.root",
-			  sampleType colli=kPADATA
-			  )
+				   std::string MinbiasFname = "skim_trackJet_minbiasTrackJet_mc.root",
+				   float cutphotonPt  = 50, 
+				   std::string outname = "testPhotonSkim.root",
+				   sampleType colli=kPADATA,
+				   bool doMix = false
+				   )
 { 
   bool isMC=true;
   if ((colli==kPPDATA)||(colli==kPADATA)||(colli==kHIDATA))
@@ -118,34 +119,33 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
 
 
 
-  // Track tree
-  int nTrk;
-  float trkPt[MAXTRK];
-  float trkEta[MAXTRK];
-  float trkPhi[MAXTRK];
-  float trkDphi[MAXTRK];
-  float trkWeight[MAXTRK];
-  TTree *newtreeTrack = new TTree("yTrk","tracks");
-  newtreeTrack->SetMaxTreeSize(MAXTREESIZE);
-  newtreeTrack->Branch("ntrk",&nTrk,"ntrk/I");
-  newtreeTrack->Branch("pt",trkPt,"pt[ntrk]/F");
-  newtreeTrack->Branch("eta",trkEta,"eta[ntrk]/F");
-  newtreeTrack->Branch("phi",trkPhi,"phi[ntrk]/F");
-  newtreeTrack->Branch("dphi", trkDphi, "dphi[ntrk]/F");
-  newtreeTrack->Branch("trkWeight",trkWeight,"trkWeight[ntrk]/F");
-   
-  
-  const int maxGp = 30000;
-  int nGp;
-  int   gpSube[maxGp];
-  int   gpChg[maxGp];
-  float gpPt[maxGp];
-  float gpEta[maxGp];
-  float gpPhi[maxGp];
-  float gpDphi[maxGp];
+  /* No gen particle and tracks analysis at the moment 
+    // Track tree
+    int nTrk;
+    float trkPt[MAXTRK];
+    float trkEta[MAXTRK];
+    float trkPhi[MAXTRK];
+    float trkDphi[MAXTRK];
+    float trkWeight[MAXTRK];
+    TTree *newtreeTrack = new TTree("yTrk","tracks");
+    newtreeTrack->SetMaxTreeSize(MAXTREESIZE);
+    newtreeTrack->Branch("ntrk",&nTrk,"ntrk/I");
+    newtreeTrack->Branch("pt",trkPt,"pt[ntrk]/F");
+    newtreeTrack->Branch("eta",trkEta,"eta[ntrk]/F");
+    newtreeTrack->Branch("phi",trkPhi,"phi[ntrk]/F");
+    newtreeTrack->Branch("dphi", trkDphi, "dphi[ntrk]/F");
+    newtreeTrack->Branch("trkWeight",trkWeight,"trkWeight[ntrk]/F");
+    const int maxGp = 30000;
+    int nGp;
+    int   gpSube[maxGp];
+    int   gpChg[maxGp];
+    float gpPt[maxGp];
+    float gpEta[maxGp];
+    float gpPhi[maxGp];
+    float gpDphi[maxGp];
     
-  TTree *newtreeGp;
-  if ( isMC ) { 
+    TTree *newtreeGp;
+    if ( isMC ) { 
     newtreeGp = new TTree("gp","gen chg particle");
     newtreeGp->SetMaxTreeSize(MAXTREESIZE);
     newtreeGp->Branch("nGp",&nGp,"nGp/I");
@@ -155,35 +155,35 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
     newtreeGp->Branch("eta",gpEta,"eta[nGp]/F");
     newtreeGp->Branch("phi",gpPhi,"phi[nGp]/F");
     newtreeGp->Branch("dphi",gpDphi,"dphi[nGp]/F");
-  }
-  
-  int nMtrk;
-  float mTrkPt[MAXMTRK];
-  float mTrkEta[MAXMTRK];
-  float mTrkPhi[MAXMTRK];
-  float mTrkWeight[MAXMTRK];
-  float mTrkDphi[MAXMTRK];
-  
-  TTree * tmixTrk = new TTree("mTrk","Track from second minbias events");
-  tmixTrk->SetMaxTreeSize(MAXTREESIZE);
-  tmixTrk->Branch("ntrk",&nMtrk,"ntrk/I");
-  tmixTrk->Branch("pt",mTrkPt,"pt[ntrk]/F");
-  tmixTrk->Branch("eta",mTrkEta,"eta[ntrk]/F");
-  tmixTrk->Branch("phi",mTrkPhi,"phi[ntrk]/F");
-  tmixTrk->Branch("trkWeight",mTrkWeight,"trkWeight[ntrk]/F");
-  tmixTrk->Branch("dphi", mTrkDphi, "dphi[ntrk]/F");
-  
-  
-  TTree * tmixGp;
-  int   nMgp;
-  float mGpPt[MAXMTRK];
-  float mGpEta[MAXMTRK];
-  float mGpPhi[MAXMTRK];
-  float mGpDphi[MAXMTRK];
-  int   mGpChg[MAXMTRK];
+    }
     
-  
-  if ( isMC) { 
+    int nMtrk;
+    float mTrkPt[MAXMTRK];
+    float mTrkEta[MAXMTRK];
+    float mTrkPhi[MAXMTRK];
+    float mTrkWeight[MAXMTRK];
+    float mTrkDphi[MAXMTRK];
+    
+    TTree * tmixTrk = new TTree("mTrk","Track from second minbias events");
+    tmixTrk->SetMaxTreeSize(MAXTREESIZE);
+    tmixTrk->Branch("ntrk",&nMtrk,"ntrk/I");
+    tmixTrk->Branch("pt",mTrkPt,"pt[ntrk]/F");
+    tmixTrk->Branch("eta",mTrkEta,"eta[ntrk]/F");
+    tmixTrk->Branch("phi",mTrkPhi,"phi[ntrk]/F");
+    tmixTrk->Branch("trkWeight",mTrkWeight,"trkWeight[ntrk]/F");
+    tmixTrk->Branch("dphi", mTrkDphi, "dphi[ntrk]/F");
+    
+    
+    TTree * tmixGp;
+    int   nMgp;
+    float mGpPt[MAXMTRK];
+    float mGpEta[MAXMTRK];
+    float mGpPhi[MAXMTRK];
+    float mGpDphi[MAXMTRK];
+    int   mGpChg[MAXMTRK];
+    
+    
+    if ( isMC) { 
     tmixGp = new TTree("mGp","genParticle from second minbias events");
     tmixGp->SetMaxTreeSize(MAXTREESIZE);
     tmixGp->Branch("nGp",&nMgp,"nGp/I");
@@ -192,9 +192,9 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
     tmixGp->Branch("phi",mGpPhi,"phi[nGp]/F");
     tmixGp->Branch("chg",mGpChg,"chg[nGp]/I");
     tmixGp->Branch("dphi", mGpDphi, "dphi[nGp]/F");
-  }
+    }
+  */
   
-
   int nMjet;
   float mJetPt[MAXMJET];
   float mJetEta[MAXMJET];
@@ -211,78 +211,77 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
   
   
   
-  // Imb means that it was imported from input file
+  // Imb = Input MinBias events 
   EvtSel          evtImb;
-  
-  Int_t           nTrkImb;
-  Float_t         trkPtImb[4000];   
-  Float_t         trkEtaImb[4000];  
-  Float_t         trkPhiImb[4000];  
-  Float_t         trkWeightImb[4000];
-  
   Int_t           nJetImb;
   Float_t         jetPtImb[100];
   Float_t         jetEtaImb[100];
   Float_t         jetPhiImb[100];
-  
-  
-  Int_t           nGpImb;
-  Float_t         gpPtImb[4000];  
-  Float_t         gpEtaImb[4000]; 
-  Float_t         gpPhiImb[4000]; 
-  Int_t           gpChgImb[4000]; 
   TBranch        *b_evt;
-  TBranch        *b_nTrkImb;   //!
-  TBranch        *b_trkPtImb; 
-  TBranch        *b_trkEtaImb;
-  TBranch        *b_trkPhiImb;
-  TBranch        *b_trkWeightImb;
   TBranch        *b_nJetImb;
   TBranch        *b_jetPtImb;
   TBranch        *b_jetEtaImb;
-  TBranch        *b_jetPhiImb;
-  TBranch        *b_nGpImb; 
-  TBranch        *b_gpPtImb;  
-  TBranch        *b_gpEtaImb; 
-  TBranch        *b_gpPhiImb; 
-  TBranch        *b_gpChgImb; 
+  TBranch        *b_jetPhiImb; 
+  /*
+    Int_t           nTrkImb;
+    Float_t         trkPtImb[4000];   
+    Float_t         trkEtaImb[4000];  
+    Float_t         trkPhiImb[4000];  
+    Float_t         trkWeightImb[4000];
+    Int_t           nGpImb;
+    Float_t         gpPtImb[4000];  
+    Float_t         gpEtaImb[4000]; 
+    Float_t         gpPhiImb[4000]; 
+    Int_t           gpChgImb[4000]; 
+    TBranch        *b_nTrkImb;   //!
+    TBranch        *b_trkPtImb; 
+    TBranch        *b_trkEtaImb;
+    TBranch        *b_trkPhiImb;
+    TBranch        *b_trkWeightImb;
+    TBranch        *b_nGpImb; 
+    TBranch        *b_gpPtImb;  
+    TBranch        *b_gpEtaImb; 
+    TBranch        *b_gpPhiImb; 
+    TBranch        *b_gpChgImb; 
+  */
   
+  
+  int nCentBins =  nCentBinSkim;
+  if ((colli==kPADATA)||(colli==kPAMC)) {
+    nCentBins = nCentBinSkimPA;
+  } 
+
   TChain         *tjmb[100][nVtxBin+1];
   int nMB[100][nVtxBin+1] ; //= 199109;                                                                                          
   int mbItr[100][nVtxBin+1];
-  
-  if ( (colli == kHIDATA)||(colli==kHIMC)) {
+  if ( doMix ) {
     cout <<"  Tree initialization for MinBias mixing" << endl;
-    for( int icent = 0 ; icent< nCentBinSkim ; icent++) {
+    for( int icent = 0 ; icent< nCentBins ; icent++) {
       for( int ivz = 1 ; ivz<=nVtxBin ; ivz++) {
 	
-	tjmb[icent][ivz] = new TChain(Form("trackAndGenParticles_first_cBin2icent%d_ivz%d",icent,ivz));
+	tjmb[icent][ivz] = new TChain(Form("trkAndJets_first_cBin2icent%d_ivz%d",icent,ivz));
 	tjmb[icent][ivz]->Add(MinbiasFname.data());
-	
 	tjmb[icent][ivz]->SetBranchAddress("evt", &evtImb,&b_evt);
-      
-	tjmb[icent][ivz]->SetBranchAddress("nTrk", &nTrkImb,&b_nTrkImb);
-	tjmb[icent][ivz]->SetBranchAddress("trkPt", trkPtImb, &b_trkPtImb);
-	tjmb[icent][ivz]->SetBranchAddress("trkEta", trkEtaImb, &b_trkEtaImb);
-	tjmb[icent][ivz]->SetBranchAddress("trkPhi", trkPhiImb, &b_trkPhiImb);
-	tjmb[icent][ivz]->SetBranchAddress("trkWeight", trkWeightImb, &b_trkWeightImb);
-	
 	tjmb[icent][ivz]->SetBranchAddress("nJet",   &nJetImb,   &b_nJetImb);
 	tjmb[icent][ivz]->SetBranchAddress("jetPt",  &jetPtImb,  &b_jetPtImb);
 	tjmb[icent][ivz]->SetBranchAddress("jetEta", &jetEtaImb, &b_jetEtaImb);
-	tjmb[icent][ivz]->SetBranchAddress("jetPhi", &jetPhiImb, &b_jetPhiImb);
+	tjmb[icent][ivz]->SetBranchAddress("jetPhi", &jetPhiImb, &b_jetPhiImb);	
 	
-	
-	if ( isMC) {
-	  tjmb[icent][ivz]->SetBranchAddress("nGp", &nGpImb, &b_nGpImb);
-	  tjmb[icent][ivz]->SetBranchAddress("gpPt", gpPtImb, &b_gpPtImb);
-	  tjmb[icent][ivz]->SetBranchAddress("gpEta", gpEtaImb, &b_gpEtaImb);
-	  tjmb[icent][ivz]->SetBranchAddress("gpPhi", gpPhiImb, &b_gpPhiImb);
-	  tjmb[icent][ivz]->SetBranchAddress("gpChg", gpChgImb, &b_gpChgImb);
-	}      
-	
+	/*  tjmb[icent][ivz]->SetBranchAddress("nTrk", &nTrkImb,&b_nTrkImb);
+	    tjmb[icent][ivz]->SetBranchAddress("trkPt", trkPtImb, &b_trkPtImb);
+	    tjmb[icent][ivz]->SetBranchAddress("trkEta", trkEtaImb, &b_trkEtaImb);
+	    tjmb[icent][ivz]->SetBranchAddress("trkPhi", trkPhiImb, &b_trkPhiImb);
+	    tjmb[icent][ivz]->SetBranchAddress("trkWeight", trkWeightImb, &b_trkWeightImb);
+	    if ( isMC) {
+	    tjmb[icent][ivz]->SetBranchAddress("nGp", &nGpImb, &b_nGpImb);
+	    tjmb[icent][ivz]->SetBranchAddress("gpPt", gpPtImb, &b_gpPtImb);
+	    tjmb[icent][ivz]->SetBranchAddress("gpEta", gpEtaImb, &b_gpEtaImb);
+	    tjmb[icent][ivz]->SetBranchAddress("gpPhi", gpPhiImb, &b_gpPhiImb);
+	    tjmb[icent][ivz]->SetBranchAddress("gpChg", gpChgImb, &b_gpChgImb);
+	    }      
+	*/
 	nMB[icent][ivz] = tjmb[icent][ivz]->GetEntries();
-	cout << "number of evetns in (icent = " << icent << ", iVtxZ = "<< ivz << ")  = " << nMB[icent][ivz] << endl;
+	cout << "number of evetns in (icent = " << icent << ", ivtxZ = "<< ivz << ")  = " << nMB[icent][ivz] << endl;
 	int primeSeed = rand.Integer(37324);
 	mbItr[icent][ivz] = primeSeed%(nMB[icent][ivz]);
 	cout <<" initial itr = " << mbItr[icent][ivz] << endl;
@@ -290,7 +289,7 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
     }
   }
   else 
-    cout <<" It's not PbPb.  Mixing process is skipped" << endl;
+    cout << endl << endl << "  Mixing process is skipped" << endl << endl << endl ;
 
   
   // reweighting factor should go here
@@ -306,58 +305,56 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
   tgj->Branch("isolation",&isol.cc1,"cc1:cc2:cc3:cc4:cc5:cr1:cr2:cr3:cr4:cr5:ct1PtCut20:ct2PtCut20:ct3PtCut20:ct4PtCut20:ct5PtCut20:ecalIso:hcalIso:trackIso");  // ecalIso,hcalIso,trackIso are the pp style isolation                                       
   
 
-  
   float vzCut = vtxCutPhotonAna;
   TH1F* hvz = new TH1F("hvz","",nVtxBin,-vzCut,vzCut);
-  
-  // event plane hitogram   
+  // event plane hitogram                                                                                              
   TH1F* hEvtPlnBin = new TH1F("hEvtPlnBin", "", nPlnBin, -PI/2., PI/2.);
-   
-  // jet algos
-  
+  // jet algos                                                                                                         
   Jets* theJet;
   theJet = &(c->akPu3PF) ;   cout << "Using akPu3PF Jet Algo" << endl<<endl;
   
   // Loop starts.
   int nentries = c->GetEntries();
-  //  nentries = 5000;
   cout << "number of entries = " << nentries << endl;
-    for (Long64_t jentry = 0 ; jentry < nentries; jentry++) {
-  //  for (Long64_t jentry = 2000000 ; jentry < nentries; jentry++) {
-     eTot++;
-     if (jentry% 1000 == 0)  {
-       cout <<jentry<<" / "<<nentries<<" "<<setprecision(2)<<(double)jentry/nentries*100<<endl;
-     }
-     c->GetEntry(jentry);                
-    //here
+  for (Long64_t jentry = 0 ; jentry < nentries; jentry++) {
+    eTot++;
+    if (jentry% 1000 == 0)  {
+      cout <<jentry<<" / "<<nentries<<" "<<setprecision(2)<<(double)jentry/nentries*100<<endl;
+    }
+    c->GetEntry(jentry);                
     evt.clear();
     evt.run   = c->evt.run;
     evt.evt = c->evt.evt;
+    evt.hf4Pos = c->evt.hiHFplusEta4;
+    evt.hf4Neg = c->evt.hiHFminusEta4;
+    evt.hf4Sum = evt.hf4Pos + evt.hf4Neg;
     evt.cBin = -99; 
     evt.pBin   = -99 ; 
     if ((colli==kHIDATA)||(colli==kHIMC))   {
       evt.cBin = c->evt.hiBin;
       evt.pBin   = hEvtPlnBin->FindBin( c->evt.hiEvtPlanes[theEvtPlNumber] ) ;
     }
+    else if ((colli==kPADATA)||(colli==kPAMC))   {
+      evt.cBin =  getHfBin(evt.hf4Sum);
+      if (  ((evt.cBin) < 0) || (evt.cBin) > 9 )
+        cout << " Check the pA centrality..  cbin = " << evt.cBin << endl;
+    }
+    
     evt.reweight = 1;
     evt.trig = 0;
     evt.offlSel = (c->skim.pcollisionEventSelection > 0);
     evt.noiseFilt = (c->skim.pHBHENoiseFilter > 0);
     evt.anaEvtSel = c->selectEvent() && evt.trig;
     evt.vz = c->evt.vz;
-    evt.hf4Pos = c->evt.hiHFplusEta4;
-    evt.hf4Neg = c->evt.hiHFminusEta4;
-    evt.hf4Sum = evt.hf4Pos + evt.hf4Neg;
-
+   
     
     if ( c->selectEvent() == 0 ) 
       continue;
-    
-    // OK.  This event is a collisional and no-noise event.  
-    eSel++; 
+    eSel++;      // OK.  This event is a collisional and no-noise event.  
 
     int cBin = evt.cBin;
     int vzBin = hvz->FindBin(evt.vz)  ;
+    hvz->Fill(evt.vz) ;
     if ( (vzBin<1) || ( vzBin > nVtxBin) )
       continue;
     
@@ -491,41 +488,40 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
     */
     
     //////////////////////////////////////////// New collection of tracks                                                 
-    nTrk = 0;
     // Forget about the tracks at the moment
-    /* 
-       for (int it=0; it < c->track.nTrk; it++ ) {
-       if ( c->track.highPurity[it] == 0 )
-       continue;   // only high purity high pt tracks and all pixel track          
-       if ( c->track.trkPt[it] < cuttrkPt )
-       continue;
-       if ( fabs( c->track.trkEta[it]  ) > cuttrkEtaSkim )
-       continue;
-       trkPt[nTrk]  = c->track.trkPt[it];
-       trkEta[nTrk] = c->track.trkEta[it];
-       trkPhi[nTrk] = c->track.trkPhi[it];
-       if  (trkPt[nTrk] > 0 )
-       trkDphi[nTrk] = getAbsDphi ( trkPhi[nTrk], gj.photonPhi) ;
-       else
-       trkDphi[nTrk] = -1;
-       trkWeight[nTrk] = c->getTrackCorrection(it);
-       nTrk++;
-       }
+    /*    nTrk = 0;
+	  for (int it=0; it < c->track.nTrk; it++ ) {
+	  if ( c->track.highPurity[it] == 0 )
+	  continue;   // only high purity high pt tracks and all pixel track          
+	  if ( c->track.trkPt[it] < cuttrkPt )
+	  continue;
+	  if ( fabs( c->track.trkEta[it]  ) > cuttrkEtaSkim )
+	  continue;
+	  trkPt[nTrk]  = c->track.trkPt[it];
+	  trkEta[nTrk] = c->track.trkEta[it];
+	  trkPhi[nTrk] = c->track.trkPhi[it];
+	  if  (trkPt[nTrk] > 0 )
+	  trkDphi[nTrk] = getAbsDphi ( trkPhi[nTrk], gj.photonPhi) ;
+	  else
+	  trkDphi[nTrk] = -1;
+	  trkWeight[nTrk] = c->getTrackCorrection(it);
+	  nTrk++;
+	  }
     */
     
     /// Gen Particle 
-    nGp = 0;
     // Forget about the gen particle information 
-    /*  if ( isMC ) {
-	 for ( int ig = 0 ; ig < c->genparticle.mult ; ig++) {
-	 if ( c->genparticle.pt[ig] < cuttrkPt )  /// not possibly though..                                 
-	 continue;
-	 if ( fabs( c->genparticle.eta[ig] ) > cuttrkEtaSkim )
-	 continue;
-	 if ( c->genparticle.chg[ig] == 0 )
-	 continue;
+    /* nGp = 0;
+       if ( isMC ) {
+       for ( int ig = 0 ; ig < c->genparticle.mult ; ig++) {
+       if ( c->genparticle.pt[ig] < cuttrkPt )  /// not possibly though..                                 
+       continue;
+       if ( fabs( c->genparticle.eta[ig] ) > cuttrkEtaSkim )
+       continue;
+       if ( c->genparticle.chg[ig] == 0 )
+       continue;
 	 
-	 gpChg[nGp] =  c->genparticle.chg[ig] ;
+       gpChg[nGp] =  c->genparticle.chg[ig] ;
 	 gpPt[nGp]  = c->genparticle.pt[ig];
 	 gpEta[nGp] = c->genparticle.eta[ig];
 	 gpPhi[nGp] = c->genparticle.phi[ig];
@@ -541,125 +537,119 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
     
      // now let's mix minbias tracks
      
-     int iCounter=0;
-     int loopCounter=0;
-     bool noSuchEvent = false;
-     int nMixing = nMixing1;
-     //    nMixing = nMixing2;    // = 1 
-     
-     nMtrk = 0;
-     nMjet = 0;
-     nMgp  = 0;
-     
-     if ( (colli==kPPDATA)||(colli==kPPMC)||(colli==kPADATA)||(colli==kPAMC) ) {
-       iCounter = nMixing+1;
-     }
-     while (iCounter<nMixing)  {
-       loopCounter++;
-       if ( loopCounter > nMB[cBin][vzBin]+1) {
-	 iCounter = 999999 ;
-	 noSuchEvent = true;
-	 cout << " no such event!! :  icent = " << cBin << ",  vzBin = " << vzBin << ",  pBin = " << evt.pBin << endl;
-       }
-       
-       mbItr[cBin][vzBin] = mbItr[cBin][vzBin] + 1;
-       if ( mbItr[cBin][vzBin] == nMB[cBin][vzBin] )
-	 mbItr[cBin][vzBin] =  mbItr[cBin][vzBin] - nMB[cBin][vzBin];
-	
-       /// Load the minbias tracks!!
-       tjmb[cBin][vzBin]->GetEntry(mbItr[cBin][vzBin]);
-       
-       if  ( evt.pBin != evtImb.pBin ) 
-	 continue;
-       
-       if ( evt.vz == evtImb.vz ) {
-	 cout << " exactly same event!!" << endl;
-	 continue;
-       }
-       
-       // ok found the event!! ///////////
-       loopCounter =0;
-       ////////////////////////////////////
-       
-       for (int it = 0 ; it < nTrkImb ; it++) {
-	 if ( trkPtImb[it] < cuttrkPt )
-	   continue;
-	 if ( fabs( trkEtaImb[it] ) > cuttrkEtaSkim )
-	   continue;
-	 
+     //    nMtrk = 0;
+     // nMgp  = 0;
+    
+    int nMixing = nMixing1;
+    nMjet = 0;
+    bool noSuchEvent = false;
+    int iMix=0;
+    int loopCounter=0;
+    
+    if ( !doMix ) 
+      iMix = nMixing+1;   // Mixing step will be skipped 
+    
+    while (iMix<nMixing)  {
+      loopCounter++;
+      if ( loopCounter > nMB[cBin][vzBin]+1) {
+	iMix = 999999 ;
+	noSuchEvent = true;
+	cout << " no such event!! :  icent = " << cBin << ",  vzBin = " << vzBin << ",  pBin = " << evt.pBin << endl;
+	continue;
+      }
+      
+      mbItr[cBin][vzBin] = mbItr[cBin][vzBin] + 1;
+      if ( mbItr[cBin][vzBin] == nMB[cBin][vzBin] )
+	mbItr[cBin][vzBin] =  mbItr[cBin][vzBin] - nMB[cBin][vzBin];
+      
+      /// Load the minbias tracks!!
+      tjmb[cBin][vzBin]->GetEntry(mbItr[cBin][vzBin]);
+      
+      // Event plane is out of control for both pA and PbPb
+      //    if  ( evt.pBin != evtImb.pBin ) 
+      //   continue;
+      
+      // ok found the event!! ///////////
+      loopCounter =0;  // Re-initiate loopCounter
+      /*  forget about the tracks!   
+	  for (int it = 0 ; it < nTrkImb ; it++) {
+	  if ( trkPtImb[it] < cuttrkPt )
+	  continue;
+	  if ( fabs( trkEtaImb[it] ) > cuttrkEtaSkim )
+	  continue;
+	  
 	  mTrkPt[nMtrk]    = trkPtImb[it];
 	  mTrkEta[nMtrk]   = trkEtaImb[it];
 	  mTrkPhi[nMtrk]   = trkPhiImb[it];
 	  mTrkWeight[nMtrk]= trkWeightImb[it];
 	  if  ( mTrkPt[nMtrk]>0 )  
-	    mTrkDphi[nMtrk]  =   getAbsDphi(mTrkPhi[nMtrk], gj.photonPhi) ;
+	  mTrkDphi[nMtrk]  =   getAbsDphi(mTrkPhi[nMtrk], gj.photonPhi) ;
 	  else 
-	    mTrkDphi[nMtrk]=-1;
-
+	  mTrkDphi[nMtrk]=-1;
+	  
 	  nMtrk++;
-       }
+	  }
+      */
+      // Jet mixing 
+      for (int it = 0 ; it < nJetImb ; it++) {
+	if ( jetPtImb[it] < cutjetPtSkim ) 
+	  continue;
+	if ( fabs( jetEtaImb[it] ) > cutjetEta ) 
+	  continue;
+	
+	mJetPt[nMjet]    = jetPtImb[it];
+	mJetEta[nMjet]   = jetEtaImb[it];
+	mJetPhi[nMjet]   = jetPhiImb[it];
+	if  ( mJetPt[nMjet]>0 )
+	  mJetDphi[nMjet]  =   getAbsDphi(mJetPhi[nMjet], gj.photonPhi) ;
+	else
+	  mJetDphi[nMjet]=-1;
+	
+	nMjet++; // < == Important! 
+      }
+      
+      /*      
 
-       for (int it = 0 ; it < nJetImb ; it++) {
-         if ( jetPtImb[it] < cutjetPtSkim )
-           continue;
-         if ( fabs( jetEtaImb[it] ) > cuttrkEtaSkim )
-           continue;
-	 
-	 mJetPt[nMjet]    = jetPtImb[it];
-	 mJetEta[nMjet]   = jetEtaImb[it];
-	 mJetPhi[nMjet]   = jetPhiImb[it];
-	 if  ( mJetPt[nMjet]>0 )
-	   mJetDphi[nMjet]  =   getAbsDphi(mJetPhi[nMjet], gj.photonPhi) ;
-	 else
-	   mJetDphi[nMjet]=-1;
-	 
-	 nMjet++;
-       }
-       
-       /* 
-	  forget about MC at the moment  29th Jul. 2013
-	  if ( isMC) { 
-	  for (int it = 0 ; it < nGpImb ; it++) {
-	  if ( gpPtImb[it] < cuttrkPt )
-	  continue;
-	  if ( fabs(gpEtaImb[it]) > cuttrkEtaSkim )
-	  continue;
-	  if ( gpChgImb[it] == 0 ) 
-	  continue;
-	  mGpPt[nMgp]  =   gpPtImb[it];
-	  mGpEta[nMgp]  =   gpEtaImb[it];
-	  mGpPhi[nMgp]  =   gpPhiImb[it];
-	  mGpChg[nMgp]  =   gpChgImb[it];
-	  if  (mGpPt[nMgp] > 0 ) 
-	  mGpDphi[nMgp] = getAbsDphi ( mGpPhi[nMgp], gj.photonPhi );
-	  else 
-	  mGpDphi[nMgp]=-1;
-	  nMgp++;
-	  }
-	  }
-       */
-       
-       iCounter++;
-     }
-     
-     if ( noSuchEvent )
-       continue;
-     
-     
-     tgj->Fill();
-     newtreeJet->Fill();
-     newtreeTrack->Fill();
-     tmixJet->Fill();     
-     newtreePhoton->Fill();
-     /*
-       tmixTrk->Fill();   // No tracks saved at the moment 
-       if ( isMC ) {
-       newtreeGp->Fill();
-       tmixGp->Fill();
-       } 
-     */ 
-     
-     
+	 if ( isMC) { 
+	 for (int it = 0 ; it < nGpImb ; it++) {
+	 if ( gpPtImb[it] < cuttrkPt )
+	 continue;
+	 if ( fabs(gpEtaImb[it]) > cuttrkEtaSkim )
+	 continue;
+	 if ( gpChgImb[it] == 0 ) 
+	 continue;
+	 mGpPt[nMgp]  =   gpPtImb[it];
+	 mGpEta[nMgp]  =   gpEtaImb[it];
+	 mGpPhi[nMgp]  =   gpPhiImb[it];
+	 mGpChg[nMgp]  =   gpChgImb[it];
+	 if  (mGpPt[nMgp] > 0 ) 
+	 mGpDphi[nMgp] = getAbsDphi ( mGpPhi[nMgp], gj.photonPhi );
+	 else 
+	 mGpDphi[nMgp]=-1;
+	 nMgp++;
+	 }
+	 }
+      */
+      
+      iMix++;
+    }
+    if ( noSuchEvent )
+      continue;
+    
+    tgj->Fill();
+    newtreeJet->Fill();
+    tmixJet->Fill();     
+    newtreePhoton->Fill();
+    /*
+      newtreeTrack->Fill();
+      tmixTrk->Fill();   // No tracks saved at the moment 
+      if ( isMC ) {
+      newtreeGp->Fill();
+      tmixGp->Fill();
+      } 
+    */ 
+    
+    
   }
   
   

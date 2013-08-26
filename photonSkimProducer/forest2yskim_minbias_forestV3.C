@@ -29,7 +29,8 @@ static const long MAXTREESIZE = 10000000000;
 
 void forest2yskim_minbias_forestV3(TString inputFile_="mergedFiles/forest_minbias-HYDJET-START44-V12-Aug29th.root",
 				   std::string outname = "skim_trackJet_minbiasTrackJet_mc.root",
-				   sampleType colli=kPADATA
+				   sampleType colli=kPADATA,
+				   int maxEvent = -1
 				   )
 { 
   
@@ -120,7 +121,8 @@ void forest2yskim_minbias_forestV3(TString inputFile_="mergedFiles/forest_minbia
   
   /// LOOP!!
   int nentries = c->GetEntries();
-  //  nentries = 10000;                                                                                       
+  if ( maxEvent > 0 ) 
+    nentries = maxEvent;
   int nSelEvt = 0;
   cout << "number of entries = " << nentries << endl;
     
@@ -132,11 +134,11 @@ void forest2yskim_minbias_forestV3(TString inputFile_="mergedFiles/forest_minbia
     evt.clear();
     evt.run   = c->evt.run;
     evt.evt = c->evt.evt;
-    evt.cBin = -99;
-    evt.pBin   = -99 ;
     evt.hf4Pos = c->evt.hiHFplusEta4;
     evt.hf4Neg = c->evt.hiHFminusEta4;
     evt.hf4Sum = evt.hf4Pos + evt.hf4Neg;
+    evt.cBin = -99;
+    evt.pBin   = -99 ;
     if ((colli==kHIDATA)||(colli==kHIMC))   {
       evt.cBin = c->evt.hiBin;
       evt.pBin   = hEvtPlnBin->FindBin( c->evt.hiEvtPlanes[theEvtPlNumber] ) ;
@@ -159,6 +161,7 @@ void forest2yskim_minbias_forestV3(TString inputFile_="mergedFiles/forest_minbia
     // vertex bin and cut!! 
     
     int vzBin = hvz->FindBin(evt.vz)  ;
+    hvz->Fill(evt.vz)  ;
     if ( (vzBin<1) || ( vzBin > nVtxBin) ) 
       continue;
     
@@ -190,6 +193,12 @@ void forest2yskim_minbias_forestV3(TString inputFile_="mergedFiles/forest_minbia
 	continue;
       if ( fabs( jetEta[nJet] ) > cutjetEta )
         continue;
+
+      if ( (colli==kPADATA) && ( evt.run > 211256 ) )  {
+        jetEta[nJet] = -theJet->jteta[ij];
+        //      cout << " reflect eta" << endl;                                                                       
+      }
+
       jetPhi[nJet] = theJet->jtphi[ij];
       jetSubid[nJet] = theJet->subid[ij];
       jetRefPt[nJet] = theJet->refpt[ij];
