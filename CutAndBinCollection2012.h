@@ -368,14 +368,19 @@ const int theEvtPlNumber = 21;
 
 
 int nCentBinSkim = 40;
-int nCentBinSkimPA = 5;
+int nCentBinSkimPA = 10;
 int getHfBin( float hf4Sum=-1 ) { 
   if ( hf4Sum < -1 )   return -1;
-  else if ( hf4Sum < 10 )   return 0;
-  else if ( hf4Sum < 20 )   return 1;
-  else if ( hf4Sum < 30 )   return 2;
-  else if ( hf4Sum < 40 )   return 3;
-  else                      return 4;
+  else if ( hf4Sum < 5 )   return 0;
+  else if ( hf4Sum < 10)   return 1;
+  else if ( hf4Sum < 15)   return 2;
+  else if ( hf4Sum < 20 )   return 3;
+  else if ( hf4Sum < 25 )   return 4;
+  else if ( hf4Sum < 30 )   return 5;
+  else if ( hf4Sum < 35 )   return 6;
+  else if ( hf4Sum < 40 )   return 7;
+  else if ( hf4Sum < 45 )   return 8;
+  else                      return 9;
 }
 
 

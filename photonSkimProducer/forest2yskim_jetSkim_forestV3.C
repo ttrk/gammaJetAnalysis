@@ -34,7 +34,7 @@ vector<jetKinem> nullVec;
 
 void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonSkimForest_v85_skimPhotonPt50_eta1.5.root",
 				   std::string MinbiasFname = "skim_trackJet_minbiasTrackJet_mc.root",
-				   float cutphotonPt  = 50, 
+				   float cutphotonPt  = 40, 
 				   std::string outname = "testPhotonSkim.root",
 				   sampleType colli=kPADATA,
 				   bool doMix = false

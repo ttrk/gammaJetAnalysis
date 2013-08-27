@@ -53,7 +53,7 @@ void gammaJetHistProducer(sampleType collision = kPADATA, float photonPtThr=60, 
   TString stringSampleType = getSampleName(collision); "";
   
   TDatime* date = new TDatime();
-  TString  outName=  Form("ffFiles/photonTrackCorr_%s_output_photonPtThr%d_to_%d_jetPtThr%d_%d.root",stringSampleType.Data(),(int)photonPtThr, (int)photonPtThrUp, (int)jetPtThr,  date->GetDate());
+  TString  outName=  Form("photonTrackCorr_%s_output_photonPtThr%d_to_%d_jetPtThr%d_%d.root",stringSampleType.Data(),(int)photonPtThr, (int)photonPtThrUp, (int)jetPtThr,  date->GetDate());
   delete date;
   
   int lowerCent(0),  upperCent(0); 
@@ -274,6 +274,10 @@ void gammaTrkSingle(     GjSpectra* gSpec,  multiTreeUtil* tObj[3],   corrFuncti
 			 TH1D* hTemplate,  TString outfName)
 {
   TH1::SetDefaultSumw2();
+  
+  TCanvas* c1 = new TCanvas(Form("canvas_%s",hTemplate->GetName()),"",800,650);
+  makeMultiPanelCanvas(c1,2,2,0.0,0.0,0.2,0.15,0.02);
+  c1->cd(1);
   corr->init(gSpec, collision, purity, hTemplate);
   cout << "Filling raw jets" << endl;
   tObj[kTrkRaw]->Draw2(corr->Func[kPhoCand][kTrkRaw],  var,  phoCandCut  && cut, theWeight);
@@ -296,7 +300,34 @@ void gammaTrkSingle(     GjSpectra* gSpec,  multiTreeUtil* tObj[3],   corrFuncti
   TH1ScaleByWidth( corr->Func[kPhoDecay][kTrkBkg]);
   
   corr->calCorr();
-  TFile outf = TFile(outfName.Data(),"update");
+  c1->cd(1); 
+  handsomeTH1(corr->Func[kPhoCand][kTrkRaw],1);
+  handsomeTH1(corr->Func[kPhoCand][kTrkBkg],1);
+  handsomeTH1(corr->Func[kPhoCand][kTrkSig],2);
+  corr->Func[kPhoCand][kTrkRaw]->Draw();
+  corr->Func[kPhoCand][kTrkBkg]->Draw("same hist");
+  corr->Func[kPhoCand][kTrkSig]->Draw("same");
+  gPad->SetLogy();
+
+  c1->cd(2); 
+  handsomeTH1(corr->Func[kPhoDecay][kTrkRaw],1);
+  handsomeTH1(corr->Func[kPhoDecay][kTrkBkg],1);
+  handsomeTH1(corr->Func[kPhoDecay][kTrkSig],4);
+  corr->Func[kPhoDecay][kTrkRaw]->Draw();
+  corr->Func[kPhoDecay][kTrkBkg]->Draw("same hist");
+  corr->Func[kPhoDecay][kTrkSig]->Draw("same");
+  gPad->SetLogy();
+  
+  c1->cd(3);
+  corr->Func[kPhoCand][kTrkSig]->Draw();
+  corr->Func[kPhoDecay][kTrkSig]->Draw("same");
+
+  c1->cd(4);
+  handsomeTH1(corr->Func[kPhoSig][kTrkSig],1);
+  corr->Func[kPhoSig][kTrkSig]->Draw();
+  c1->SaveAs(Form("gifs/%s_%s.gif",outfName.Data(),c1->GetName()) );
+  
+  TFile outf = TFile(Form("ffFiles/%s",outfName.Data()),"update");
   corr->Func[kPhoCand][kTrkRaw]->Write();
   corr->Func[kPhoCand][kTrkBkg]->Write();
   corr->Func[kPhoCand][kTrkSig]->Write();
