@@ -1,4 +1,5 @@
-#include "CutAndBinCollection2012.h"
+#include "../../hiForestV3/hiForest.h"
+#include "../CutAndBinCollection2012.h"
 #include <TRandom3.h>
 #include <time.h>
 
@@ -10,7 +11,7 @@ void drawPtDependence(bool drawPbPb=1, int xNorm = 0) {
   // double AvePtBin[nPtBin+1] = { 45, 54.1479, 67.4204, 99.6956, 9999};
   
   const int nCentBinHI = 2;
-  const int centBinHI[nCentBinHI +1] = {-1, 10020, 12050}; 
+  const int centBinHI[nCentBinHI +1] = {-1, 10030, 13099}; 
 
   TH1D* hxjg[7][10][6]; // [Collision][centrality][pt]
   TH1D* hJetPt[7][10][6]; // [Collision][centrality][pt]
@@ -38,7 +39,7 @@ void drawPtDependence(bool drawPbPb=1, int xNorm = 0) {
   for (int ipt=1 ; ipt<=nPtBin ; ipt++) {
     for (int icoll=0 ; icoll<6 ; icoll++) {
       TString sampleName = getSampleName( icoll ) ;
-      char* fname =  Form("ffFiles/photonTrackCorr_%s_output_photonPtThr%d_to_%d_jetPtThr30_20130822.root",sampleName.Data(), (int)ptBin[ipt-1], (int)ptBin[ipt]);
+      char* fname =  Form("../histogramProducer/ffFiles/photonTrackCorr_%s_output_photonPtThr%d_to_%d_jetPtThr30_20130828.root",sampleName.Data(), (int)ptBin[ipt-1], (int)ptBin[ipt]);
       histFile[icoll][ipt] = new TFile(fname) ;
       cout << " Reading file : " << fname << endl;
       
@@ -50,8 +51,8 @@ void drawPtDependence(bool drawPbPb=1, int xNorm = 0) {
 	  cout << " Getting histogram : " << Form("xjg_icent%d_final", icent) << endl;
 	  hJetPt[icoll][icent][ipt] = (TH1D*)histFile[icoll][ipt]->Get(Form("jetPt_icent%d_final", icent)) ;
 	  cout << " Getting histogram : " << Form("jetPt_icent%d_final", icent) << endl;
-	  hDphi[icoll][icent][ipt]  = (TH1D*)histFile[icoll][ipt]->Get(Form("jetPt_icent%d_final", icent)) ;
-	  cout << " Getting histogram : " << Form("jetPt_icent%d_final", icent) << endl;
+	  hDphi[icoll][icent][ipt]  = (TH1D*)histFile[icoll][ipt]->Get(Form("jetDphi_icent%d_final", icent)) ;
+	  cout << " Getting histogram : " << Form("jetDphi_icent%d_final", icent) << endl;
 	}
 	
 	if ( ( icoll == kHIDATA) ||  (icoll == kHIMC) ) { // PbPb
@@ -60,8 +61,8 @@ void drawPtDependence(bool drawPbPb=1, int xNorm = 0) {
 	    cout << " Getting histogram : " << Form("xjg_icent%d_final", centBinHI[icent] ) << endl;
 	    hJetPt[icoll][icent][ipt] = (TH1D*)histFile[icoll][ipt]->Get(Form("jetPt_icent%d_final", centBinHI[icent] ) );
 	    cout << " Getting histogram : " << Form("jetPt_icent%d_final", centBinHI[icent] ) << endl;
-	    hDphi[icoll][icent][ipt]  = (TH1D*)histFile[icoll][ipt]->Get(Form("jetPt_icent%d_final", centBinHI[icent] ) ) ;
-	    cout << " Getting histogram : " << Form("jetPt_icent%d_final", icent)<< endl;
+	    hDphi[icoll][icent][ipt]  = (TH1D*)histFile[icoll][ipt]->Get(Form("jetDphi_icent%d_final", centBinHI[icent] ) ) ;
+	    cout << " Getting histogram : " << Form("jetDphi_icent%d_final", icent)<< endl;
 	  }
 	}
       }
@@ -101,6 +102,35 @@ void drawPtDependence(bool drawPbPb=1, int xNorm = 0) {
     c1->cd(ipt);
     
     // draw pp
+    handsomeTH1(hDphi[kPPDATA][7][ipt], 1);
+    hDphi[kPPDATA][7][ipt]->SetXTitle("#Delta#phi_{J#gamma}");
+    hDphi[kPPDATA][7][ipt]->SetYTitle("Normalized entries");
+    hDphi[kPPDATA][7][ipt]->SetAxisRange(0,3.141592,"X");
+    hDphi[kPPDATA][7][ipt]->SetAxisRange(0.01,100,"Y");
+    hDphi[kPPDATA][7][ipt]->SetMarkerStyle(24);
+    hDphi[kPPDATA][7][ipt]->Scale(1./hDphi[kPPDATA][7][ipt]->Integral("width"));       
+    hDphi[kPPDATA][7][ipt]->Draw();
+    // draw pbpb 
+    for ( int icent = 1; icent <= nCentBinHI ; icent++ ) {
+      handsomeTH1(hDphi[kHIDATA][icent][ipt],kRed);
+      if ( icent == 2 ) hDphi[kHIDATA][icent][ipt]->SetMarkerStyle(24);
+      hDphi[kHIDATA][icent][ipt]->Scale(1./hDphi[kHIDATA][icent][ipt]->Integral("width"));
+      hDphi[kHIDATA][icent][ipt]->Draw("same");
+      
+    }
+      
+    gPad->SetLogy();
+    //    onSun(30,0,200,0);
+  }
+
+
+  TCanvas* c2 = new TCanvas("c2","",1200,350);
+  makeMultiPanelCanvas(c2,nPtBin,1,0.0,0.0,0.2,0.15,0.02);
+  for ( int ipt = 1 ; ipt<=nPtBin  ; ipt++) {
+    
+    c2->cd(ipt);
+    
+    // draw pp
     handsomeTH1(hJetPt[kPPDATA][7][ipt], 1);
     hJetPt[kPPDATA][7][ipt]->SetXTitle("p_{T}^{Jet}");
     hJetPt[kPPDATA][7][ipt]->SetYTitle("#frac{dN}{dp_{T}} #frac{1}{N}");
@@ -121,7 +151,6 @@ void drawPtDependence(bool drawPbPb=1, int xNorm = 0) {
     onSun(30,0,200,0);
   }
 
-  c1->SaveAs("figure1.pdf");
 
 }
 

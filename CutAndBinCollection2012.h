@@ -353,6 +353,7 @@ double cutjetPtSkim = 20;
 double cuttrkEtaSkim = 2.0;
 
 double cutjetEta = 1.6;
+double cutjetEtaSkim = 3.0;
 
 double cuttrkPt =  10;
 double cuttrkEta  = 2.0;
@@ -391,6 +392,7 @@ double centBin1[nCentBin1+1] = {0,4,12,20,40};
 
 const int nCentBinPa = 3;
 double centBinPa[nCentBinPa+1] = {0,20,30,100};
+//double centBinPa[nCentBinPa+1] = {0,20,25,30,40,100};
 
 const int nPtBinPa = 4; 
 double ptBinPa[nPtBinPa+1]    = {40,50,60,80,9999}; 

@@ -424,7 +424,7 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
       jetPt[nJet] = theJet->jtpt[ij];
       if ( jetPt[nJet] < cutjetPtSkim)
 	 continue;
-      if ( fabs( theJet->jteta[ij] ) > cutjetEta )    
+      if ( fabs( theJet->jteta[ij] ) > cutjetEtaSkim )    
 	continue;
       if ( getDR( theJet->jteta[ij], theJet->jtphi[ij], gj.photonEta, gj.photonPhi) < 0.3 )
 	continue;
@@ -594,7 +594,7 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
       for (int it = 0 ; it < nJetImb ; it++) {
 	if ( jetPtImb[it] < cutjetPtSkim ) 
 	  continue;
-	if ( fabs( jetEtaImb[it] ) > cutjetEta ) 
+	if ( fabs( jetEtaImb[it] ) > cutjetEtaSkim ) 
 	  continue;
 	
 	mJetPt[nMjet]    = jetPtImb[it];

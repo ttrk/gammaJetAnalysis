@@ -169,6 +169,8 @@ void gammaJetHistProducer(sampleType collision = kPADATA, float photonPtThr=60, 
   TCut genJetCut     =  Form("abs(jtEta)<%f && jtPt>%f", (float)cutjetEta, (float)jetPtThr );
   TCut genJetCutDphi =  jetCut && (TCut)(Form("abs(refDphi)>%f",(float)awayRange));
   
+  TCut jetCut2   = Form("abs(dphi)>%f && pt>%f", (float)awayRange, (float)jetPtThr ) ;
+  
   
   TString jetWeight = "";
   
@@ -238,32 +240,31 @@ void gammaJetHistProducer(sampleType collision = kPADATA, float photonPtThr=60, 
 		  phoCandCut, phoDecayCut,  hGenPhoGenJetXjg, outName);
   
   
-  /*      Eta distribution
-	  TH1D* hEtaJg = new TH1D(Form("etaJg_icent%d",icent),";#eta_{J,#gamma} ; ",160,-3,3);
-	  corrFunctionTrk* cEtaJg = new corrFunctionTrk();
-	  TString varEtaJg         = Form("(photonEta+eta)/2.");
+  // Eta distribution
+  TH1D* hEtaJg = new TH1D(Form("etaJg_icent%d",icent),";#eta_{J,#gamma} ; ",160,-3,3);
+  corrFunctionTrk* cEtaJg = new corrFunctionTrk();
+  TString varEtaJg         = Form("(photonEta+eta)/2.");
+  
+  gammaTrkSingle( gSpec,  tObj, cEtaJg,  purity, 
+		  collision, varEtaJg, jetCut2, jetWeight,
+		  phoCandCut, phoDecayCut,  hEtaJg, outName);
+  
+  TH1D* hEtaJet = new TH1D(Form("etaJet_icent%d",icent),";#eta_{Jet} ; ",160,-3,3);
+  corrFunctionTrk* cEtaJet = new corrFunctionTrk();
+  TString varEtaJet         = Form("eta");
 	  
-	  gammaTrkSingle( gSpec,  tObj, cEtaJg,  purity, 
-	  collision, varEtaJg, jetCutDphi, jetWeight,
-	  phoCandCut, phoDecayCut,  hEtaJg, outName);
-	  
-	  TH1D* hEtaJet = new TH1D(Form("etaJet_icent%d",icent),";#eta_{Jet} ; ",160,-3,3);
-	  corrFunctionTrk* cEtaJet = new corrFunctionTrk();
-	  TString varEtaJet         = Form("eta");
-	  
-	  gammaTrkSingle( gSpec,  tObj, cEtaJet,  purity, 
-	  collision, varEtaJet, jetCutDphi, jetWeight,
-	  phoCandCut, phoDecayCut,  hEtaJet, outName);
-	  
-	  TH1D* hEtaPhoton = new TH1D(Form("etaPhoton_icent%d",icent),";#eta_{#gamma} ; ",160,-3,3);
-	  corrFunctionTrk* cEtaPhoton = new corrFunctionTrk();
-	  TString varEtaPhoton         = Form("photonEta");
-	  
-	  gammaTrkSingle( gSpec,  tObj, cEtaPhoton,  purity, 
-	  collision, varEtaPhoton, jetCutDphi, jetWeight,
-	  phoCandCut, phoDecayCut,  hEtaPhoton, outName);
-		  
-  */
+  gammaTrkSingle( gSpec,  tObj, cEtaJet,  purity, 
+		  collision, varEtaJet, jetCut2, jetWeight,
+		  phoCandCut, phoDecayCut,  hEtaJet, outName);
+  
+  TH1D* hEtaPhoton = new TH1D(Form("etaPhoton_icent%d",icent),";#eta_{#gamma} ; ",160,-3,3);
+  corrFunctionTrk* cEtaPhoton = new corrFunctionTrk();
+  TString varEtaPhoton         = Form("photonEta");
+  
+  gammaTrkSingle( gSpec,  tObj, cEtaPhoton,  purity, 
+		  collision, varEtaPhoton, jetCut2, jetWeight,
+		  phoCandCut, phoDecayCut,  hEtaPhoton, outName);
+  
   
 }
 

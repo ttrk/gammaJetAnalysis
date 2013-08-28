@@ -191,7 +191,7 @@ void forest2yskim_minbias_forestV3(TString inputFile_="mergedFiles/forest_minbia
       jetEta[nJet] = theJet->jteta[ij];
       if ( jetPt[nJet] < cutjetPtSkim)
 	continue;
-      if ( fabs( jetEta[nJet] ) > cutjetEta )
+      if ( fabs( jetEta[nJet] ) > cutjetEtaSkim )
         continue;
 
       if ( (colli==kPADATA) && ( evt.run > 211256 ) )  {
