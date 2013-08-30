@@ -50,8 +50,13 @@ const Double_t PURITY_BIN_VAL = 0.00999;
 const Double_t HFBINS[] = {0,1000};//20,30,1000};
 const Int_t nHFBINS = sizeof(HFBINS)/sizeof(Double_t) -1;
 
-const Double_t PTBINS[] = {40, 50, 60, 80, 120, 1000};
+const Double_t PTBINS[] = {40, 50, 60, 80, 1000};
+//const Double_t PTBINS[] = {40, 1000};
 const Int_t nPTBINS = sizeof(PTBINS)/sizeof(Double_t) -1;
+
+const Double_t ETABINS[] = {-1.479, 1.479};
+//const Double_t ETABINS[] = {-1.479, -1, -0.5, 0, 0.5, 1, 1.479};
+const Int_t nETABINS = sizeof(ETABINS)/sizeof(Double_t) -1;
 
 const Int_t nSIGMABINS = 100; // number of bins in sigmaIetaIeta dist
 const Double_t maxSIGMA = 0.025; // x-axis max of sigmaIetaIeta dist
@@ -141,105 +146,128 @@ void photonPurity()
   TNtuple *mcTuple = (TNtuple*)mcFile->Get("gammaJets");
   use_only_unique_events(mcTuple,"mcid"); //private MC has bad event numbers
 
-  TCut etaCut = "(abs(gEta) < 1.479)";
-  //TCut etaCut = "(abs(gEta) > 1.479)";
-  //TCut etaCut = "";
   //TCut sampleIsolation = "(cc4+cr4+ct4PtCut20<1) && hadronicOverEm<0.1";
   TCut sampleIsolation = "ecalRecHitSumEtConeDR04 < 4.2  &&  hcalTowerSumEtConeDR04 < 2.2  &&  trkSumPtHollowConeDR04 < 2 && hadronicOverEm<0.1";
   TCut sidebandIsolation = "(cc4+cr4+ct4PtCut20>10) && (cc4+cr4+ct4PtCut20<20) && hadronicOverEm<0.1";
   TCut mcIsolation = "genCalIsoDR04<5 && abs(genMomId)<=22";
 
-  TCanvas *cPurity = new TCanvas("c1","c1",1920,1000);
-  
-  cPurity->Divide(nPTBINS,2*nHFBINS,0,0);
+  //TCanvas *cPurity[nPTBINS];  
+  TCanvas *cPurity = new TCanvas("c1","c1",1350,600);
+  cPurity->Divide(nPTBINS,2,0,0);
   
   for(Int_t i = 0; i < nPTBINS; ++i) {
-    for(Int_t j = 0; j < nHFBINS; ++j) {      
-      TString ptCut = Form("(gPt >= %f) && (gPt < %f)",
-			   PTBINS[i], PTBINS[i+1]);
-      TString hfCut = Form("((HFplusEta4+HFminusEta4) >= %f) && ((HFplusEta4+HFminusEta4) < %f)",
-			   HFBINS[j], HFBINS[j+1]);
+    //cPurity[i] = new TCanvas(Form("c1_%d",i),"",1920,1000);
+    //cPurity[i]->Divide(nETABINS,2,0,0);
+    for(Int_t j = 0; j < nHFBINS; ++j) {
+      for(Int_t k = 0; k< nETABINS; ++k) {
+	TString ptCut = Form("(gPt >= %f) && (gPt < %f)",
+			     PTBINS[i], PTBINS[i+1]);
+	TString hfCut = Form("((HFplusEta4+HFminusEta4) >= %f) && ((HFplusEta4+HFminusEta4) < %f)",
+			     HFBINS[j], HFBINS[j+1]);
+	TString etaCut = Form("(gEta >= %f) && (gEta < %f)",
+			      ETABINS[k], ETABINS[k+1]);
 
-      TCut dataCandidateCut = etaCut && ptCut && hfCut && sampleIsolation;
-      TCut sidebandCut = etaCut && ptCut && hfCut && sidebandIsolation;
-      TCut mcSignalCut = dataCandidateCut && mcIsolation;
+	TString pPbflipetaCut = Form("(gEta*((run>211257)*-1+(run<211257)) >=%f) && (gEta*((run>211257)*-1+(run<211257)) <%f)",
+				     ETABINS[k], ETABINS[k+1]);
 
-      // cout << "dataCandidateCut: " << dataCandidateCut << endl;
-      // cout << "sidebandCut: " << sidebandCut << endl;
-      // cout << "mcSignalCut: " << mcSignalCut << endl;
+	TCut dataCandidateCut = sampleIsolation && etaCut && ptCut && hfCut;
+	TCut sidebandCut =  sidebandIsolation && etaCut && ptCut && hfCut;
+	TCut mcSignalCut = dataCandidateCut && mcIsolation;
+		
+	if(nETABINS != 1)
+	{
+	  dataCandidateCut = sampleIsolation && pPbflipetaCut && ptCut && hfCut;
+	  sidebandCut =  sidebandIsolation && pPbflipetaCut && ptCut && hfCut;
+	  mcSignalCut =  sampleIsolation && etaCut && ptCut && hfCut && mcIsolation;
+	}
 
-      TCanvas *fakeCanvas = new TCanvas("fake","fake",1,1);
-      fitResult fitr = getPurity(dataTuple, mcTuple,
-				 dataCandidateCut, sidebandCut,
-				 mcSignalCut);
-      delete fakeCanvas;
+	TCanvas *fakeCanvas = new TCanvas("fake","fake",1,1);
+	fitResult fitr = getPurity(dataTuple, mcTuple,
+				   dataCandidateCut, sidebandCut,
+				   mcSignalCut);
+	delete fakeCanvas;
 
-      // cPurity[i*nHFBINS+j] = new TCanvas(Form("cpurity%d",i*nHFBINS+j),
-      // 					 "",500,500);
-      cPurity->cd(2*j*nPTBINS+i+1);
+	//cPurity[i*nHFBINS+j] = new TCanvas(Form("cpurity%d",i*nHFBINS+j),
+	// 					 "",500,500);
+	cPurity->cd(2*(k+j)*nPTBINS+i+1);
+	//cPurity[i]->cd(k+1);
 
-      TH1F *hSigPdf = fitr.sigPdf;
-      TH1F *hBckPdf = fitr.bckPdf;
-      TH1D *hData1  = fitr.data;
+	TH1F *hSigPdf = fitr.sigPdf;
+	TH1F *hBckPdf = fitr.bckPdf;
+	TH1D *hData1  = fitr.data;
 
-      // plot stacked histos
-      hSigPdf->Add(hBckPdf);
-      handsomeTH1(hSigPdf);
-      mcStyle(hSigPdf);
-      sbStyle(hBckPdf);
-      cleverRange(hSigPdf,1.5);
-      hSigPdf->SetNdivisions(510);      
-      hSigPdf->SetYTitle("Entries");
-      hSigPdf->SetXTitle("#sigma_{#eta #eta}");
-      hSigPdf->DrawCopy("hist");
-      hBckPdf->DrawCopy("same hist");
-      hData1->DrawCopy("same");
-      TLegend *t3=new TLegend(0.54, 0.60, 0.92, 0.79);
-      t3->AddEntry(hData1,LABEL,"pl");
-      t3->AddEntry(hSigPdf,"Signal","lf");
-      t3->AddEntry(hBckPdf,"Background","lf");
-      t3->SetFillColor(0);
-      t3->SetBorderSize(0);
-      t3->SetFillStyle(0);
-      t3->SetTextFont(63);
-      t3->SetTextSize(15);
-      t3->Draw();
+	// plot stacked histos
+	hSigPdf->Add(hBckPdf);
+	handsomeTH1(hSigPdf);
+	mcStyle(hSigPdf);
+	sbStyle(hBckPdf);
+	cleverRange(hSigPdf,1.5);
+	hSigPdf->SetNdivisions(510);      
+	hSigPdf->SetYTitle("Entries");
+	hSigPdf->SetXTitle("#sigma_{#eta #eta}");
+	hSigPdf->DrawCopy("hist");
+	hBckPdf->DrawCopy("same hist");
+	hData1->DrawCopy("same");
+	TLegend *t3=new TLegend(0.54, 0.60, 0.92, 0.79);
+	t3->AddEntry(hData1,LABEL,"pl");
+	t3->AddEntry(hSigPdf,"Signal","lf");
+	t3->AddEntry(hBckPdf,"Background","lf");
+	t3->SetFillColor(0);
+	t3->SetBorderSize(0);
+	t3->SetFillStyle(0);
+	t3->SetTextFont(63);
+	t3->SetTextSize(15);
+	t3->Draw();
 
-      //drawText("|#eta_{#gamma}| < 1.479",0.5680963,0.9);
-      if(nPTBINS != 1)
-	drawText(Form("%.0f < p_{T}^{#gamma} < %.0f",PTBINS[i], PTBINS[i+1]),
-		 0.57, 0.9);
-      if(nHFBINS != 1)
-	drawText(Form("%.0f < E_{T}^{HF[|#eta|>4]} < %.0f",
-		      HFBINS[j], HFBINS[j+1]),
-		 0.57, 0.82);
-      drawText(Form("Purity : %.2f", (Float_t)fitr.purity),
-      	       0.57, 0.53);
-      //cout << "pT: " << PTBINS[i] << " : " << fitr.purity << endl;
-      drawText(Form("#chi^{2}/ndf : %.2f", (Float_t)fitr.chisq),
-	       0.57, 0.45);
-      // TString savename = Form("purity_pA_barrel_pt%.0f_hf%.0f_plot",
-      // 			     PTBINS[i], HFBINS[j]);
-      // cPurity[i*nHFBINS+j]->SaveAs(savename+".C");
-      // cPurity[i*nHFBINS+j]->SaveAs(savename+".pdf");
-      // cPurity[i*nHFBINS+j]->SaveAs(savename+".png");
+	//drawText("|#eta_{#gamma}| < 1.479",0.5680963,0.9);
+	drawText("-0.0015 shift",0.57,0.82);
+	if(nPTBINS != 1)
+	  drawText(Form("%.0f < p_{T}^{#gamma} < %.0f",
+			PTBINS[i], PTBINS[i+1]),
+		   0.57, 0.9);
+	if(nHFBINS != 1)
+	  drawText(Form("%.0f < E_{T}^{HF[|#eta|>4]} < %.0f",
+			HFBINS[j], HFBINS[j+1]),
+		   0.57, 0.82);
+	if(nETABINS != 1)
+	  drawText(Form("%.3f < #eta_{#gamma} < %.3f",
+			ETABINS[k], ETABINS[k+1]),
+		   0.57, 0.82);		 
+	drawText(Form("Purity : %.2f", (Float_t)fitr.purity),
+		 0.57, 0.53);
+	drawText(Form("#chi^{2}/ndf : %.2f", (Float_t)fitr.chisq),
+		 0.57, 0.45);
 
-      //plot ratio
-      cPurity->cd((2*j+1)*nPTBINS+i+1);
-      TH1D* ratio = (TH1D*)hData1->Clone("ratio");
-      ratio->Divide(hData1, hSigPdf, 1, 1);
-      ratio->SetMinimum(0);
-      ratio->SetMaximum(3);
-      ratio->SetXTitle("#sigma_{#eta #eta}");
-      ratio->GetXaxis()->CenterTitle();      
-      ratio->SetYTitle("ratio");
-      ratio->GetYaxis()->CenterTitle();
-      ratio->DrawCopy("E");
-      TLine *line = new TLine(0,1,maxSIGMA,1);
-      line->SetLineStyle(2);
-      line->Draw("same");
+	//plot ratio
+	cPurity->cd((2*(j+k)+1)*nPTBINS+i+1);
+	//cPurity[i]->cd(nETABINS + k+ 1);
+	TH1D* ratio = (TH1D*)hData1->Clone("ratio");
+	ratio->Divide(hData1, hSigPdf, 1, 1);
+	ratio->SetMinimum(0);
+	ratio->SetMaximum(3);
+	ratio->SetXTitle("#sigma_{#eta #eta}");
+	ratio->GetXaxis()->CenterTitle();      
+	ratio->SetYTitle("ratio");
+	ratio->GetYaxis()->CenterTitle();
+	ratio->DrawCopy("E");
+	TLine *line = new TLine(0,1,maxSIGMA,1);
+	line->SetLineStyle(2);
+	line->Draw("same");
+
+	// TString savename = Form("purity_pA_barrel_pt%.0f_hf%.0f_plot",
+	// 			PTBINS[i], HFBINS[j]);
+	// cPurity[i*nHFBINS+j]->SaveAs(savename+".C");
+	// cPurity[i*nHFBINS+j]->SaveAs(savename+".pdf");
+	// cPurity[i*nHFBINS+j]->SaveAs(savename+".png");
+
+      }
     }
+    //cPurity[i]->SaveAs(Form("pPb_purity_etadep_wshift_ptbin%.0f.png",PTBINS[i]));
+    //cPurity[i]->SaveAs(Form("pPb_purity_etadep_noshift_inclusive.png"));
   }
+  cPurity->SaveAs("pPb_purity_shift.C");
+  cPurity->SaveAs("pPb_purity_shift.png");
+  cPurity->SaveAs("pPb_purity_shift.pdf");
 }
 
 fitResult getPurity(TNtuple *dataTuple, TNtuple *mcTuple,
