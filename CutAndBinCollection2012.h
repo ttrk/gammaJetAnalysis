@@ -390,8 +390,9 @@ const int nCentBin1 = 4;
 double centBin1[nCentBin1+1] = {0,4,12,20,40};
 
 
-const int nCentBinPa = 3;
-double centBinPa[nCentBinPa+1] = {0,20,30,100};
+const int nCentBinPa = 1;
+//double centBinPa[nCentBinPa+1] = {0,20,30,100};
+double centBinPa[nCentBinPa+1] = {0,100};
 //double centBinPa[nCentBinPa+1] = {0,20,25,30,40,100};
 
 const int nPtBinPa = 4; 

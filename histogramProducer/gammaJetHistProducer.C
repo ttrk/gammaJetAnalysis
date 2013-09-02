@@ -182,7 +182,9 @@ void gammaJetHistProducer(sampleType collision = kPADATA, float photonPtThr=60, 
 		  collision, varJetDphi, jetCut, jetWeight,
 		  phoCandCut, phoDecayCut,  hJetDphi, outName);
   
-  TH1D* hJetPt = new TH1D(Form("jetPt_icent%d",icent),";Jet p_{T} (GeV) ;dN/dp_{T} (GeV^{-1})",40,30,230);
+  //  double jetPtBin[6] = {30,35,40,50,70,120}; 
+  //  TH1D* hJetPt = new TH1D(Form("jetPt_icent%d",icent),";Jet p_{T} (GeV) ;dN/dp_{T} (GeV^{-1})",5, jetPtBin);
+  TH1D* hJetPt = new TH1D(Form("jetPt_icent%d",icent),";Jet p_{T} (GeV) ;dN/dp_{T} (GeV^{-1})",10, 20,120);
   corrFunctionTrk* cJetPt = new corrFunctionTrk();
   TString varJetPt         = Form("pt");
   
@@ -209,7 +211,7 @@ void gammaJetHistProducer(sampleType collision = kPADATA, float photonPtThr=60, 
 		  phoCandCut, phoDecayCut,  hDjetPt, outName);
   
   
-  TH1D* hJetXjg = new TH1D(Form("xjg_icent%d",icent),";p_{T}^{Jet}/p_{T}^{#gamma}  ; ",16,0,2);
+  TH1D* hJetXjg = new TH1D(Form("xjg_icent%d",icent),";p_{T}^{Jet}/p_{T}^{#gamma}  ; ",24,0,3);
   corrFunctionTrk* cJetXjg = new corrFunctionTrk();
   TString varJetXjg         = Form("pt/photonEt");
   

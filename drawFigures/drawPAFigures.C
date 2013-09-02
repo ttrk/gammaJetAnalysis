@@ -1,6 +1,8 @@
-#include "CutAndBinCollection2012.h"
+#include "../../hiForestV3/hiForest.h"
+#include "../CutAndBinCollection2012.h"
 #include <TRandom3.h>
 #include <time.h>
+
 
 void drawPAFigures(int xNorm = 1) { 
   
@@ -30,7 +32,7 @@ void drawPAFigures(int xNorm = 1) {
     int iglb = icent + iSpecies*50.;
     
     
-    fff[iSpecies][iglb] = new TFile("ffFiles/photonTrackCorr_ppbMC_output_photonPtThr60_to_9999_jetPtThr30_20130815.root");
+    fff[iSpecies][iglb] = new TFile("../histogramProducer/ffFiles/photonTrackCorr_ppbMC_output_photonPtThr60_to_9999_jetPtThr30_20130830.root");
     hdphi[iSpecies][iglb] = (TH1D*)fff[iSpecies][iglb]->Get(Form("jetDphi_icent%d_final",icent));
     
     hxjg[iSpecies][iglb] = (TH1D*)fff[iSpecies][iglb]->Get(Form("jetXjg_icent%d_final",icent));

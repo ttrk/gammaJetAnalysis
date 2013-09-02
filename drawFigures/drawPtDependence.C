@@ -3,7 +3,7 @@
 #include <TRandom3.h>
 #include <time.h>
 
-void drawPtDependence(bool drawPbPb=1, int xNorm = 0) {
+void drawPtDependence( bool saveFigures=false) {
   
   const int nPtBin = 4;
   double ptBin[nPtBin+1] = {40, 50,60,80,9999}; 
@@ -15,21 +15,25 @@ void drawPtDependence(bool drawPbPb=1, int xNorm = 0) {
 
   TH1D* hxjg[7][10][6]; // [Collision][centrality][pt]
   TH1D* hJetPt[7][10][6]; // [Collision][centrality][pt]
+  TH1D* hIaa[7][10][6]; // [Collision][centrality][pt]
   TH1D* hDphi[7][10][6]; // [Collision][centrality][pt]
+  TH1D* hEta[7][10][6]; // [Collision][centrality][pt]
   TH1D* meanXjg[7][10];      // [Collision][centrality]
   TH1D* meanJetPt[7][10];      // [Collisi on][centrality]
-
+  
   TH1D* rjg[7][5];     //  [Collision][centrality]
   for (int icoll=0 ; icoll<6  ; icoll++) {
     for (int icent=1 ; icent<= 10 ; icent++) {
-      meanXjg[icoll][icent] = new TH1D( Form("meanXjg_icoll%d_icent%d",icoll,icent), ";p_{T}^{#gamma}; <X_{J#gamma}>",nPtBin,ptBinPaDraw);
-      meanJetPt[icoll][icent] = new TH1D( Form("meanJetPt_icoll%d_icent%d",icoll,icent), ";p_{T}^{#gamma}; <p_{T}^{Jet}>",nPtBin,ptBinPaDraw);
-      rjg[icoll][icent] = new TH1D( Form("rjg_icoll%d_icent%d",icoll,icent), ";p_{T}^{#gamma}; R_{J#gamma}",nPtBin,ptBinPaDraw);
+      meanXjg[icoll][icent] = new TH1D( Form("meanXjg_icoll%d_icent%d",icoll,icent), ";p_{T}^{#gamma} (GeV); <X_{J#gamma}>",nPtBin,ptBinPaDraw);
+      meanJetPt[icoll][icent] = new TH1D( Form("meanJetPt_icoll%d_icent%d",icoll,icent), ";p_{T}^{#gamma} (GeV); <p_{T}^{Jet}>",nPtBin,ptBinPaDraw);
+      rjg[icoll][icent] = new TH1D( Form("rjg_icoll%d_icent%d",icoll,icent), ";p_{T}^{#gamma} (GeV); R_{J#gamma}",nPtBin,ptBinPaDraw);
 
       for (int ipt=1 ; ipt<=nPtBin ; ipt++) {
 	hxjg[icoll][icent][ipt] = NULL;
 	hJetPt[icoll][icent][ipt] = NULL;
+	hIaa[icoll][icent][ipt] = NULL;
 	hDphi[icoll][icent][ipt] = NULL;
+	hEta[icoll][icent][ipt] = NULL;
       }
       
     }
@@ -39,7 +43,7 @@ void drawPtDependence(bool drawPbPb=1, int xNorm = 0) {
   for (int ipt=1 ; ipt<=nPtBin ; ipt++) {
     for (int icoll=0 ; icoll<6 ; icoll++) {
       TString sampleName = getSampleName( icoll ) ;
-      char* fname =  Form("../histogramProducer/ffFiles/photonTrackCorr_%s_output_photonPtThr%d_to_%d_jetPtThr30_20130828.root",sampleName.Data(), (int)ptBin[ipt-1], (int)ptBin[ipt]);
+      char* fname =  Form("../histogramProducer/ffFiles/photonTrackCorr_%s_output_photonPtThr%d_to_%d_jetPtThr30_20130830.root",sampleName.Data(), (int)ptBin[ipt-1], (int)ptBin[ipt]);
       histFile[icoll][ipt] = new TFile(fname) ;
       cout << " Reading file : " << fname << endl;
       
@@ -53,6 +57,9 @@ void drawPtDependence(bool drawPbPb=1, int xNorm = 0) {
 	  cout << " Getting histogram : " << Form("jetPt_icent%d_final", icent) << endl;
 	  hDphi[icoll][icent][ipt]  = (TH1D*)histFile[icoll][ipt]->Get(Form("jetDphi_icent%d_final", icent)) ;
 	  cout << " Getting histogram : " << Form("jetDphi_icent%d_final", icent) << endl;
+	  hEta[icoll][icent][ipt]  = (TH1D*)histFile[icoll][ipt]->Get(Form("etaJg_icent%d_final", icent)) ;
+	  cout << " Getting histogram : " << Form("etaJg_icent%d_final", icent) << endl;
+
 	}
 	
 	if ( ( icoll == kHIDATA) ||  (icoll == kHIMC) ) { // PbPb
@@ -63,6 +70,8 @@ void drawPtDependence(bool drawPbPb=1, int xNorm = 0) {
 	    cout << " Getting histogram : " << Form("jetPt_icent%d_final", centBinHI[icent] ) << endl;
 	    hDphi[icoll][icent][ipt]  = (TH1D*)histFile[icoll][ipt]->Get(Form("jetDphi_icent%d_final", centBinHI[icent] ) ) ;
 	    cout << " Getting histogram : " << Form("jetDphi_icent%d_final", icent)<< endl;
+	    hEta[icoll][icent][ipt]  = (TH1D*)histFile[icoll][ipt]->Get(Form("etaJg_icent%d_final", centBinHI[icent] ) ) ;
+	    cout << " Getting histogram : " << Form("etaJg_icent%d_final", icent)<< endl;
 	  }
 	}
       }
@@ -81,7 +90,7 @@ void drawPtDependence(bool drawPbPb=1, int xNorm = 0) {
 	rVal = hxjg[icoll][icent][ipt]->IntegralAndError(1, hxjg[icoll][icent][ipt]->GetNbinsX(), rErr, "width");
 	rjg[icoll][icent]->SetBinContent( ipt, rVal );
 	rjg[icoll][icent]->SetBinError  ( ipt, rErr );
- 	
+
 	meanXjg[icoll][icent]->SetBinContent( ipt, hxjg[icoll][icent][ipt]->GetMean() );
 	meanXjg[icoll][icent]->SetBinError  ( ipt, hxjg[icoll][icent][ipt]->GetMeanError() );
 	
@@ -89,8 +98,6 @@ void drawPtDependence(bool drawPbPb=1, int xNorm = 0) {
 	meanJetPt[icoll][icent]->SetBinError  ( ipt, hJetPt[icoll][icent][ipt]->GetMeanError() );
 
 
-	hJetPt[icoll][icent][ipt]->Rebin(2);
-	hJetPt[icoll][icent][ipt]->Scale(1./2);
       }
     }
   }
@@ -105,10 +112,10 @@ void drawPtDependence(bool drawPbPb=1, int xNorm = 0) {
     handsomeTH1(hDphi[kPPDATA][7][ipt], 1);
     hDphi[kPPDATA][7][ipt]->SetXTitle("#Delta#phi_{J#gamma}");
     hDphi[kPPDATA][7][ipt]->SetYTitle("Normalized entries");
-    hDphi[kPPDATA][7][ipt]->SetAxisRange(0,3.141592,"X");
-    hDphi[kPPDATA][7][ipt]->SetAxisRange(0.01,100,"Y");
     hDphi[kPPDATA][7][ipt]->SetMarkerStyle(24);
     hDphi[kPPDATA][7][ipt]->Scale(1./hDphi[kPPDATA][7][ipt]->Integral("width"));       
+    hDphi[kPPDATA][7][ipt]->SetAxisRange(0,3.141592,"X");
+    hDphi[kPPDATA][7][ipt]->SetAxisRange(0.01,30,"Y");
     hDphi[kPPDATA][7][ipt]->Draw();
     // draw pbpb 
     for ( int icent = 1; icent <= nCentBinHI ; icent++ ) {
@@ -122,22 +129,76 @@ void drawPtDependence(bool drawPbPb=1, int xNorm = 0) {
     gPad->SetLogy();
     //    onSun(30,0,200,0);
   }
+  c1->cd(1);
+  TLegend *l1 = new TLegend(0.4913112,0.6561548,0.9997611,0.9431145,NULL,"brNDC");
+  easyLeg(l1,"2.76TeV");
+  l1->AddEntry(hDphi[kPPDATA][7][1],"pp ","p");
+  l1->AddEntry(hDphi[kHIDATA][1][1],"PbPb 30-100%","p");
+  l1->AddEntry(hDphi[kHIDATA][2][1],"PbPb 0-30%","p");
+  l1->Draw();
+
+  if (saveFigures) c1->SaveAs("figures/pT_dependence_dphi_pp_pbpb_figure1.pdf");
+  if (saveFigures) c1->SaveAs("figures/pT_dependence_dphi_pp_pbpb_figure1.gif");
 
 
-  TCanvas* c2 = new TCanvas("c2","",1200,350);
-  makeMultiPanelCanvas(c2,nPtBin,1,0.0,0.0,0.2,0.15,0.02);
+
+  TCanvas* c5 = new TCanvas("c5","",1200,350);
+  makeMultiPanelCanvas(c5,nPtBin,1,0.0,0.0,0.2,0.15,0.02);
+  for ( int ipt = 1 ; ipt<=nPtBin  ; ipt++) {
+    
+    c5->cd(ipt);
+    
+    // draw pp
+    handsomeTH1(hEta[kPPDATA][7][ipt], 1);
+    hEta[kPPDATA][7][ipt]->SetXTitle("#eta_{J#gamma}");
+    hEta[kPPDATA][7][ipt]->SetYTitle("Normalized entries");
+    hEta[kPPDATA][7][ipt]->SetMarkerStyle(24);
+    hEta[kPPDATA][7][ipt]->Scale(1./hEta[kPPDATA][7][ipt]->Integral("width"));       
+    hEta[kPPDATA][7][ipt]->SetAxisRange(-2,2,"X");
+    hEta[kPPDATA][7][ipt]->SetAxisRange(0.01,30,"Y");
+    hEta[kPPDATA][7][ipt]->Rebin(5);
+    hEta[kPPDATA][7][ipt]->Draw();
+    // draw pbpb 
+    for ( int icent = 1; icent <= nCentBinHI ; icent++ ) {
+      handsomeTH1(hEta[kHIDATA][icent][ipt],kRed);
+      if ( icent == 2 ) hEta[kHIDATA][icent][ipt]->SetMarkerStyle(24);
+      hEta[kHIDATA][icent][ipt]->Scale(1./hEta[kHIDATA][icent][ipt]->Integral("width"));
+      hEta[kHIDATA][icent][ipt]->Rebin(5);
+      hEta[kHIDATA][icent][ipt]->Draw("same");
+      
+    }
+    
+    gPad->SetLogy();
+    //    onSun(30,0,200,0);
+  }
+  c5->cd(1);
+  l1->Draw();  
+  
+  if (saveFigures)   c5->SaveAs("figures/pT_dependence_eta_pp_pbpb_figure1.pdf");
+  if (saveFigures)   c5->SaveAs("figures/pT_dependence_eta_pp_pbpb_figure1.gif");
+
+
+
+  
+  TH1D* hTempPt = new TH1D("hTemp",";p_{T}^{#gamma} (GeV);",200,10,150);
+  
+  TCanvas* c2 = new TCanvas("c2","",1200,700);
+  makeMultiPanelCanvas(c2,nPtBin,2,0.0,0.0,0.2,0.15,0.02);
   for ( int ipt = 1 ; ipt<=nPtBin  ; ipt++) {
     
     c2->cd(ipt);
     
     // draw pp
+    hTempPt->SetXTitle("p_{T}^{Jet} (GeV)");
+    hTempPt->SetYTitle("#frac{dN}{dp_{T}} #frac{1}{N}");
+    hTempPt->SetAxisRange(10,150,"X");
+    hTempPt->SetAxisRange(0,0.025,"Y");
+    handsomeTH1(hTempPt,0);
+    hTempPt->DrawCopy();
+
     handsomeTH1(hJetPt[kPPDATA][7][ipt], 1);
-    hJetPt[kPPDATA][7][ipt]->SetXTitle("p_{T}^{Jet}");
-    hJetPt[kPPDATA][7][ipt]->SetYTitle("#frac{dN}{dp_{T}} #frac{1}{N}");
-    hJetPt[kPPDATA][7][ipt]->SetAxisRange(30,150,"X");
-    hJetPt[kPPDATA][7][ipt]->SetAxisRange(0,0.025,"Y");
     hJetPt[kPPDATA][7][ipt]->SetMarkerStyle(24);
-    hJetPt[kPPDATA][7][ipt]->Draw();
+    hJetPt[kPPDATA][7][ipt]->Draw("same");
 
     // draw pbpb 
     for ( int icent = 1; icent <= nCentBinHI ; icent++ ) {
@@ -145,13 +206,102 @@ void drawPtDependence(bool drawPbPb=1, int xNorm = 0) {
       if ( icent == 2 ) hJetPt[kHIDATA][icent][ipt]->SetMarkerStyle(24);
       //      if ( icent == 1 )       hJetPt[kHIDATA][icent][ipt]->Draw("same");
       hJetPt[kHIDATA][icent][ipt]->Draw("same");
-      
     }
-      
+    
+    onSun(30,0,200,0);
+
+    c2->cd(ipt+nPtBin);
+    
+    hTempPt->SetYTitle("I_{AA}");
+    hTempPt->SetAxisRange(0,3,"Y");
+    hTempPt->DrawCopy();
+    //    for ( int icent = 1; icent <= nCentBinHI ; icent++ ) {
+    for ( int icent = 1; icent <= 1 ; icent++ ) {
+      hIaa[kHIDATA][icent][ipt] = (TH1D*)hJetPt[kHIDATA][icent][ipt]->Clone(Form("iaa_%s",hJetPt[kHIDATA][icent][ipt]->GetName()) );
+      hIaa[kHIDATA][icent][ipt]->Divide(hJetPt[kPPDATA][7][ipt]);
+      hIaa[kHIDATA][icent][ipt]->Draw("same");
+    }
+    jumSun(10,1,150,1);
+  }
+  c2->cd(1);
+  l1->Draw();  
+
+  if (saveFigures)   c2->SaveAs("figures/pT_dependence_jetPt_pp_pbpb_figure1.pdf");
+  if (saveFigures)   c2->SaveAs("figures/pT_dependence_jetPt_pp_pbpb_figure1.gif");
+
+  TCanvas* c21 = new TCanvas("c21","",500,500);
+  handsomeTH1(meanJetPt[kPPDATA][7], 1);
+  meanJetPt[kPPDATA][7]->SetYTitle("<p_{T}^{Jet}>  (>30GeV)");
+  meanJetPt[kPPDATA][7]->SetMarkerStyle(24);
+  //  meanJetPt[kPPDATA][7]->SetAxisRange(-2,2,"X");
+  meanJetPt[kPPDATA][7]->SetAxisRange(30,95,"Y");
+  meanJetPt[kPPDATA][7]->Draw();
+  
+  for ( int icent = 1; icent <= nCentBinHI ; icent++ ) {
+    handsomeTH1(meanJetPt[kHIDATA][icent],kRed);
+    if ( icent == 2 ) meanJetPt[kHIDATA][icent]->SetMarkerStyle(24);
+    meanJetPt[kHIDATA][icent]->Draw("same");
+  }
+  TLegend *l2 = new TLegend(0.1834677,0.6567797,0.6915323,0.9449153,NULL,"brNDC");
+  easyLeg(l2,"2.76TeV");
+  l2->AddEntry(hDphi[kPPDATA][7][1],"pp ","p");
+  l2->AddEntry(hDphi[kHIDATA][1][1],"PbPb 30-100%","p");
+  l2->AddEntry(hDphi[kHIDATA][2][1],"PbPb 0-30%","p");
+  l2->Draw();
+  l2->Draw();
+
+  if (saveFigures)   c21->SaveAs("figures/pT_dependence_jetPt_pp_pbpb_figure2.pdf");
+  if (saveFigures)   c21->SaveAs("figures/pT_dependence_jetPt_pp_pbpb_figure2.gif");
+
+  TCanvas* c3 = new TCanvas("c3","",1200,350);
+  makeMultiPanelCanvas(c3,nPtBin,1,0.0,0.0,0.2,0.15,0.02);
+  for ( int ipt = 1 ; ipt<=nPtBin  ; ipt++) {
+
+    c3->cd(ipt);
+
+    // draw pp                                                                                                                                      
+    handsomeTH1(hxjg[kPPDATA][7][ipt], 1);
+    hxjg[kPPDATA][7][ipt]->SetXTitle("x_{J#gamma}");
+    hxjg[kPPDATA][7][ipt]->SetYTitle("#frac{dN}{dp_{T}} #frac{1}{N}");
+    hxjg[kPPDATA][7][ipt]->SetAxisRange(0,2,"X");
+    hxjg[kPPDATA][7][ipt]->SetAxisRange(0,2,"Y");
+    hxjg[kPPDATA][7][ipt]->SetMarkerStyle(24);
+    hxjg[kPPDATA][7][ipt]->Draw();
+
+    // draw pbpb                                                                                                                                    
+    for ( int icent = 1; icent <= nCentBinHI ; icent++ ) {
+      handsomeTH1(hxjg[kHIDATA][icent][ipt],kRed);
+      if ( icent == 2 ) hxjg[kHIDATA][icent][ipt]->SetMarkerStyle(24);
+      //      if ( icent == 1 )       hxjg[kHIDATA][icent][ipt]->Draw("same");                                                                    
+      hxjg[kHIDATA][icent][ipt]->Draw("same");
+
+    }
+
     onSun(30,0,200,0);
   }
+  c3->cd(1);
+  l1->Draw();  
 
+  if (saveFigures)   c3->SaveAs("figures/pT_dependence_xjg_pp_pbpb_figure1.pdf");
+  if (saveFigures)   c3->SaveAs("figures/pT_dependence_xjg_pp_pbpb_figure1.gif");
 
+  TCanvas* c31 = new TCanvas("c31","",500,500);
+  handsomeTH1(meanXjg[kPPDATA][7], 1);
+  meanXjg[kPPDATA][7]->SetYTitle("<x_{J#gamma}>  (>30GeV)");
+  meanXjg[kPPDATA][7]->SetMarkerStyle(24);
+  //  meanXjg[kPPDATA][7]->SetAxisRange(-2,2,"X");
+  meanXjg[kPPDATA][7]->SetAxisRange(0.6,1.2,"Y");
+  meanXjg[kPPDATA][7]->Draw();
+  
+  for ( int icent = 1; icent <= nCentBinHI ; icent++ ) {
+    handsomeTH1(meanXjg[kHIDATA][icent],kRed);
+    if ( icent == 2 ) meanXjg[kHIDATA][icent]->SetMarkerStyle(24);
+    meanXjg[kHIDATA][icent]->Draw("same");
+  }
+  l1->Draw();
+  if (saveFigures)   c31->SaveAs("figures/pT_dependence_xjg_pp_pbpb_figure1.pdf");
+  if (saveFigures)   c31->SaveAs("figures/pT_dependence_xjg_pp_pbpb_figure1.gif");
+  
 }
 
 

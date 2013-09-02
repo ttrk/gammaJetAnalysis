@@ -348,8 +348,9 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
     evt.vz = c->evt.vz;
    
     
-    if ( c->selectEvent() == 0 ) 
+    if ( ( (colli==kHIDATA)||(colli==kHIMC)||(colli==kPADATA)||(colli==kPAMC) ) && ( c->selectEvent() == 0 ))
       continue;
+
     eSel++;      // OK.  This event is a collisional and no-noise event.  
 
     int cBin = evt.cBin;
@@ -367,13 +368,12 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
       else 
 	newPt[j] = c->photon.pt[j] - 10000;
 
-      corrPt[j] = newPt[j];
-
-      
       if ( (c->isSpike(j)) || (c->photon.hadronicOverEm[j]>0.2) ||  (c->photon.isEle[j]) )
 	newPt[j] = newPt[j] - 20000;
       if (c->photon.seedTime[j] ==0 )   // clustering bug
 	newPt[j] = newPt[j] - 30000;
+
+      corrPt[j] = newPt[j];
       
     }
     TMath::Sort(c->photon.nPhotons, newPt, order);
