@@ -21,15 +21,16 @@
 #include "stdio.h"
 #include <iostream>
 #include "commonUtility.h"
+#include "fitResult.h"
 #include "uniqueEvents.C"
 
 using namespace std;
 //last forward run is 211256
 
 //pp
-//const TString DATA_FILE = "gammaJets_inclusive_dphi7pi8_pp2013Data_v2.root";
-//const TString MC_FILE = "gammaJets_inclusive_dphi7pi8_pA_allQCDPhoton50.root";
-//const TString LABEL = "pp #sqrt{s}_{_{NN}}=2.76 TeV";
+const TString DATA_FILE = "gammaJets_inclusive_dphi7pi8_pp2013Data_v2.root";
+const TString MC_FILE = "gammaJets_pp_pythia_allQCDPhoton30_ntuple.root";
+const TString LABEL = "pp #sqrt{s}_{_{NN}}=2.76 TeV";
 
 //PbPb
 //const TString DATA_FILE = "gammaJets_inclusive_dphi7pi8_PbPb2011_Data.root";
@@ -37,14 +38,9 @@ using namespace std;
 //const TString LABEL = "PbPb #sqrt{s}_{_{NN}}=2.76 TeV";
 
 //pPb
-const TString DATA_FILE = "gammaJets_inclusive_dphi7pi8_pPbData_v2.root";
-const TString MC_FILE = "gammaJets_pA_merged_allQCDPhoton_ntuple.root";
-const TString LABEL = "pPb #sqrt{s}_{_{NN}}=5.02 TeV";
-
-// the bin which holds this value is considered the largest bin when
-// computing the purity
-const Double_t PURITY_BIN_VAL = 0.00999;
-//const Double_t PURITY_BIN_VAL = 0.02699;
+//const TString DATA_FILE = "gammaJets_inclusive_dphi7pi8_pPbData_v2.root";
+//const TString MC_FILE = "gammaJets_pA_merged_allQCDPhoton_ntuple_v2.root";
+//const TString LABEL = "pPb #sqrt{s}_{_{NN}}=5.02 TeV";
 
 // last entry is upper bound on last bin
 const Double_t HFBINS[] = {0,1000};//20,30,1000};
@@ -58,81 +54,12 @@ const Double_t ETABINS[] = {-1.479, 1.479};
 //const Double_t ETABINS[] = {-1.479, -1, -0.5, 0, 0.5, 1, 1.479};
 const Int_t nETABINS = sizeof(ETABINS)/sizeof(Double_t) -1;
 
-const Int_t nSIGMABINS = 100; // number of bins in sigmaIetaIeta dist
-const Double_t maxSIGMA = 0.025; // x-axis max of sigmaIetaIeta dist
-const Double_t SHIFTVAL = -0.00015; // shift the mean of the signal hist by this much
+// the bin which holds this value is considered the largest bin when
+// computing the purity
+const Double_t PURITY_BIN_VAL = 0.00999;
+//const Double_t PURITY_BIN_VAL = 0.02699;
 
-class fitResult {
-public:
-  Double_t nSig;
-  Double_t nSigErr;
-  Double_t purity;
-  Double_t chisq;
-
-  TH1F *sigPdf;
-  TH1F *bckPdf;
-  TH1D *data;
-};
-
-class histFunction2
-{ 
-public:
-  histFunction2(TH1D *h, TH1D *h2);
-  ~histFunction2(){ 
-    delete histBck;
-    delete histSig;
-  };
-  
-  //      Int_t GetBinNumber(Double_t c);
-  Double_t evaluate(Double_t *x, Double_t *par);
-  TH1D *histSig;
-  TH1D *histBck;
-  Double_t lowEdge;
-  Double_t highEdge;
-  Double_t nbin;
-};
-
-histFunction2::histFunction2(TH1D *h,TH1D *h2)
-{
-  histSig=(TH1D*)h->Clone();
-  histBck=(TH1D*)h2->Clone();
-   
-  nbin=h->GetNbinsX();
-  lowEdge=h->GetBinLowEdge(1);
-  highEdge=h->GetBinLowEdge(nbin+1);
-   
-  histSig->SetName("hSig");
-  histSig->Scale(1./histSig->Integral(1,histSig->GetNbinsX()+1));
-  histBck->SetName("hBck");
-  histBck->Scale(1./histBck->Integral(1,histBck->GetNbinsX()+1));
-}
-
-void mcStyle(TH1* h=0) {
-  h->SetLineColor(kPink);
-  h->SetFillColor(kOrange+7);
-  h->SetFillStyle(3004);
-}
-
-void sbStyle(TH1* h=0) {
-  h->SetLineColor(kGreen+4);
-  h->SetFillColor(kGreen+1);
-  h->SetFillStyle(3001);
-}
-
-Double_t histFunction2::evaluate(Double_t *x, Double_t *par) {
-     
-  Double_t xx = x[0];
-  Int_t binNum=histSig->FindBin(xx);  //
-   
-  return par[0]*(histSig->GetBinContent(binNum)*par[1]+histBck->GetBinContent(binNum)*(1-par[1]));
-}
-
-fitResult getPurity(TNtuple *dataTuple, TNtuple *mcTuple,
-		    TCut dataCandidateCut, TCut sidebandCut,
-		    TCut mcSignalCut);
-
-fitResult doFit(TH1D* hSig=0, TH1D* hBkg=0, TH1D* hData1=0,
-		Float_t varLow=0.001, Float_t varHigh=0.028);
+const Double_t SHIFTVAL = 0;//-0.00015; //shift signal distribution by this much
 
 void photonPurity()
 {
@@ -181,11 +108,10 @@ void photonPurity()
 	  mcSignalCut =  sampleIsolation && etaCut && ptCut && hfCut && mcIsolation;
 	}
 
-	TCanvas *fakeCanvas = new TCanvas("fake","fake",1,1);
 	fitResult fitr = getPurity(dataTuple, mcTuple,
 				   dataCandidateCut, sidebandCut,
-				   mcSignalCut);
-	delete fakeCanvas;
+				   mcSignalCut, SHIFTVAL,
+				   0.0, PURITY_BIN_VAL);
 
 	//cPurity[i*nHFBINS+j] = new TCanvas(Form("cpurity%d",i*nHFBINS+j),
 	// 					 "",500,500);
@@ -220,7 +146,7 @@ void photonPurity()
 	t3->Draw();
 
 	//drawText("|#eta_{#gamma}| < 1.479",0.5680963,0.9);
-	drawText("-0.0015 shift",0.57,0.82);
+	drawText(Form("%f shift",SHIFTVAL),0.57,0.82);
 	if(nPTBINS != 1)
 	  drawText(Form("%.0f < p_{T}^{#gamma} < %.0f",
 			PTBINS[i], PTBINS[i+1]),
@@ -265,75 +191,9 @@ void photonPurity()
     //cPurity[i]->SaveAs(Form("pPb_purity_etadep_wshift_ptbin%.0f.png",PTBINS[i]));
     //cPurity[i]->SaveAs(Form("pPb_purity_etadep_noshift_inclusive.png"));
   }
-  cPurity->SaveAs("pPb_purity_shift.C");
-  cPurity->SaveAs("pPb_purity_shift.png");
-  cPurity->SaveAs("pPb_purity_shift.pdf");
-}
-
-fitResult getPurity(TNtuple *dataTuple, TNtuple *mcTuple,
-		    TCut dataCandidateCut, TCut sidebandCut,
-		    TCut mcSignalCut)
-{
-  TH1D* hCand = new TH1D("cand","",nSIGMABINS,0,maxSIGMA);
-  TH1D* hBkg = (TH1D*)hCand->Clone("bkg");
-  TH1D* hSig = (TH1D*)hCand->Clone("sig");
-
-  TString shift = "+";
-  shift += SHIFTVAL;
-  Int_t dEntries = dataTuple->Project(hCand->GetName(), "sigmaIetaIeta", dataCandidateCut, "");
-  Int_t sbEntries = dataTuple->Project(hBkg->GetName(), "sigmaIetaIeta", sidebandCut, "");
-  Int_t mcEntries = mcTuple->Project(hSig->GetName(), "sigmaIetaIeta"+shift, "mcweight"*mcSignalCut, "");
-
-  cout << "# Candidates: " << dEntries << endl;
-  cout << "# Sideband: " << sbEntries << endl;
-  cout << "# MC Signal: " << mcEntries << endl;
-
-  fitResult fitr = doFit(hSig, hBkg, hCand, 0.005, 0.035);
-
-  delete hSig;
-  delete hBkg;
-  delete hCand;
-  
-  return fitr;
-}
-
-
-fitResult doFit(TH1D* hSig, TH1D* hBkg, TH1D* hData1,
-		Float_t varLow, Float_t varHigh)
-{   
-  TH1D* hDatatmp = (TH1D*)hData1->Clone(Form("%s_datatmp",hData1->GetName()));
-  Int_t nBins = hDatatmp->GetNbinsX();
-  histFunction2 *myFits = new histFunction2(hSig,hBkg);
-  TF1 *f = new TF1("f",myFits,&histFunction2::evaluate,varLow,varHigh,2);
-  f->SetParameters( hDatatmp->Integral(1,nBins+1), 0.3);
-  f->SetParLimits(1,0,1);
-  hDatatmp->Fit("f","LL M O Q","",varLow,varHigh);
-  hDatatmp->Fit("f","LL M O Q","",varLow,varHigh);
-
-  fitResult res;
-  res.nSig =0;
-  Double_t nev = f->GetParameter(0);
-  Double_t ratio = f->GetParameter(1);
-  Double_t ratioErr = f->GetParError(1);
-  res.nSig    = nev * ratio;
-  res.nSigErr = nev * ratioErr;
-  res.chisq = (Double_t)f->GetChisquare()/ f->GetNDF();
-   
-  TH1F *hSigPdf = (TH1F*)hSig->Clone(Form("%s_tmp",hSig->GetName()));
-  hSigPdf->Scale(res.nSig/hSigPdf->Integral(1,nBins+1));
-
-  TH1F *hBckPdf = (TH1F*)hBkg->Clone(Form("%s_tmp",hBkg->GetName()));
-  hBckPdf->Scale((nev-res.nSig)/hBckPdf->Integral(1,nBins+1));
-
-  Double_t ss1 = hSigPdf->Integral(1, hSigPdf->FindBin(PURITY_BIN_VAL),"width");
-  Double_t bb1 = hBckPdf->Integral(1, hBckPdf->FindBin(PURITY_BIN_VAL),"width");
-  res.purity = ss1/(ss1+bb1);
-
-  res.sigPdf = (TH1F*)hSigPdf->Clone(Form("%s_sig",hSig->GetName()));
-  res.bckPdf = (TH1F*)hBckPdf->Clone(Form("%s_bck",hBkg->GetName()));
-  res.data = (TH1D*)hData1->Clone(Form("%s_cand",hData1->GetName()));
-
-  return res;
+  //cPurity->SaveAs("pPb_purity_shift.C");
+  //cPurity->SaveAs("pPb_purity_shift.png");
+  //cPurity->SaveAs("pPb_purity_shift.pdf");
 }
 
 int main()

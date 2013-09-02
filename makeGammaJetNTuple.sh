@@ -15,14 +15,15 @@
 # root -l -b -x -q makeGammaJetNTuple.C+\(\"$PPFILE\",0,\"$PPOUTFILE\"\)
 
 
-COUNTER=0
-MCWEIGHT=(1 0.486 0.149 0.0349 0 0 0 0)
-for PTHAT in 30 50 80 120 170 220 280 370
+#COUNTER=0
+MCWEIGHT=(1 0.0890448 0.0228245 0.00493548) #for pPb
+PTHATS=(30 50 80 120 9999)
+for COUNTER in 0 1 2 3
 do
-    INFILE="/mnt/hadoop/cms/store/user/luck/PA2013_pyquen_allQCDPhoton_forest_53x_2013-18-14-1922/pA_Pyquen_allQCDPhoton${PTHAT}_hiForest2_53x_2013-18-14-1922.root"
-    OUTFILE="gammaJets_pA_pythiaHIJING_allQCDPhoton${PTHAT}_ntuple.root"
+    INFILE="/mnt/hadoop/cms/store/user/goyeonju/pA/PA2013_pyquen_allQCDPhoton${PTHATS[COUNTER]}to${PTHATS[COUNTER+1]}_forestv85.root"
+    OUTFILE="gammaJets_pA_pythiaHIJING_allQCDPhoton${PTHATS[COUNTER]}_ntuple_v2.root"
     root -l -b -x -q makeGammaJetNTuple.C+\(\"$INFILE\",2,1,\"$OUTFILE\",${MCWEIGHT[$COUNTER]},$COUNTER\)
-    ((COUNTER++))
+    #((COUNTER++))
 done
 
-hadd gammaJets_pA_merged_allQCDPhoton_ntuple.root gammaJets_pA_pythiaHIJING_allQCDPhoton*_ntuple.root
+hadd gammaJets_pA_merged_allQCDPhoton_ntuple_v2.root gammaJets_pA_pythiaHIJING_allQCDPhoton*_ntuple_v2.root
