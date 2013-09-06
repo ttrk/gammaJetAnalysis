@@ -1,4 +1,8 @@
 #include <TH1.h>
+#include "Minuit2/Minuit2Minimizer.h"
+#include "Math/Functor.h"
+#include <TNtuple.h>
+#include <TCut.h>
 
 class fitResult {
 public:
@@ -6,6 +10,7 @@ public:
   Double_t nSigErr;
   Double_t purity;
   Double_t chisq;
+  Double_t sigMeanShift;
 
   TH1F *sigPdf;
   TH1F *bckPdf;
@@ -127,17 +132,73 @@ fitResult getPurity(TNtuple *dataTuple, TNtuple *mcTuple,
   Int_t sbEntries = dataTuple->Project(hBkg->GetName(), "sigmaIetaIeta"+bkgshift, sidebandCut, "");
   Int_t mcEntries = mcTuple->Project(hSig->GetName(), "sigmaIetaIeta"+sigshift, "mcweight"*mcSignalCut, "");
 
-  cout << "# Candidates: " << dEntries << endl;
-  cout << "# Sideband: " << sbEntries << endl;
-  cout << "# MC Signal: " << mcEntries << endl;
+  //cout << "# Candidates: " << dEntries << endl;
+  //cout << "# Sideband: " << sbEntries << endl;
+  //cout << "# MC Signal: " << mcEntries << endl;
 
-  TCanvas *fakeCanvas = new TCanvas("fake","fake",1,1);
+  TCanvas *fakeCanvas = new TCanvas("fake","fake");
   fitResult fitr = doFit(hSig, hBkg, hCand, 0.005, 0.035, purityBinVal);
   delete fakeCanvas;
   
   delete hSig;
   delete hBkg;
   delete hCand;
-  
+
+  fitr.sigMeanShift = signalShift;
+
   return fitr;
+}
+
+//passing by global variables is awful but I don't have time to figure out
+//nested functors
+// I need to make sure none of these names collide with those used above
+TNtuple *dtuple_;
+TNtuple *mtuple_;
+TCut dCut_;
+TCut sCut_;
+TCut mCut_;
+Double_t bkg_shift_;
+Double_t purityBinVal_;
+
+double minimizerPurity(const double *xx)
+{
+  fitResult fitr = getPurity(dtuple_, mtuple_,
+			     dCut_, sCut_,
+			     mCut_, xx[0],
+			     bkg_shift_, purityBinVal_);
+  return fitr.chisq;
+}
+
+fitResult getBestFitPurity(TNtuple *dataTuple, TNtuple *mcTuple,
+			   TCut dataCandidateCut, TCut sidebandCut,
+			   TCut mcSignalCut,
+			   Double_t backgroundShift, Double_t purityBinVal)
+{
+  dtuple_ = dataTuple;
+  mtuple_ = mcTuple;
+  dCut_ = dataCandidateCut;
+  sCut_ = sidebandCut;
+  mCut_ = mcSignalCut;
+  bkg_shift_ = backgroundShift;
+  purityBinVal_ = purityBinVal;
+
+  
+  ROOT::Minuit2::Minuit2Minimizer min ( ROOT::Minuit2::kMigrad );
+  min.SetMaxFunctionCalls(1000000);
+  min.SetMaxIterations(100000);
+  min.SetTolerance(0.00001); 
+  ROOT::Math::Functor f(&minimizerPurity,1); 
+  double step = 0.00001;
+  double variable = 0; 
+  min.SetFunction(f); 
+  // Set the free variables to be minimized!
+  min.SetLimitedVariable(0,"sigShift",variable, step,-0.0005,0.0005); 
+  min.Minimize(); 
+
+  Double_t bestSigShift = min.X()[0];
+
+  return getPurity(dataTuple, mcTuple,
+		   dataCandidateCut, sidebandCut,
+		   mcSignalCut, bestSigShift,
+		   backgroundShift, purityBinVal);
 }

@@ -28,9 +28,9 @@ using namespace std;
 //last forward run is 211256
 
 //pp
-const TString DATA_FILE = "gammaJets_inclusive_dphi7pi8_pp2013Data_v2.root";
-const TString MC_FILE = "gammaJets_pp_pythia_allQCDPhoton30_ntuple.root";
-const TString LABEL = "pp #sqrt{s}_{_{NN}}=2.76 TeV";
+//const TString DATA_FILE = "gammaJets_inclusive_dphi7pi8_pp2013Data_v2.root";
+//const TString MC_FILE = "gammaJets_pp_pythia_allQCDPhoton30_ntuple.root";
+//const TString LABEL = "pp #sqrt{s}_{_{NN}}=2.76 TeV";
 
 //PbPb
 //const TString DATA_FILE = "gammaJets_inclusive_dphi7pi8_PbPb2011_Data.root";
@@ -38,9 +38,11 @@ const TString LABEL = "pp #sqrt{s}_{_{NN}}=2.76 TeV";
 //const TString LABEL = "PbPb #sqrt{s}_{_{NN}}=2.76 TeV";
 
 //pPb
-//const TString DATA_FILE = "gammaJets_inclusive_dphi7pi8_pPbData_v2.root";
-//const TString MC_FILE = "gammaJets_pA_merged_allQCDPhoton_ntuple_v2.root";
-//const TString LABEL = "pPb #sqrt{s}_{_{NN}}=5.02 TeV";
+const TString DATA_FILE = "gammaJets_inclusive_dphi7pi8_pPbData_v2.root";
+const TString MC_FILE = "gammaJets_pA_merged_allQCDPhoton_ntuple_v2.root";
+const TString LABEL = "pPb #sqrt{s}_{_{NN}}=5.02 TeV";
+const Double_t sigShifts[] = {-0.0000989, -0.000131273, -0.00016207, -0.000170555};
+//const Double_t sigShifts[] = {-0.00015,-0.00015,-0.00015,-0.00015};
 
 // last entry is upper bound on last bin
 const Double_t HFBINS[] = {0,1000};//20,30,1000};
@@ -59,7 +61,7 @@ const Int_t nETABINS = sizeof(ETABINS)/sizeof(Double_t) -1;
 const Double_t PURITY_BIN_VAL = 0.00999;
 //const Double_t PURITY_BIN_VAL = 0.02699;
 
-const Double_t SHIFTVAL = 0;//-0.00015; //shift signal distribution by this much
+//const Double_t SHIFTVAL = 0;//-0.00015; //shift signal distribution by this much
 
 void photonPurity()
 {
@@ -108,10 +110,16 @@ void photonPurity()
 	  mcSignalCut =  sampleIsolation && etaCut && ptCut && hfCut && mcIsolation;
 	}
 
+	// fitResult fitr = getBestFitPurity(dataTuple, mcTuple,
+	// 				  dataCandidateCut, sidebandCut,
+	// 				  mcSignalCut,
+	// 				  0.0, PURITY_BIN_VAL);
 	fitResult fitr = getPurity(dataTuple, mcTuple,
 				   dataCandidateCut, sidebandCut,
-				   mcSignalCut, SHIFTVAL,
+				   mcSignalCut, sigShifts[i],
 				   0.0, PURITY_BIN_VAL);
+
+	//std::cout << "Best signal shift: " << fitr.sigMeanShift << std::endl;
 
 	//cPurity[i*nHFBINS+j] = new TCanvas(Form("cpurity%d",i*nHFBINS+j),
 	// 					 "",500,500);
@@ -146,7 +154,7 @@ void photonPurity()
 	t3->Draw();
 
 	//drawText("|#eta_{#gamma}| < 1.479",0.5680963,0.9);
-	drawText(Form("%f shift",SHIFTVAL),0.57,0.82);
+	drawText(Form("%f shift",fitr.sigMeanShift),0.57,0.82);
 	if(nPTBINS != 1)
 	  drawText(Form("%.0f < p_{T}^{#gamma} < %.0f",
 			PTBINS[i], PTBINS[i+1]),
@@ -192,7 +200,7 @@ void photonPurity()
     //cPurity[i]->SaveAs(Form("pPb_purity_etadep_noshift_inclusive.png"));
   }
   //cPurity->SaveAs("pPb_purity_shift.C");
-  //cPurity->SaveAs("pPb_purity_shift.png");
+  cPurity->SaveAs("pPb_purity_shift_min.png");
   //cPurity->SaveAs("pPb_purity_shift.pdf");
 }
 
