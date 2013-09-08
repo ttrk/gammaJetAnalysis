@@ -4,26 +4,26 @@
 
 
 #pp data 
-#root -l -b -q 'gammaJetHistProducer.C+(2, 40, 50, 30, 4)'
-#root -l -b -q 'gammaJetHistProducer.C+(2, 50, 60, 30, 4)'
-#root -l -b -q 'gammaJetHistProducer.C+(2, 60, 80, 30, 4)'
-#root -l -b -q 'gammaJetHistProducer.C+(2, 80,9999, 30, 4)'
-#root -l -b -q 'gammaJetHistProducer.C+(2, 40,9999, 30, 4)'
+root -l -b -q 'gammaJetHistProducer.C+(2, 40, 50, 30, 4)'
+root -l -b -q 'gammaJetHistProducer.C+(2, 50, 60, 30, 4)'
+root -l -b -q 'gammaJetHistProducer.C+(2, 60, 80, 30, 4)'
+root -l -b -q 'gammaJetHistProducer.C+(2, 80,9999, 30, 4)'
+root -l -b -q 'gammaJetHistProducer.C+(2, 40,9999, 30, 4)'
 
 
 #PbPb data
-#for icent in 10030 13099 
-#do
-#    root -l -b -q 'gammaJetHistProducer.C+(0, 40,50, 30, '$icent')'
-#    root -l -b -q 'gammaJetHistProducer.C+(0, 50,60, 30,'$icent')'
-#    root -l -b -q 'gammaJetHistProducer.C+(0, 60,80, 30, '$icent')'
-#    root -l -b -q 'gammaJetHistProducer.C+(0, 80,9999, 30, '$icent')'
-#    root -l -b -q 'gammaJetHistProducer.C+(0, 40,9999, 30, '$icent')'
-#done
+for icent in 10030 13099 
+do
+    root -l -b -q 'gammaJetHistProducer.C+(0, 40,50, 30, '$icent')'
+    root -l -b -q 'gammaJetHistProducer.C+(0, 50,60, 30,'$icent')'
+    root -l -b -q 'gammaJetHistProducer.C+(0, 60,80, 30, '$icent')'
+    root -l -b -q 'gammaJetHistProducer.C+(0, 80,9999, 30, '$icent')'
+    root -l -b -q 'gammaJetHistProducer.C+(0, 40,9999, 30, '$icent')'
+done
 
 
 #pPb data and MC
-for i in 4 5
+for i in 5  #4 
 do
     for icent in 1 #2 3 
    do
