@@ -28,7 +28,6 @@
 #include "../CutAndBinCollection2012.h"
 #include "corrFunctionJetTrk.h"
 
-
 GjSpectra* nullGj;
 
 void gammaTrkSingle(     GjSpectra* gjSpec_=nullGj,
@@ -107,27 +106,35 @@ void gammaJetHistProducer(sampleType collision = kPADATA, float photonPtThr=60, 
   
   
   TString fname;
-  if ( collision == kHIMC)              fname = fnameHIMC_AllQcdPho30; 
-  else if ( collision == kHIDATA)       fname = fnameDATAPbPbAk3;
-  else if ( collision == kPPMC)         fname = fnameMCppAk3;
-  else if ( collision == kPPDATA)         fname = fnameDATAppAk3;
-  else if ( collision == kPADATA)         fname = fnameDATApPbAk3;
-  else if ( collision == kPAMC)      {
-    if       (photonPtThr <45 )
-      fname = fnamePAMC_AllQcdPho30;
-    else if  (photonPtThr <55 )
-      fname = fnamePAMC_AllQcdPho30;
-    else if  (photonPtThr <65 ) 
-      fname = fnamePAMC_AllQcdPho50;
-    else
-      fname = fnamePAMC_AllQcdPho50;
- 
-  }   
+  if ( collision == kHIDATA) fname = fnameHIDATA;
+  else if ( collision == kPADATA) fname = fnamePADATA;
+  else if ( collision == kPPDATA) fname = fnamePPDATA;
+  else fname = "";
+
   multiTreeUtil* tgj = new multiTreeUtil();
   multiTreeUtil* tgjMC = new multiTreeUtil();
-  tgj->addFile(fname,  "tgj",  evtSeltCut,  1);
+  if (  ( collision == kHIDATA)   || ( collision==kPADATA) || ( collision == kPPDATA) ) {
+    tgj->addFile(fname,  "tgj",  evtSeltCut,  1);
+  }
+  else if ( collision == kPPMC ) {
+    tgj->addFile(fnamePPMC_AllQcdPho30to50,    "tgj", evtSeltCut, wPPMC_AllQcdPho30to50 );
+    tgj->addFile(fnamePPMC_AllQcdPho50to80,    "tgj", evtSeltCut, wPPMC_AllQcdPho50to80 );
+    tgj->addFile(fnamePPMC_AllQcdPho80to120,   "tgj", evtSeltCut, wPPMC_AllQcdPho80to120 );
+    tgj->addFile(fnamePPMC_AllQcdPho120to9999, "tgj", evtSeltCut, wPPMC_AllQcdPho120to9999 );
+  }
+  else if ( collision == kPAMC ) {
+    tgj->addFile(fnamePAMC_AllQcdPho30to50,    "tgj", evtSeltCut, wPAMC_AllQcdPho30to50 );
+    tgj->addFile(fnamePAMC_AllQcdPho50to80,    "tgj", evtSeltCut, wPAMC_AllQcdPho50to80 );
+    tgj->addFile(fnamePAMC_AllQcdPho80to120,   "tgj", evtSeltCut, wPAMC_AllQcdPho80to120 );
+    tgj->addFile(fnamePAMC_AllQcdPho120to9999, "tgj", evtSeltCut, wPAMC_AllQcdPho120to9999 );
+  }
+  else  {    // kHIMC
+    tgj->addFile(fnameHIMC_AllQcdPho30to50,    "tgj", evtSeltCut, wHIMC_AllQcdPho30to50 );
+    tgj->addFile(fnameHIMC_AllQcdPho50to80,    "tgj", evtSeltCut, wHIMC_AllQcdPho50to80 );
+    tgj->addFile(fnameHIMC_AllQcdPho80to9999,  "tgj", evtSeltCut, wHIMC_AllQcdPho80to9999 );
+  }
   tgj->AddFriend("yJet");
-
+ 
   // get purity with the current jet cut ! 
   float purity(0);
   
@@ -159,9 +166,44 @@ void gammaJetHistProducer(sampleType collision = kPADATA, float photonPtThr=60, 
   tObj[kTrkRaw] = new multiTreeUtil();
   tObj[kTrkBkg] = new multiTreeUtil();
   
-  tObj[kTrkRaw]->addFile(fname,  "yJet",  evtSeltCut,  1);
-  tObj[kTrkBkg]->addFile(fname,  "mJet",  evtSeltCut,  1);
-  
+  if (  ( collision == kHIDATA)   || ( collision==kPADATA) || ( collision == kPPDATA) ) {
+    tObj[kTrkRaw]->addFile(fname,  "yJet",  evtSeltCut,  1);
+    tObj[kTrkBkg]->addFile(fname,  "mJet",  evtSeltCut,  1);
+  }
+  else if ( collision == kHIMC ) {
+    tObj[kTrkRaw]->addFile(fnameHIMC_AllQcdPho30to50,   "yJet", evtSeltCut, wHIMC_AllQcdPho30to50 ) ;
+    tObj[kTrkRaw]->addFile(fnameHIMC_AllQcdPho50to80,   "yJet", evtSeltCut, wHIMC_AllQcdPho50to80 ) ;
+    tObj[kTrkRaw]->addFile(fnameHIMC_AllQcdPho80to9999, "yJet", evtSeltCut, wHIMC_AllQcdPho80to9999 ) ;
+ 
+    tObj[kTrkBkg]->addFile(fnameHIMC_AllQcdPho30to50,   "mJet", evtSeltCut, wHIMC_AllQcdPho30to50 ) ;
+    tObj[kTrkBkg]->addFile(fnameHIMC_AllQcdPho50to80,   "mJet", evtSeltCut, wHIMC_AllQcdPho50to80 ) ;
+    tObj[kTrkBkg]->addFile(fnameHIMC_AllQcdPho80to9999, "mJet", evtSeltCut, wHIMC_AllQcdPho80to9999 ) ;
+  } 
+  else if ( collision == kPAMC ) {
+    tObj[kTrkRaw]->addFile(fnamePAMC_AllQcdPho30to50,   "yJet", evtSeltCut, wPAMC_AllQcdPho30to50 ) ;
+    tObj[kTrkRaw]->addFile(fnamePAMC_AllQcdPho50to80,   "yJet", evtSeltCut, wPAMC_AllQcdPho50to80 ) ;
+    tObj[kTrkRaw]->addFile(fnamePAMC_AllQcdPho80to120,  "yJet", evtSeltCut, wPAMC_AllQcdPho80to120 ) ;
+    tObj[kTrkRaw]->addFile(fnamePAMC_AllQcdPho120to9999,"yJet", evtSeltCut, wPAMC_AllQcdPho120to9999 ) ;
+    
+    tObj[kTrkBkg]->addFile(fnamePAMC_AllQcdPho30to50,   "mJet", evtSeltCut, wPAMC_AllQcdPho30to50 ) ;
+    tObj[kTrkBkg]->addFile(fnamePAMC_AllQcdPho50to80,   "mJet", evtSeltCut, wPAMC_AllQcdPho50to80 ) ;
+    tObj[kTrkBkg]->addFile(fnamePAMC_AllQcdPho80to120,  "mJet", evtSeltCut, wPAMC_AllQcdPho80to120 ) ;
+    tObj[kTrkBkg]->addFile(fnamePAMC_AllQcdPho120to9999,"mJet", evtSeltCut, wPAMC_AllQcdPho120to9999 ) ;
+  }
+  else if ( collision == kPPMC ) {
+    tObj[kTrkRaw]->addFile(fnamePPMC_AllQcdPho30to50,   "yJet", evtSeltCut, wPPMC_AllQcdPho30to50 );
+    tObj[kTrkRaw]->addFile(fnamePPMC_AllQcdPho50to80,   "yJet", evtSeltCut, wPPMC_AllQcdPho50to80 );
+    tObj[kTrkRaw]->addFile(fnamePPMC_AllQcdPho80to120,  "yJet", evtSeltCut, wPPMC_AllQcdPho80to120 );
+    tObj[kTrkRaw]->addFile(fnamePPMC_AllQcdPho120to9999,"yJet", evtSeltCut, wPPMC_AllQcdPho120to9999 );
+
+    tObj[kTrkBkg]->addFile(fnamePPMC_AllQcdPho30to50,   "mJet", evtSeltCut, wPPMC_AllQcdPho30to50 );
+    tObj[kTrkBkg]->addFile(fnamePPMC_AllQcdPho50to80,   "mJet", evtSeltCut, wPPMC_AllQcdPho50to80 );
+    tObj[kTrkBkg]->addFile(fnamePPMC_AllQcdPho80to120,  "mJet", evtSeltCut, wPPMC_AllQcdPho80to120 );
+    tObj[kTrkBkg]->addFile(fnamePPMC_AllQcdPho120to9999,"mJet", evtSeltCut, wPPMC_AllQcdPho120to9999 );
+  }
+
+
+
   tObj[kTrkRaw]->AddFriend("tgj");
   tObj[kTrkBkg]->AddFriend("tgj");
   TCut jetCut     =  Form("abs(eta)<%f && pt>%f", (float)cutjetEta, (float)jetPtThr );
@@ -203,12 +245,12 @@ void gammaJetHistProducer(sampleType collision = kPADATA, float photonPtThr=60, 
 		  phoCandCut, phoDecayCut,  hGenJetPt, outName);
   
   
-  TH1D* hDjetPt = new TH1D(Form("dpt_icent%d",icent),";p_{T}^{#gamma} - p_{T}^{Jet} (GeV) ;dN/dp_{T} (GeV^{-1})",30,-150,150);
-  corrFunctionTrk* cDjetPt = new corrFunctionTrk();
-  TString varJetDpt         = Form("pt - photonEt");
-  gammaTrkSingle( gSpec,  tObj, cDjetPt,  purity, 
-		  collision, varJetDpt, jetCutDphi, jetWeight,
-		  phoCandCut, phoDecayCut,  hDjetPt, outName);
+  //  TH1D* hDjetPt = new TH1D(Form("dpt_icent%d",icent),";p_{T}^{#gamma} - p_{T}^{Jet} (GeV) ;dN/dp_{T} (GeV^{-1})",30,-150,150);
+  //  corrFunctionTrk* cDjetPt = new corrFunctionTrk();
+  //  TString varJetDpt         = Form("pt - photonEt");
+  // gammaTrkSingle( gSpec,  tObj, cDjetPt,  purity, 
+  //		  collision, varJetDpt, jetCutDphi, jetWeight,
+  //		  phoCandCut, phoDecayCut,  hDjetPt, outName);
   
   
   TH1D* hJetXjg = new TH1D(Form("xjg_icent%d",icent),";p_{T}^{Jet}/p_{T}^{#gamma}  ; ",24,0,3);
@@ -355,24 +397,23 @@ fitResult getPurity(TString fname, sampleType collision, TCut evtSeltCut, TCut s
   tgj->addFile(fname,  "tgj",  "",  1);
   cout <<" 2 " << endl;
   tgj->AddFriend("yJet");
-  if   (collision==kPPDATA)
-    tgjMC->addFile(fnameMCppAk3, "tgj", "", 1);
-  else if (collision==kHIDATA)  {
-    if       (photonPtThr <65 )
-      tgjMC->addFile(fnameHIMC_AllQcdPho30, "tgj", "", 1);
-    else if  (photonPtThr <85 )
-      tgjMC->addFile(fnameHIMC_AllQcdPho50, "tgj", "", 1);
-    else 
-      tgjMC->addFile(fnameHIMC_AllQcdPho80, "tgj", "", 1);
+  if   (collision==kPPDATA) { 
+    tgjMC->addFile(fnamePPMC_AllQcdPho30to50,    "tgj", "", wPPMC_AllQcdPho30to50 ); 
+    tgjMC->addFile(fnamePPMC_AllQcdPho50to80,    "tgj", "", wPPMC_AllQcdPho50to80 ); 
+    tgjMC->addFile(fnamePPMC_AllQcdPho80to120,   "tgj", "", wPPMC_AllQcdPho80to120); 
+    tgjMC->addFile(fnamePPMC_AllQcdPho120to9999, "tgj", "", wPPMC_AllQcdPho120to9999); 
   }
   else if (collision==kPADATA)     {
-    if       (photonPtThr <65 )
-      tgjMC->addFile(fnamePAMC_AllQcdPho30, "tgj", "", 1);
-    else if  (photonPtThr <85 )
-      tgjMC->addFile(fnamePAMC_AllQcdPho50, "tgj", "", 1);
-    else
-      tgjMC->addFile(fnamePAMC_AllQcdPho50, "tgj", "", 1);
+    tgjMC->addFile(fnamePAMC_AllQcdPho30to50,     "tgj","", wPAMC_AllQcdPho30to50);
+    tgjMC->addFile(fnamePAMC_AllQcdPho50to80,     "tgj","", wPAMC_AllQcdPho50to80);
+    tgjMC->addFile(fnamePAMC_AllQcdPho80to120,    "tgj","", wPAMC_AllQcdPho80to120);
+    tgjMC->addFile(fnamePAMC_AllQcdPho120to9999,  "tgj","", wPAMC_AllQcdPho120to9999);
   }
+  else if (collision==kHIDATA)  {
+    tgjMC->addFile(fnameHIMC_AllQcdPho30to50,     "tgj", "",wHIMC_AllQcdPho30to50);
+    tgjMC->addFile(fnameHIMC_AllQcdPho50to80,     "tgj", "",wHIMC_AllQcdPho50to80);
+    tgjMC->addFile(fnameHIMC_AllQcdPho80to9999,   "tgj", "",wHIMC_AllQcdPho80to9999);
+  }   
   else { 
     cout << " Error: getPurity.  check the type of the collision!  " << endl;
     fitResult fitr0;
@@ -395,8 +436,8 @@ fitResult getPurity(TString fname, sampleType collision, TCut evtSeltCut, TCut s
   fitResult  fitr = doFit ( hSig, hBkg, hCand, 0.005, 0.025);
   drawText(Form("Purity : %.2f", (float)fitr.purity010), 0.5680963,0.429118);
   drawText(Form("p_{T}^{#gamma}: %d-%d GeV", (int)photonPtThr, (int)photonPtThrUp), 0.568,0.529118);
-  cleverCanvasSaving(cPurity,canvasName);
-  
+  cPurity->SaveAs( Form("%s.gif",canvasName.Data() ) );
+
   TCanvas* c1 = new TCanvas("c1","",100,100);
   
   
