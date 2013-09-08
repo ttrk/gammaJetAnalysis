@@ -14,8 +14,8 @@
 #include <iomanip>
 #include <string>
 #include <TMath.h>
-#include "../hiForestV3/hiForest.h"
-#include "CutAndBinCollection2012.h"
+#include "../../hiForestV3/hiForest.h"
+#include "../CutAndBinCollection2012.h"
 #include <time.h>
 
 
@@ -28,8 +28,8 @@ static const long MAXTREESIZE = 10000000000;
 
 
 void highPtPhotonSkimmerV3(TString inputFile_="/home/jazzitup/forestFiles/pA/pA_photonSkimForest_v85.root",
-			   TString outname = "testPhotonSkim.root",
-			   float photonPtCut=50
+			   TString outname = "pA_photonSkimForest_v85_hlt.HLT_PAPhoton20_NoCaloIdVL_v1_highPtPhoton20.root",
+			   float photonPtCut=20
 			   )
 { 
   // start from here
@@ -46,14 +46,19 @@ void highPtPhotonSkimmerV3(TString inputFile_="/home/jazzitup/forestFiles/pA/pA_
  
   t->SetOutputFile(outname.Data());
   // LOOP!!
+  t->InitTree();
+
   int nentries = t->GetEntries();
-  //  nentries = 5000;
+  //   nentries = 20000;
   cout << "number of entries = " << nentries << endl;
   for (Long64_t jentry = 0 ; jentry < nentries; jentry++) {
-    if (jentry% 1000 == 0)  {
+    if (jentry% 10000 == 0)  {
       cout <<jentry<<" / "<<nentries<<" "<<setprecision(2)<<(double)jentry/nentries*100<<endl;
     }
     t->GetEntry(jentry);
+    
+    if ( !(t->hlt.HLT_PAPhoton20_NoCaloIdVL_v1) ) 
+      continue;
     
     bool isHighPtPhoton = false;
     for (int jpho=0;jpho< t->photon.nPhotons;jpho++) {
