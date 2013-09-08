@@ -64,6 +64,7 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
   }
   else if  ((colli==kHIDATA)||(colli==kHIMC)) {
     c = new HiForest(inputFile_.Data(), "forest", cPbPb, isMC );
+    c->GetEnergyScaleTable("photonEnergyScaleTable_lowPt_v6.root");
   }
   else {
     cout << " Error!  No such collision type" << endl;
@@ -251,7 +252,7 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
     nCentBins = nCentBinSkimPA;
   } 
 
-  TChain         *tjmb[100][nVtxBin+1];
+  TChain   *tjmb[100][nVtxBin+1];
   int nMB[100][nVtxBin+1] ; //= 199109;                                                                                          
   int mbItr[100][nVtxBin+1];
   if ( doMix ) {
@@ -318,10 +319,10 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
   cout << "number of entries = " << nentries << endl;
   for (Long64_t jentry = 0 ; jentry < nentries; jentry++) {
     eTot++;
-    if (jentry% 1000 == 0)  {
+    if (jentry% 2000 == 0)  {
       cout <<jentry<<" / "<<nentries<<" "<<setprecision(2)<<(double)jentry/nentries*100<<endl;
     }
-    c->GetEntry(jentry);                
+    c->GetEntry(jentry);
     evt.clear();
     evt.run   = c->evt.run;
     evt.evt = c->evt.evt;
@@ -346,11 +347,11 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
     evt.noiseFilt = (c->skim.pHBHENoiseFilter > 0);
     evt.anaEvtSel = c->selectEvent() && evt.trig;
     evt.vz = c->evt.vz;
-   
+    
     
     if ( ( (colli==kHIDATA)||(colli==kHIMC)||(colli==kPADATA)||(colli==kPAMC) ) && ( c->selectEvent() == 0 ))
       continue;
-
+    
     eSel++;      // OK.  This event is a collisional and no-noise event.  
 
     int cBin = evt.cBin;
@@ -363,19 +364,20 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
 
     for (int j=0;j< c->photon.nPhotons;j++) {
 	
-      if (  ( c->photon.pt[j] > preCutPhotonEt ) && ( fabs( c->photon.eta[j] ) < cutphotonEta ) )
-	newPt[j] = c->getCorrEt(j);
-      else 
-	newPt[j] = c->photon.pt[j] - 10000;
-
-      if ( (c->isSpike(j)) || (c->photon.hadronicOverEm[j]>0.2) ||  (c->photon.isEle[j]) )
-	newPt[j] = newPt[j] - 20000;
-      if (c->photon.seedTime[j] ==0 )   // clustering bug
-	newPt[j] = newPt[j] - 30000;
-
-      corrPt[j] = newPt[j];
-      
+    if (  ( c->photon.pt[j] > preCutPhotonEt ) && ( fabs( c->photon.eta[j] ) < cutphotonEta ) ) { 
+      newPt[j] = c->getCorrEt(j);
     }
+    else 
+      newPt[j] = c->photon.pt[j] - 10000;
+    
+    if ( (c->isSpike(j)) || (c->photon.hadronicOverEm[j]>0.2) ||  (c->photon.isEle[j]) )
+      newPt[j] = newPt[j] - 20000;
+    if (c->photon.seedTime[j] ==0 )   // clustering bug
+      newPt[j] = newPt[j] - 30000;
+    
+    corrPt[j] = newPt[j];
+    }
+    
     TMath::Sort(c->photon.nPhotons, newPt, order);
     
      
@@ -398,6 +400,7 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
     if ( (gj.photonEt < cutphotonPt) ) 
       continue;
     
+    
     /// Save leading photons 
     if (leadingIndex!=-1) {
       gj.photonRawEt=c->photon.pt[leadingIndex];
@@ -417,7 +420,7 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
     }
     
     
-    
+
     ///////////////////// Jet tree ///////////////////////////////////
     nJet = 0 ;
     for (int ij=0; ij< theJet->nref ; ij++) {
@@ -457,6 +460,7 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
 
       nJet++ ; 
     }
+
     //////// Leading jet kinematics
     /*    float maxJpt = 0;
     int jetLeadingIndex = -1;
@@ -565,7 +569,7 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
       /// Load the minbias tracks!!
       tjmb[cBin][vzBin]->GetEntry(mbItr[cBin][vzBin]);
       
-      // Event plane is out of control for both pA and PbPb
+      // Event plane is out of control for both pA and PbPb Sept 2013
       //    if  ( evt.pBin != evtImb.pBin ) 
       //   continue;
       
