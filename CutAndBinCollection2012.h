@@ -30,6 +30,42 @@ double a1, a2, a3, a4, a5, a6;
 #define PI 3.141592653589
 
 
+///////////// pp Data
+TString fnamePPDATA                  = "yskimmedFiles/skim_ak3PF_ppData2013_promptSkim_photon40GeV.root";
+// pp MC
+TString fnamePPMC_AllQcdPho30to50    = "yskimmedFiles/yskim_merged_allQCDPhoton30to50_genPhotonPtCut30_CMSSW538HIp2.root";
+TString fnamePPMC_AllQcdPho50to80    = "yskimmedFiles/yskim_merged_allQCDPhoton50to80_genPhotonPtCut30_CMSSW538HIp2.root";
+TString fnamePPMC_AllQcdPho80to120   = "yskimmedFiles/yskim_merged_allQCDPhoton80to120_genPhotonPtCut30_CMSSW538HIp2.root";
+TString fnamePPMC_AllQcdPho120to9999 = "yskimmedFiles/yskim_merged_allQCDPhoton120to9999_genPhotonPtCut30_CMSSW538HIp2.root";
+double  wPPMC_AllQcdPho30to50        = 29329./ 29329.;
+double  wPPMC_AllQcdPho50to80        = 8098. / 87988.;
+double  wPPMC_AllQcdPho80to120       = 1680. / 96756.;
+double  wPPMC_AllQcdPho120to9999     = 438.  / 90972.;
+
+
+///////////// pA Data
+TString fnamePADATA                  = "yskimmedFiles/yskim_pA_photonSkimForest_v85_HLT_PAPhoton30_NoCaloIdVL_v1_highPtPhoton40.root";
+//            pA MC 
+TString fnamePAMC_AllQcdPho30to50    = "yskimmedFiles/yskim_PA2013_pyquen_allQCDPhoton30to50_forestv85.root";
+TString fnamePAMC_AllQcdPho50to80    = "yskimmedFiles/yskim_PA2013_pyquen_allQCDPhoton50to80_forestv85.root";
+TString fnamePAMC_AllQcdPho80to120   = "yskimmedFiles/yskim_PA2013_pyquen_allQCDPhoton80to120_forestv85.root";
+TString fnamePAMC_AllQcdPho120to9999 = "yskimmedFiles/yskim_PA2013_pyquen_allQCDPhoton120to9999_forestv85.root";
+double  wPAMC_AllQcdPho30to50        = 56669./ 50385.;
+double  wPAMC_AllQcdPho50to80        = 41906./ 114136.;
+double  wPAMC_AllQcdPho80to120       = 12044./ 103562.;
+double  wPAMC_AllQcdPho120to9999     = 4481. / 151511.;
+
+
+
+///////////// PbPb Data
+TString fnameHIDATA                  = "yskimmedFiles/yskim_HiForestPhoton-v7-noDuplicate.root";
+// PbPb MC
+TString fnameHIMC_AllQcdPho30to50    =  "yskimmedFiles/yskim_qcdAllPhoton30to50_genPhotonPtCut40_allCent.root";
+TString fnameHIMC_AllQcdPho50to80    =  "yskimmedFiles/yskim_qcdAllPhoton50to80_genPhotonPtCut40_allCent.root";
+TString fnameHIMC_AllQcdPho80to9999  =  "yskimmedFiles/yskim_qcdAllPhoton80to9999_genPhotonPtCut40_allCent.root";
+double  wHIMC_AllQcdPho30to50        = 32796./ 32796.;
+double  wHIMC_AllQcdPho50to80        = 21470./ 53876.;
+double  wHIMC_AllQcdPho80to9999       = 6462. / 58781.;
 
 const float awayRange= PI * 7./8.;
 
@@ -287,32 +323,6 @@ TCut genMatchCutBkg      = "(isGenMatched && abs(genMatchedEta)<1.44 && abs(etCo
 
 TCut genPhotonCut     = Form("( abs(gpEta) < 1.44 && abs(gpId)==22 && abs(gpMomId) <= 22 && gpCollId ==0  && gpIsoDR04 < %.3f)",isolationCut);
 
-TString fnamePAMC_AllQcdPho30  =   "forestFiles/yskimmedFiles/yskim_pA_Pyquen_allQCDPhoton30_hiForest2_53x_2013-18-14-1922.root";
-TString fnamePAMC_AllQcdPho50  =   "forestFiles/yskimmedFiles/yskim_pA_Pyquen_allQCDPhoton50_hiForest2_53x_2013-18-14-1922.root";
-TString fnamePAMC_AllQcdPho80  =   "forestFiles/yskimmedFiles/yskim_pA_Pyquen_allQCDPhoton80_hiForest2_53x_2013-18-14-1922.root";
-TString fnamePAMC_AllQcdPho120  =   "forestFiles/yskimmedFiles/yskim_pA_Pyquen_allQCDPhoton120_hiForest2_53x_2013-18-14-1922.root";
-
-TString fnameHIMC_AllQcdPho30  =   "forestFiles/yskimmedFiles/skim_qcdAllPhoton30_allCent.root";
-TString fnameHIMC_AllQcdPho50  =   "forestFiles/yskimmedFiles/skim_qcdAllPhoton50_allCent.root";
-TString fnameHIMC_AllQcdPho80  =   "forestFiles/yskimmedFiles/skim_qcdAllPhoton80_allCent.root";
-
-TString fnameDATApPbAk3      = "forestFiles/yskimmedFiles/yskim_pA_photonSkimForest_v85.root";
-
-TString fnameDATAPbPbAk3     =   "forestFiles/yskimmedFiles/skim_akPu3PF_PbPbData_photon40GeVSkim-OCT-29.root";
-//TString fnameDATAppAk3       =   "forestFiles/yskimmedFiles/skim_akPu3PF_ppData2013_promptSkim_photon40GeV.root";
-TString fnameMCppAk3         =   "forestFiles/yskimmedFiles/skim_ak3PF_ppMc2013_merged_gammaJet_pp_pt40_2p76_pythia_forest.root";
-TString fnameDATAppAk3       =   "forestFiles/yskimmedFiles/skim_ak3PF_ppData2013_promptSkim_photon40GeV.root";
-
-//TString fnameDATAppAk3_qnch10       =   "forestFiles/yskimmedFiles/skim_ak3PF_ppData2013_promptSkim_photon40GeV_quenching1.0.root";
-//TString fnameDATAppAk3_qnch08       =   "forestFiles/yskimmedFiles/skim_ak3PF_ppData2013_promptSkim_photon40GeV_quenching0.8.root";
-//TString fnameDATAppAk3_qnch06       =   "forestFiles/yskimmedFiles/skim_ak3PF_ppData2013_promptSkim_photon40GeV_quenching0.6.root";
-//TString fnameDATAppAk3_qnch04       =   "forestFiles/yskimmedFiles/skim_ak3PF_ppData2013_promptSkim_photon40GeV_quenching0.4.root";
-//TString fnameDATAppAk3_qnch02       =   "forestFiles/yskimmedFiles/skim_ak3PF_ppData2013_promptSkim_photon40GeV_quenching0.2.root";
-//TString fnameDATAppAk3_qnch10       =   "forestFiles/yskimmedFiles/skim_ak3PF_ppData2013_promptSkim_photon40GeV_quenching1.0_fixedLpath.root";
-//TString fnameDATAppAk3_qnch08       =   "forestFiles/yskimmedFiles/skim_ak3PF_ppData2013_promptSkim_photon40GeV_quenching0.8_fixedLpath.root";
-//TString fnameDATAppAk3_qnch06       =   "forestFiles/yskimmedFiles/skim_ak3PF_ppData2013_promptSkim_photon40GeV_quenching0.6_fixedLpath.root";
-//TString fnameDATAppAk3_qnch04       =   "forestFiles/yskimmedFiles/skim_ak3PF_ppData2013_promptSkim_photon40GeV_quenching0.4_fixedLpath.root";
-//TString fnameDATAppAk3_qnch02       =   "forestFiles/yskimmedFiles/skim_ak3PF_ppData2013_promptSkim_photon40GeV_quenching0.2_fixedLpath.root";
 
 
 TString swissCrx      = "(1 - (eRight+eLeft+eTop+eBottom)/eMax)";
@@ -439,28 +449,13 @@ double getNoEmc (TString theFname="", TCut theCut="") {
 
 
 
-void setupMTU(multiTreeUtil* photon1=0 , sampleType collision = kHIDATA){
-
-  if ( collision == kHIDATA) {
-    photon1->addFile("yskim_HiForest-promptskim-hihighpt-photon35-v0_part1-Aug29th_Sept-v9-8VtxBin-24PlnBin-40CentBin_onlyJetMatchTrks0.root"
-		     ,"tgj","",1);
-  }
-  else if ( collision == kPPDATA) {
-    photon1->addFile("yskim_forest2_pp_photon40GeV-Aug29th_Sept-v9-8VtxBin-24PlnBin-40CentBin_onlyJetMatchTrks0.root"
-		     ,"tgj","",1);
-  }
-  else if ( collision == kHIMC) {
-    photon1->addFile("yskim_forest_loPhoton50-HYDJET-START44-V12-Aug29th_Sept-v9-8VtxBin-24PlnBin-40CentBin_onlyJetMatchTrks0.root"
-		     ,"tgj", "yPhoton.ptHat>50" ,1);
-    //    photon1->addFile("skimmed/yskim_qcdAllPhoton30_allCent_nMix10_v7_mrgTrkCollection.root",
-    //  "tgj", "yPhoton.ptHat>30 && yPhoton.ptHat<50" , 1.59);
-    //    photon1->addFile("skimmed/yskim_qcdAllPhoton50_allCent_nMix10_v7_mrgTrkCollection.root",
-    //		     "tgj", "yPhoton.ptHat>50" , 0.767);
-  }
+void setupMTU(multiTreeUtil* photon1=0 , sampleType collision = kHIDATA){  // obsolete subroutine
+  if ( collision == kHIDATA) 
+    photon1->addFile(fnameHIDATA, "tgj","",1);
+  else if ( collision == kPPDATA)
+    photon1->addFile(fnamePPDATA, "tgj","",1);
   
   photon1->AddFriend("yTrk=yTrack");
-  photon1->AddFriend("yPhoton=yongsunPhotonTree");
-  
   photon1->AddFriend("yJet");
   photon1->AddFriend("mJet");
   
