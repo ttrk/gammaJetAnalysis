@@ -140,12 +140,13 @@ void gammaJetHistProducer(sampleType collision = kPADATA, float photonPtThr=60, 
   
   TString canvasName = Form("gifs/purity_%s_output_icent%d_photonPtThr%d-%d_jetPtThr%d", stringSampleType.Data(),  (int)icent, (int)photonPtThr, (int)photonPtThrUp, (int)jetPtThr);
   
-  if ( (collision==kPPDATA) && (photonPtThr < 50 ) ) {
-    purity = 0.86 ;   
-    cout << " !!!!!!!" << endl << endl << " purity is set as  0.86 for this bin because we don't have pp MC low pt sample " << endl;
-    cout << endl << endl << endl << " !!!!!!" << endl;
-  }
-  else if ( (collision==kHIDATA)||(collision==kPPDATA)||(collision==kPADATA) )  {
+  //  if ( (collision==kPPDATA) && (photonPtThr < 50 ) ) {
+  //   purity = 0.86 ;   
+  //   cout << " !!!!!!!" << endl << endl << " purity is set as  0.86 for this bin because we don't have pp MC low pt sample " << endl;
+  //   cout << endl << endl << endl << " !!!!!!" << endl;
+  //  }
+
+  if ( (collision==kHIDATA)||(collision==kPPDATA)||(collision==kPADATA) )  {
     fitResult fitr = getPurity(fname, collision, evtSeltCut, sbSeltCut, canvasName, photonPtThr, photonPtThrUp);
     purity = fitr.purity010;
   }
@@ -431,13 +432,24 @@ fitResult getPurity(TString fname, sampleType collision, TCut evtSeltCut, TCut s
   handsomeTH1(hCand,1);
   handsomeTH1(hSig,2);
   handsomeTH1(hBkg,4);
+  
+  // temporary
+  /*
+  for ( int ii=1 ; ii<=hBkg->GetNbinsX() ; ii++) {
+    float xx = hBkg->GetBinCenter(ii);
+    hBkg -> SetBinContent( ii, hBkg->GetBinContent(ii) * ( 1.82 - 77.7*xx) );
+  }
+  */
+
 
   TCanvas* cPurity = new TCanvas("cpurity","",500,500);
   fitResult  fitr = doFit ( hSig, hBkg, hCand, 0.005, 0.025);
   drawText(Form("Purity : %.2f", (float)fitr.purity010), 0.5680963,0.429118);
   drawText(Form("p_{T}^{#gamma}: %d-%d GeV", (int)photonPtThr, (int)photonPtThrUp), 0.568,0.529118);
   cPurity->SaveAs( Form("%s.gif",canvasName.Data() ) );
-
+  gPad->SetLogy();
+  cPurity->SaveAs( Form("%s_logScale.gif",canvasName.Data() ) );
+  
   TCanvas* c1 = new TCanvas("c1","",100,100);
   
   
