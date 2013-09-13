@@ -147,8 +147,26 @@ void gammaJetHistProducer(sampleType collision = kPADATA, float photonPtThr=60, 
   //  }
 
   if ( (collision==kHIDATA)||(collision==kPPDATA)||(collision==kPADATA) )  {
+    
     fitResult fitr = getPurity(fname, collision, evtSeltCut, sbSeltCut, canvasName, photonPtThr, photonPtThrUp);
     purity = fitr.purity010;
+
+    /*
+      float originalP = purity;
+      if (collision==kPPDATA)  
+      purity = purity - 0.05;
+      else if (collision==kHIDATA) {
+      if ( icent == 10030)
+      purity = purity - 0.08; 
+      else if ( icent == 13099) 
+      purity = purity - 0.07; 
+      }
+      cout << "====================================================================================" << endl << endl << endl;
+      cout << "====================================================================================" << endl << endl << endl;
+      cout << "================================ Purity modified!!! ================================" << endl << endl << endl;
+      cout << "=============== "<<originalP<< " --> "<<purity<< "====================================" << endl << endl << endl;
+      cout << "====================================================================================" << endl << endl << endl;
+    */
   }
   else  {
     purity = 1;  
@@ -433,14 +451,6 @@ fitResult getPurity(TString fname, sampleType collision, TCut evtSeltCut, TCut s
   handsomeTH1(hSig,2);
   handsomeTH1(hBkg,4);
   
-  // temporary
-  /*
-  for ( int ii=1 ; ii<=hBkg->GetNbinsX() ; ii++) {
-    float xx = hBkg->GetBinCenter(ii);
-    hBkg -> SetBinContent( ii, hBkg->GetBinContent(ii) * ( 1.82 - 77.7*xx) );
-  }
-  */
-
 
   TCanvas* cPurity = new TCanvas("cpurity","",500,500);
   fitResult  fitr = doFit ( hSig, hBkg, hCand, 0.005, 0.025);
@@ -449,7 +459,7 @@ fitResult getPurity(TString fname, sampleType collision, TCut evtSeltCut, TCut s
   cPurity->SaveAs( Form("%s.gif",canvasName.Data() ) );
   gPad->SetLogy();
   cPurity->SaveAs( Form("%s_logScale.gif",canvasName.Data() ) );
-  
+   
   TCanvas* c1 = new TCanvas("c1","",100,100);
   
   
