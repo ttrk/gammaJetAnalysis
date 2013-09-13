@@ -168,153 +168,111 @@ void drawPbPb_pp( bool saveFigures=true) {
         //    onSun(30,0,200,0);
     }
     c1->cd(1);
-    TLegend *ly = new TLegend(0.4913112,0.6561548,0.9997611,0.9431145,NULL,"brNDC");
-    easyLeg(ly,"2.76TeV");
-    ly->AddEntry(hDphi[kPPDATA][7][1],"pp ","p");
-    ly->AddEntry(hDphi[kHIDATA][2][1],"PbPb 0-30%","p");
 
     
-    TH1D* hTempPt = new TH1D("hTemp",";p_{T}^{#gamma} (GeV);",200,10,150);
+    TH1D* hTempPt = new TH1D("hTemp",";p_{T}^{Jet} (GeV);#frac{dN}{dp_{T}} #frac{1}{N}",200,10,150);
+    hTempPt->SetAxisRange(30,150,"X");
+    hTempPt->SetAxisRange(0,0.05,"Y");
+    hTempPt->GetYaxis()->SetTitleOffset(1.35);
+    handsomeTH1(hTempPt,0);
     
-    TCanvas* c2 = new TCanvas("c2","",1200,350);
+    TCanvas* c2 = new TCanvas("c2_xjg","",1200,350);
     makeMultiPanelCanvas(c2,nPtBin,1,0.0,0.0,0.2,0.15,0.02);
     for ( int ipt = 1 ; ipt<=nPtBin  ; ipt++) {
+      
+      c2->cd(ipt);
+      
+      // draw pp
+      hTempPt->DrawCopy();
+      hJetPt[kPPMC][7][ipt]->Scale(1./rjg[kPPMC][7]->GetBinContent(ipt)); // rjg normalization                      
+      handsomeTH1(hJetPt[kPPMC][7][ipt], 1);
+      hJetPt[kPPMC][7][ipt]->SetMarkerStyle(24);
+      hJetPt[kPPMC][7][ipt]->Draw("same hist");
+      // draw pbpb 
+      for ( int icent = 1; icent <= nCentBinHI ; icent++ ) {
+	handsomeTH1(hJetPt[kHIMC][icent][ipt],kRed);
+	hJetPt[kHIMC][icent][ipt]->Scale(1./rjg[kHIMC][icent]->GetBinContent(ipt));  // rjg normalization
+	if ( icent == 2 ) hJetPt[kHIMC][icent][ipt]->SetMarkerStyle(24);
 
-        c2->cd(ipt);
-
-        // draw pp
-        hTempPt->SetXTitle("p_{T}^{Jet} (GeV)");
-        hTempPt->SetYTitle("#frac{dN}{dp_{T}} #frac{1}{N}");
-        hTempPt->SetAxisRange(10,150,"X");
-	//        hTempPt->SetAxisRange(0,0.025,"Y");
-	hTempPt->SetAxisRange(0,0.08,"Y");
-        handsomeTH1(hTempPt,0);
-        hTempPt->DrawCopy();
+	if ( icent == 2 ) hJetPt[kHIMC][icent][ipt]->Draw("same hist");
+	if ( icent == 1 ) hJetPt[kHIMC][icent][ipt]->Draw("same");
 	
-	hJetPt[kPPDATA][7][ipt]->Scale(1./rjg[kPPDATA][7]->GetBinContent(ipt)); // rjg normalization                      
-		
-
-        handsomeTH1(hJetPt[kPPDATA][7][ipt], 1);
-        hJetPt[kPPDATA][7][ipt]->SetMarkerStyle(24);
-        hJetPt[kPPDATA][7][ipt]->Draw("same");
-
-
-        // draw pbpb 
-        for ( int icent = 1; icent <= nCentBinHI ; icent++ ) {
-            handsomeTH1(hJetPt[kHIDATA][icent][ipt],kRed);
-	    hJetPt[kHIDATA][icent][ipt]->Scale(1./rjg[kHIDATA][icent]->GetBinContent(ipt));  // rjg normalization
-	    if ( icent == 2 ) hJetPt[kHIDATA][icent][ipt]->SetMarkerStyle(24);
-            //      if ( icent == 1 )       hJetPt[kHIDATA][icent][ipt]->Draw("same");
-            hJetPt[kHIDATA][icent][ipt]->Draw("same");
-	    
-        }
+      }
        
-        double dx1=0.15;
-        if ( ipt == nPtBin ) 
-            drawText(Form("p_{T}^{#gamma} < %dGeV, ", (int)ptBin[ipt-1]), 0.12+dx1+0.25,0.85,1,15);//yeonju 130823
-        else
-            drawText(Form("%dGeV < p_{T}^{#gamma} < %dGeV, ", (int)ptBin[ipt-1], (int)ptBin[ipt]), 0.12+dx1,0.85,1,15);//yeonju 130823
-
-	
-        onSun(30,0,200,0);
-        /*
-           c2->cd(ipt+nPtBin);
-
-        hTempPt->SetYTitle("I_{AA}");
-        hTempPt->SetAxisRange(0,3,"Y");
-        hTempPt->DrawCopy();
-        //    for ( int icent = 1; icent <= nCentBinHI ; icent++ ) {
-        for ( int icent = 1; icent <= 1 ; icent++ ) {
-            hIaa[kHIDATA][icent][ipt] = (TH1D*)hJetPt[kHIDATA][icent][ipt]->Clone(Form("iaa_%s",hJetPt[kHIDATA][icent][ipt]->GetName()) );
-            hIaa[kHIDATA][icent][ipt]->Divide(hJetPt[kPPDATA][7][ipt]);
-            hIaa[kHIDATA][icent][ipt]->Draw("same");
-        }
-        jumSun(10,1,150,1);*/
+      double dx1=0.15;
+      if ( ipt == nPtBin ) 
+	drawText(Form("p_{T}^{#gamma} < %dGeV, ", (int)ptBin[ipt-1]), 0.15+dx1+0.25,0.85,1,15);//yeonju 130823
+      else
+	drawText(Form("%dGeV < p_{T}^{#gamma} < %dGeV, ", (int)ptBin[ipt-1], (int)ptBin[ipt]), 0.15+dx1,0.85,1,15);//yeonju 130823
+      
+      if ( ipt == nPtBin )  {
+	TLegend *l0 = new TLegend(0.1542202,0.4928762,0.9769094,0.7803873,NULL,"brNDC");
+	easyLeg(l0,"MC  2.76TeV");
+	l0->AddEntry(hJetPt[kPPMC][7][ipt],"PYTHIA   pp ","l");
+	l0->AddEntry(hJetPt[kHIMC][2][ipt],"PYTHIA+HYDJET 30-100%","l");
+	l0->AddEntry(hJetPt[kHIMC][1][ipt],"PYTHIA+HYDJET 0-30%","p");
+	l0->Draw();
+      }
+      
+      onSun(30,0,200,0);
     }
-    c2->cd(1);
-
-    if (saveFigures)   c2->SaveAs("figures/pT_dependence_jetPt_pp_pbpb_figure1.pdf");
-    if (saveFigures)   c2->SaveAs("figures/pT_dependence_jetPt_pp_pbpb_figure1.gif");
-
-    TLegend *l2 = new TLegend(0.2116935,0.7012712,0.6149194,0.904661,NULL,"brNDC");
-    easyLeg(l2,"2.76TeV");
-    l2->AddEntry(hDphi[kPPDATA][7][1],"pp ","p");
-    l2->AddEntry(hDphi[kHIDATA][1][1],"PbPb 30-100%","p");
-    l2->AddEntry(hDphi[kHIDATA][2][1],"PbPb 0-30%","p");
-
-    TCanvas* c21 = new TCanvas("c21","",500,500);
-    handsomeTH1(meanJetPt[kPPDATA][7], 1);
-    meanJetPt[kPPDATA][7]->SetYTitle("<p_{T}^{Jet}>  (>30GeV)");
-    meanJetPt[kPPDATA][7]->SetMarkerStyle(24);
-    //  meanJetPt[kPPDATA][7]->SetAxisRange(-2,2,"X");
-    meanJetPt[kPPDATA][7]->SetAxisRange(40,80,"Y");
-    meanJetPt[kPPDATA][7]->Draw();
-
-    for ( int icent = 1; icent <= nCentBinHI ; icent++ ) {
-        handsomeTH1(meanJetPt[kHIDATA][icent],kRed);
-        if ( icent == 2 ) meanJetPt[kHIDATA][icent]->SetMarkerStyle(24);
-        //if ( icent != 2 ) meanJetPt[kHIDATA][icent]->Draw("same");
-        meanJetPt[kHIDATA][icent]->Draw("same");
-    }
-
-    TCanvas* c3 = new TCanvas("c3","",1200,350);
-    makeMultiPanelCanvas(c3,nPtBin,1,0.0,0.0,0.2,0.15,0.02);
+    
+    
+    TH1D* hTempXjg = new TH1D("htempxjg",";p_{T}^{Jet} (GeV);#frac{dN}{dp_{T}} #frac{1}{N}",200,0,2);
+    hTempXjg->SetAxisRange(0,2,"X");
+    hTempXjg->SetAxisRange(0,3,"Y");
+    hTempXjg->GetYaxis()->SetTitleOffset(1.35);
+    handsomeTH1(hTempXjg,0);
+    
+    TCanvas* c101 = new TCanvas("c101_xjg","",1200,350);
+    makeMultiPanelCanvas(c101,nPtBin,1,0.0,0.0,0.2,0.15,0.02);
     for ( int ipt = 1 ; ipt<=nPtBin  ; ipt++) {
+      
+      c101->cd(ipt);
+      
+      // draw pp
+      hTempXjg->DrawCopy();
+      hxjg[kPPMC][7][ipt]->Scale(1./rjg[kPPMC][7]->GetBinContent(ipt)); // rjg normalization                      
+      handsomeTH1(hxjg[kPPMC][7][ipt], 1);
+      hxjg[kPPMC][7][ipt]->SetMarkerStyle(24);
+      hxjg[kPPMC][7][ipt]->Draw("same hist");
+      // draw pbpb 
+      for ( int icent = 1; icent <= nCentBinHI ; icent++ ) {
+	handsomeTH1(hxjg[kHIMC][icent][ipt],kRed);
+	hxjg[kHIMC][icent][ipt]->Scale(1./rjg[kHIMC][icent]->GetBinContent(ipt));  // rjg normalization
+	if ( icent == 2 ) hxjg[kHIMC][icent][ipt]->SetMarkerStyle(24);
 
-        c3->cd(ipt);
-
-        // draw pp                                                                                                                                      
-        handsomeTH1(hxjg[kPPDATA][7][ipt], 1);
-        hxjg[kPPDATA][7][ipt]->SetXTitle("x_{J#gamma}");
-        hxjg[kPPDATA][7][ipt]->SetYTitle("#frac{dN}{dp_{T}} #frac{1}{N}");
-        hxjg[kPPDATA][7][ipt]->SetAxisRange(0,2,"X");
-        hxjg[kPPDATA][7][ipt]->SetAxisRange(0,2,"Y");
-        hxjg[kPPDATA][7][ipt]->SetMarkerStyle(24);
-        hxjg[kPPDATA][7][ipt]->Draw();
-
-        // draw pbpb                                                                                                                                    
-        for ( int icent = 1; icent <= nCentBinHI ; icent++ ) {
-            handsomeTH1(hxjg[kHIDATA][icent][ipt],kRed);
-            if ( icent == 2 ) hxjg[kHIDATA][icent][ipt]->SetMarkerStyle(24);
-          //        if ( icent == 1 )       hxjg[kHIDATA][icent][ipt]->Draw("same");                                                                    
-            hxjg[kHIDATA][icent][ipt]->Draw("same");
-
-        }
-        double dx1=0.15;
-        if ( ipt == nPtBin ) 
-            drawText(Form("p_{T}^{#gamma} < %dGeV, ", (int)ptBin[ipt-1]), 0.12+dx1+0.25,0.85,1,15);//yeonju 130823
-        else
-            drawText(Form("%dGeV < p_{T}^{#gamma} < %dGeV, ", (int)ptBin[ipt-1], (int)ptBin[ipt]), 0.12+dx1,0.85,1,15);//yeonju 130823
-
- 
-        onSun(30,0,200,0);
+	if ( icent == 2 ) hxjg[kHIMC][icent][ipt]->Draw("same hist");
+	if ( icent == 1 ) hxjg[kHIMC][icent][ipt]->Draw("same");
+	
+      }
+    
+       
+      double dx1=0.15;
+      if ( ipt == nPtBin ) 
+	drawText(Form("p_{T}^{#gamma} < %dGeV, ", (int)ptBin[ipt-1]), 0.15+dx1+0.25,0.85,1,15);//yeonju 130823
+      else
+	drawText(Form("%dGeV < p_{T}^{#gamma} < %dGeV, ", (int)ptBin[ipt-1], (int)ptBin[ipt]), 0.15+dx1,0.85,1,15);//yeonju 130823
+      
+      if ( ipt == nPtBin )  {
+	TLegend *l0 = new TLegend(-0.0007607977,0.6729655,0.8215427,0.9383604,NULL,"brNDC");
+	easyLeg(l0,"MC  2.76TeV");
+	l0->AddEntry(hxjg[kPPMC][7][ipt],"PYTHIA   pp ","l");
+	l0->AddEntry(hxjg[kHIMC][2][ipt],"PYTHIA+HYDJET 30-100%","l");
+	l0->AddEntry(hxjg[kHIMC][1][ipt],"PYTHIA+HYDJET 0-30%","p");
+	l0->Draw();
+      }
+      
+      onSun(30,0,200,0);
     }
-    c3->cd(1);
 
-    if (saveFigures)   c3->SaveAs("figures/pT_dependence_xjg_pp_pbpb_figure1.pdf");
-    if (saveFigures)   c3->SaveAs("figures/pT_dependence_xjg_pp_pbpb_figure1.gif");
-
-    TCanvas* c31 = new TCanvas("c31","",500,500);
-    handsomeTH1(meanXjg[kPPDATA][7], 1);
-    meanXjg[kPPDATA][7]->SetYTitle("<x_{J#gamma}>  (>30GeV)");
-    meanXjg[kPPDATA][7]->SetMarkerStyle(24);
-    //  meanXjg[kPPDATA][7]->SetAxisRange(-2,2,"X");
-    meanXjg[kPPDATA][7]->SetAxisRange(0.6,1.2,"Y");
-    meanXjg[kPPDATA][7]->Draw();
-
-    for ( int icent = 1; icent <= nCentBinHI ; icent++ ) {
-        handsomeTH1(meanXjg[kHIDATA][icent],kRed);
-        if ( icent == 2 ) meanXjg[kHIDATA][icent]->SetMarkerStyle(24);
-        //if ( icent != 2 ) meanXjg[kHIDATA][icent]->Draw("same");
-        meanXjg[kHIDATA][icent]->Draw("same");
-    }
 
     TCanvas* c32 = new TCanvas("c32","",500,500);
     handsomeTH1(meanXjg[kPPMC][7], 1);
     meanXjg[kPPMC][7]->SetYTitle("<x_{J#gamma}>  (>30GeV)");
     meanXjg[kPPMC][7]->SetMarkerStyle(24);
     //  meanXjg[kPPMC][7]->SetAxisRange(-2,2,"X");
-    meanXjg[kPPMC][7]->SetAxisRange(0.6,1.2,"Y");
+    meanXjg[kPPMC][7]->SetAxisRange(0.8,1.05,"Y");
     meanXjg[kPPMC][7]->Draw();
 
     for ( int icent = 1; icent <= nCentBinHI ; icent++ ) {
@@ -322,22 +280,22 @@ void drawPbPb_pp( bool saveFigures=true) {
         if ( icent == 2 ) meanXjg[kHIMC][icent]->SetMarkerStyle(24);
 	meanXjg[kHIMC][icent]->Draw("same");
     }
-
-
-    TLegend *l1mc = new TLegend(0.1995968,0.7097458,0.7076613,0.9237288,NULL,"brNDC");
-    easyLeg(l1mc,"MC  2.76TeV");
-    l1mc->AddEntry(hDphi[kPPDATA][7][1],"PYTHIA   pp ","p");
-    l1mc->AddEntry(hDphi[kHIDATA][2][1],"PYTHIA+HYDJET 30-100%","p");
-    l1mc->AddEntry(hDphi[kHIDATA][1][1],"PYTHIA+HYDJET 0-30%","p");
-    l1mc->Draw();
-
+    
+    if (1 == 1) {
+      TLegend *l1mc = new TLegend(0.3387097,0.6864407,0.8729839,0.9004237,NULL,"brNDC");
+      easyLeg(l1mc,"MC  2.76TeV");
+      l1mc->AddEntry(meanXjg[kPPMC][7],"PYTHIA   pp ","p");
+      l1mc->AddEntry(meanXjg[kHIMC][2],"PYTHIA+HYDJET 30-100%","p");
+      l1mc->AddEntry(meanXjg[kHIMC][1],"PYTHIA+HYDJET 0-30%","p");
+      l1mc->Draw();
+    }
 
     TCanvas* c33 = new TCanvas("c33","",500,500);
     handsomeTH1(meanJetPt[kPPMC][7], 1);
     meanJetPt[kPPMC][7]->SetYTitle("<p_{T}^{Jet}>  (>30GeV)");
     meanJetPt[kPPMC][7]->SetMarkerStyle(24);
     //  meanJetPt[kPPMC][7]->SetAxisRange(-2,2,"X");
-    meanJetPt[kPPMC][7]->SetAxisRange(30,80,"Y");
+    meanJetPt[kPPMC][7]->SetAxisRange(40,80,"Y");
     meanJetPt[kPPMC][7]->Draw();
 
     for ( int icent = 1; icent <= nCentBinHI ; icent++ ) {
@@ -345,25 +303,18 @@ void drawPbPb_pp( bool saveFigures=true) {
         if ( icent == 2 ) meanJetPt[kHIMC][icent]->SetMarkerStyle(24);
 	meanJetPt[kHIMC][icent]->Draw("same");
     }
-    l1mc->Draw();
-    
-    
-    TCanvas* c_rjg = new TCanvas("c_rjg","",500,500);
-    handsomeTH1(rjg[kPPDATA][7], 1);
-    rjg[kPPDATA][7]->SetYTitle("r_{J#gamma}");
-    rjg[kPPDATA][7]->SetMarkerStyle(24);
-    //  rjg[kPPDATA][7]->SetAxisRange(-2,2,"X");
-    rjg[kPPDATA][7]->SetAxisRange(0.0,1.1,"Y");
-    rjg[kPPDATA][7]->Draw();
 
-    for ( int icent = 1; icent <= nCentBinHI ; icent++ ) {
-        handsomeTH1(rjg[kHIDATA][icent],kRed);
-        if ( icent == 2 ) rjg[kHIDATA][icent]->SetMarkerStyle(24);
-	//        if ( icent != 2 ) rjg[kHIDATA][icent]->Draw("same");
-        rjg[kHIDATA][icent]->Draw("same");
-    }
+    if (1 == 1) {
+      TLegend *l1mc = new TLegend(0.3810484,0.1864407,0.891129,0.4004237,NULL,"brNDC");
+      easyLeg(l1mc,"MC  2.76TeV");
+      l1mc->AddEntry(meanJetPt[kPPMC][7],"PYTHIA   pp ","p");
+      l1mc->AddEntry(meanJetPt[kHIMC][2],"PYTHIA+HYDJET 30-100%","p");
+      l1mc->AddEntry(meanJetPt[kHIMC][1],"PYTHIA+HYDJET 0-30%","p");
+      l1mc->Draw();
     }
 
+    
+} 
 
 /*  
   //    onSun(meanX[iSpecies][iglb].val - meanX[iSpecies][iglb].err, 0, meanX[iSpecies][iglb].val+meanX[iSpecies][iglb].err,0,ycolor[ipt+1],2);
