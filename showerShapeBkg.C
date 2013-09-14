@@ -35,10 +35,10 @@ void showerShapeBkg(  sampleType collision = kPPMC)
 
   multiTreeUtil* tgj = new multiTreeUtil();
   if ( collision == kPPMC ) {
-    tgj->addFile(fnamePAMC_emDijet30to50,   "tgj", bkgPhoCut, wPAMC_emDijet30to50);
-    tgj->addFile(fnamePAMC_emDijet50to80,   "tgj", bkgPhoCut, wPAMC_emDijet50to80);
-    tgj->addFile(fnamePAMC_emDijet80to120,  "tgj", bkgPhoCut, wPAMC_emDijet80to120);
-    tgj->addFile(fnamePAMC_emDijet120to9999,"tgj", bkgPhoCut, wPAMC_emDijet120to9999);
+    tgj->addFile(fnamePPMC_emDijet30to50,   "tgj", bkgPhoCut, wPPMC_emDijet30to50);
+    tgj->addFile(fnamePPMC_emDijet50to80,   "tgj", bkgPhoCut, wPPMC_emDijet50to80);
+    tgj->addFile(fnamePPMC_emDijet80to120,  "tgj", bkgPhoCut, wPPMC_emDijet80to120);
+    tgj->addFile(fnamePPMC_emDijet120to9999,"tgj", bkgPhoCut, wPPMC_emDijet120to9999);
   }
   else { 
     cout << " pA and PbPb MC samples are not ready yet" << endl;
