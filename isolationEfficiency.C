@@ -44,18 +44,19 @@ void isolationEfficiency()
 
   // TH1D* hEmpty = new TH1D("hEmpty","",nSIGMABINS,0,maxSIGMA);
   
-  const Double_t HFBINS[] = {0,1000};//20,30,1000};
+  const Double_t HFBINS[] = {0,20,30,1000};
+  //const Double_t HFBINS[] = {0,1000};
   const Int_t nHFBINS = sizeof(HFBINS)/sizeof(Double_t) -1;
 
-  const Double_t PTBINS[] = {40, 50, 60, 80, 1000};
-//const Double_t PTBINS[] = {40, 1000};
+  //const Double_t PTBINS[] = {40, 50, 60, 80, 1000};
+  const Double_t PTBINS[] = {40, 1000};
   const Int_t nPTBINS = sizeof(PTBINS)/sizeof(Double_t) -1;
 
-  //const Double_t ETABINS[] = {-1.479, 1.479};
-  const Double_t ETABINS[] = {-1.479, -1, -0.5, 0, 0.5, 1, 1.479};
+  const Double_t ETABINS[] = {-1.479, 1.479};
+  //const Double_t ETABINS[] = {-1.479, -1, -0.5, 0, 0.5, 1, 1.479};
   const Int_t nETABINS = sizeof(ETABINS)/sizeof(Double_t) -1;
 
-  const TCut mcIso = "hadroniceOverEm<0.1 && matchedGPt>0 && genCalIsoDR04<5 && abs(genMomId)<=22";
+  const TCut mcIso = "hadronicOverEm<0.1 && matchedGPt>0 && genCalIsoDR04<5 && abs(genMomId)<=22";
   const TCut dataIso = "ecalRecHitSumEtConeDR04 < 4.2  &&  hcalTowerSumEtConeDR04 < 2.2  &&  trkSumPtHollowConeDR04 < 2 && hadronicOverEm<0.1";
 
   for(Int_t i = 0; i < nPTBINS; ++i) {
@@ -84,4 +85,10 @@ void isolationEfficiency()
 
   
 
+}
+
+int main()
+{
+  isolationEfficiency();
+  return 0;
 }
