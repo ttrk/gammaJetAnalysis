@@ -42,6 +42,15 @@ double  wPPMC_AllQcdPho50to80        = 8098. / 87988.;
 double  wPPMC_AllQcdPho80to120       = 1680. / 96756.;
 double  wPPMC_AllQcdPho120to9999     = 438.  / 90972.;
 
+TString fnamePPMC_emDijet30to50    = "yskimmedFiles/yskim_emDijet30to50_CMSSW538HIp2.root";
+TString fnamePPMC_emDijet50to80    = "yskimmedFiles/yskim_emDijet50to80_CMSSW538HIp2.root";
+TString fnamePPMC_emDijet80to120   = "yskimmedFiles/yskim_emDijet80to120_CMSSW538HIp2.root";
+TString fnamePPMC_emDijet120to9999 = "yskimmedFiles/yskim_emDijet120to9999_CMSSW538HIp2.root";
+double wPPMC_emDijet30to50         = 31957./31957.;
+double wPPMC_emDijet50to80         = 46494./114811.;
+double wPPMC_emDijet80to120        = 17265./121988.;
+double wPPMC_emDijet120to9999      = 4284./130444.;
+
 
 ///////////// pA Data
 TString fnamePADATA                  = "yskimmedFiles/yskim_pA_photonSkimForest_v85_HLT_PAPhoton30_NoCaloIdVL_v1_highPtPhoton40.root";
@@ -55,14 +64,6 @@ double  wPAMC_AllQcdPho50to80        = 41906./ 114136.;
 double  wPAMC_AllQcdPho80to120       = 12044./ 103562.;
 double  wPAMC_AllQcdPho120to9999     = 4481. / 151511.;
 
-TString fnamePAMC_emDijet30to50    = "yskimmedFiles/yskim_emDijet30to50_CMSSW538HIp2.root";
-TString fnamePAMC_emDijet50to80    = "yskimmedFiles/yskim_emDijet50to80_CMSSW538HIp2.root";
-TString fnamePAMC_emDijet80to120   = "yskimmedFiles/yskim_emDijet80to120_CMSSW538HIp2.root";
-TString fnamePAMC_emDijet120to9999 = "yskimmedFiles/yskim_emDijet120to9999_CMSSW538HIp2.root";
-double wPAMC_emDijet30to50         = 31957./31957.;
-double wPAMC_emDijet50to80         = 46494./114811.;
-double wPAMC_emDijet80to120        = 17265./121988.;
-double wPAMC_emDijet120to9999      = 4284./130444.;
 
 
 ///////////// PbPb Data
