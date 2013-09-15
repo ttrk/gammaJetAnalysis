@@ -64,7 +64,7 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
   }
   else if  ((colli==kHIDATA)||(colli==kHIMC)) {
     c = new HiForest(inputFile_.Data(), "forest", cPbPb, isMC );
-    c->GetEnergyScaleTable("photonEnergyScaleTable_lowPt_v6.root");
+    c->GetEnergyScaleTable("../photonEnergyScaleTable_lowPt_v6.root");
   }
   else {
     cout << " Error!  No such collision type" << endl;
@@ -461,8 +461,8 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
       nJet++ ; 
     }
 
-    //////// Leading jet kinematics
-    /*    float maxJpt = 0;
+    //////// Leading jet kinematics in dphi>7pi/8
+    float maxJpt = 0;
     int jetLeadingIndex = -1;
     
     for (int ij=0; ij< nJet ; ij++) {
@@ -489,7 +489,7 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
       gj.lJetDphi = 0;
       gj.lJetSubid=  -99;
     }
-    */
+    
     
     //////////////////////////////////////////// New collection of tracks                                                 
     // Forget about the tracks at the moment
