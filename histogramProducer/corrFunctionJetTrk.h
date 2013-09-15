@@ -30,13 +30,15 @@ class GjSpectra
   
   TH1D *hPtPhoCand;
   TH1D *hPtPhoDecay;
+  TH1D *hPtPhoSig;
   
 };
 
 
 void GjSpectra::init(TString hName)  { 
-  hPtPhoCand = new TH1D(Form("hPhoPtCand_%s",hName.Data()),";p_{T} (GeV);Entries", 50,0,500);
+  hPtPhoCand = new TH1D(Form("hPhoPtCand_%s",hName.Data()),";p_{T} (GeV);Entries", 60,0,300);
   hPtPhoDecay = (TH1D*)hPtPhoCand->Clone(Form("hPhoPtDecay_%s",hName.Data()));
+  hPtPhoSig     =  (TH1D*)hPtPhoCand->Clone(Form("hPhoPtSig_%s",hName.Data()));
 }
 
 
