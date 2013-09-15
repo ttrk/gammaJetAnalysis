@@ -284,8 +284,8 @@ void drawPbPb_pp( bool saveFigures=true) {
     if (1 == 1) {
       TLegend *l1mc = new TLegend(0.3387097,0.6864407,0.8729839,0.9004237,NULL,"brNDC");
       easyLeg(l1mc,"MC  2.76TeV");
-      l1mc->AddEntry(meanXjg[kPPMC][7],"PYTHIA   pp ","p");
-      l1mc->AddEntry(meanXjg[kHIMC][2],"PYTHIA+HYDJET 30-100%","p");
+      l1mc->AddEntry(meanXjg[kPPMC][7],"PYTHIA   pp ","l");
+      l1mc->AddEntry(meanXjg[kHIMC][2],"PYTHIA+HYDJET 30-100%","l");
       l1mc->AddEntry(meanXjg[kHIMC][1],"PYTHIA+HYDJET 0-30%","p");
       l1mc->Draw();
     }
@@ -310,6 +310,29 @@ void drawPbPb_pp( bool saveFigures=true) {
       l1mc->AddEntry(meanJetPt[kPPMC][7],"PYTHIA   pp ","p");
       l1mc->AddEntry(meanJetPt[kHIMC][2],"PYTHIA+HYDJET 30-100%","p");
       l1mc->AddEntry(meanJetPt[kHIMC][1],"PYTHIA+HYDJET 0-30%","p");
+      l1mc->Draw();
+    }
+
+    TCanvas* c34 = new TCanvas("c34","",500,500);
+    handsomeTH1(rjg[kPPMC][7], 1);
+    rjg[kPPMC][7]->SetYTitle("r_{j#gamma}  (>30GeV)");
+    rjg[kPPMC][7]->SetMarkerStyle(24);
+    //  rjg[kPPMC][7]->SetAxisRange(-2,2,"X");
+    rjg[kPPMC][7]->SetAxisRange(.2,1,"Y");
+    rjg[kPPMC][7]->Draw();
+
+    for ( int icent = 1; icent <= nCentBinHI ; icent++ ) {
+        handsomeTH1(rjg[kHIMC][icent],kRed);
+        if ( icent == 2 ) rjg[kHIMC][icent]->SetMarkerStyle(24);
+	rjg[kHIMC][icent]->Draw("same");
+    }
+
+    if (1 == 1) {
+      TLegend *l1mc = new TLegend(0.3810484,0.1864407,0.891129,0.4004237,NULL,"brNDC");
+      easyLeg(l1mc,"MC  2.76TeV");
+      l1mc->AddEntry(rjg[kPPMC][7],"PYTHIA   pp ","p");
+      l1mc->AddEntry(rjg[kHIMC][2],"PYTHIA+HYDJET 30-100%","p");
+      l1mc->AddEntry(rjg[kHIMC][1],"PYTHIA+HYDJET 0-30%","p");
       l1mc->Draw();
     }
 
