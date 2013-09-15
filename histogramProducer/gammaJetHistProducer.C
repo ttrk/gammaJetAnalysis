@@ -175,9 +175,25 @@ void gammaJetHistProducer(sampleType collision = kPADATA, float photonPtThr=60, 
   
 
   GjSpectra* gSpec = new GjSpectra();
-  gSpec->init(Form("pho%.0f_%.0f", (float)photonPtThr, (float)photonPtThrUp));
+  gSpec->init(Form("icent%d",(int)icent) );
   tgj->Draw2(gSpec->hPtPhoCand,  "photonEt", phoCandCut, "")  ;
   tgj->Draw2(gSpec->hPtPhoDecay, "photonEt", phoDecayCut, "") ;
+  
+  // Obtain background subtracted spectra
+  
+  float candInt = gSpec->hPtPhoCand->Integral();
+  float candDecay = gSpec->hPtPhoDecay->Integral();
+  gSpec->hPtPhoSig->Reset();
+  gSpec->hPtPhoSig->Add(gSpec->hPtPhoCand);
+  gSpec->hPtPhoSig->Add(gSpec->hPtPhoDecay, -(1. - purity) * candInt / candDecay);
+  gSpec->hPtPhoSig->Scale(1./purity ) ;
+  
+  TFile outf = TFile(Form("ffFiles/%s",outName.Data()),"update");
+  gSpec->hPtPhoCand->Write();
+  gSpec->hPtPhoDecay->Write();
+  gSpec->hPtPhoSig->Write();
+  outf.Close();
+  
   
   
   // Objects
@@ -253,17 +269,6 @@ void gammaJetHistProducer(sampleType collision = kPADATA, float photonPtThr=60, 
 		  collision, varJetPt, jetCutDphi, jetWeight,
 		  phoCandCut, phoDecayCut,  hJetPt, outName);
   
-  
-  
-  TH1D* hGenJetPt = (TH1D*)hJetPt->Clone(Form("genJetPt_icent%d",icent));
-  corrFunctionTrk* cGenJetPt = new corrFunctionTrk();
-  TString varGenJetPt         = Form("refPt");
-  
-  gammaTrkSingle( gSpec,  tObj, cJetPt,  purity, 
-		  collision, varGenJetPt, genJetCutDphi, jetWeight,
-		  phoCandCut, phoDecayCut,  hGenJetPt, outName);
-  
-  
   //  TH1D* hDjetPt = new TH1D(Form("dpt_icent%d",icent),";p_{T}^{#gamma} - p_{T}^{Jet} (GeV) ;dN/dp_{T} (GeV^{-1})",30,-150,150);
   //  corrFunctionTrk* cDjetPt = new corrFunctionTrk();
   //  TString varJetDpt         = Form("pt - photonEt");
@@ -279,55 +284,65 @@ void gammaJetHistProducer(sampleType collision = kPADATA, float photonPtThr=60, 
   gammaTrkSingle( gSpec,  tObj, cJetXjg,  purity, 
 		  collision, varJetXjg, jetCutDphi, jetWeight,
 		  phoCandCut, phoDecayCut,  hJetXjg, outName);
-
-
-  TH1D* hGenJetXjg = new TH1D(Form("xjg_genJet_icent%d",icent),";Gen Jet p_{T}^{Jet}/p_{T}^{#gamma}  ; ",16,0,2);
-  corrFunctionTrk* cGenJetXjg = new corrFunctionTrk();
-  TString varGenJetXjg         = Form("refPt/photonEt");
-  gammaTrkSingle( gSpec,  tObj, cGenJetXjg,  purity, 
-		  collision, varGenJetXjg, genJetCutDphi , jetWeight,
-		  phoCandCut, phoDecayCut,  hGenJetXjg, outName);
-
-  TH1D* hGenPhotonXjg = new TH1D(Form("xjg_genPho_icent%d",icent),";jet p_{T}^{Jet}/p_{T}^{#gamma}  ; ",16,0,2);
-  corrFunctionTrk* cGenPhotonXjg = new corrFunctionTrk();
-  TString varGenPhotonXjg         = Form("pt/genPhotonEt");
-  gammaTrkSingle( gSpec,  tObj, cGenPhotonXjg,  purity, 
-		  collision, varGenPhotonXjg, jetCutDphi, jetWeight,
-		  phoCandCut, phoDecayCut,  hGenPhotonXjg, outName);
-
-  TH1D* hGenPhoGenJetXjg = new TH1D(Form("xjg_genPho_genJet_icent%d",icent),";jet p_{T}^{Jet}/p_{T}^{#gamma}  ; ",16,0,2);
-  corrFunctionTrk* cGenPhoGenJetXjg = new corrFunctionTrk();
-  TString varGenPhoGenJetXjg         = Form("refPt/genPhotonEt");
-  gammaTrkSingle( gSpec,  tObj, cGenPhoGenJetXjg,  purity, 
-		  collision, varGenPhoGenJetXjg, genJetCutDphi, jetWeight,
-		  phoCandCut, phoDecayCut,  hGenPhoGenJetXjg, outName);
   
+
+  if ( (collision == kPAMC) || (collision == kPPMC) ||(collision == kHIMC) ) {
+    TH1D* hGenJetPt = (TH1D*)hJetPt->Clone(Form("genJetPt_icent%d",icent));
+    corrFunctionTrk* cGenJetPt = new corrFunctionTrk();
+    TString varGenJetPt         = Form("refPt");
+    gammaTrkSingle( gSpec,  tObj, cJetPt,  purity, 
+		    collision, varGenJetPt, genJetCutDphi, jetWeight,
+		    phoCandCut, phoDecayCut,  hGenJetPt, outName);
+    
+    TH1D* hGenJetXjg = new TH1D(Form("xjg_genJet_icent%d",icent),";Gen Jet p_{T}^{Jet}/p_{T}^{#gamma}  ; ",16,0,2);
+    corrFunctionTrk* cGenJetXjg = new corrFunctionTrk();
+    TString varGenJetXjg         = Form("refPt/photonEt");
+    gammaTrkSingle( gSpec,  tObj, cGenJetXjg,  purity, 
+		    collision, varGenJetXjg, genJetCutDphi , jetWeight,
+		    phoCandCut, phoDecayCut,  hGenJetXjg, outName);
+    
+    TH1D* hGenPhotonXjg = new TH1D(Form("xjg_genPho_icent%d",icent),";jet p_{T}^{Jet}/p_{T}^{#gamma}  ; ",16,0,2);
+    corrFunctionTrk* cGenPhotonXjg = new corrFunctionTrk();
+    TString varGenPhotonXjg         = Form("pt/genPhotonEt");
+    gammaTrkSingle( gSpec,  tObj, cGenPhotonXjg,  purity, 
+		    collision, varGenPhotonXjg, jetCutDphi, jetWeight,
+		    phoCandCut, phoDecayCut,  hGenPhotonXjg, outName);
+    
+    TH1D* hGenPhoGenJetXjg = new TH1D(Form("xjg_genPho_genJet_icent%d",icent),";jet p_{T}^{Jet}/p_{T}^{#gamma}  ; ",16,0,2);
+    corrFunctionTrk* cGenPhoGenJetXjg = new corrFunctionTrk();
+    TString varGenPhoGenJetXjg         = Form("refPt/genPhotonEt");
+    gammaTrkSingle( gSpec,  tObj, cGenPhoGenJetXjg,  purity, 
+		    collision, varGenPhoGenJetXjg, genJetCutDphi, jetWeight,
+		    phoCandCut, phoDecayCut,  hGenPhoGenJetXjg, outName);
+  }
   
+  bool doRapidity= false;
+  if ( doRapidity) {
   // Eta distribution
-  TH1D* hEtaJg = new TH1D(Form("etaJg_icent%d",icent),";#eta_{J,#gamma} ; ",160,-3,3);
-  corrFunctionTrk* cEtaJg = new corrFunctionTrk();
-  TString varEtaJg         = Form("(photonEta+eta)/2.");
+    TH1D* hEtaJg = new TH1D(Form("etaJg_icent%d",icent),";#eta_{J,#gamma} ; ",160,-3,3);
+    corrFunctionTrk* cEtaJg = new corrFunctionTrk();
+    TString varEtaJg         = Form("(photonEta+eta)/2.");
+    
+    gammaTrkSingle( gSpec,  tObj, cEtaJg,  purity, 
+		    collision, varEtaJg, jetCut2, jetWeight,
+		    phoCandCut, phoDecayCut,  hEtaJg, outName);
+    
+    TH1D* hEtaJet = new TH1D(Form("etaJet_icent%d",icent),";#eta_{Jet} ; ",160,-3,3);
+    corrFunctionTrk* cEtaJet = new corrFunctionTrk();
+    TString varEtaJet         = Form("eta");
+    
+    gammaTrkSingle( gSpec,  tObj, cEtaJet,  purity, 
+		    collision, varEtaJet, jetCut2, jetWeight,
+		    phoCandCut, phoDecayCut,  hEtaJet, outName);
   
-  gammaTrkSingle( gSpec,  tObj, cEtaJg,  purity, 
-		  collision, varEtaJg, jetCut2, jetWeight,
-		  phoCandCut, phoDecayCut,  hEtaJg, outName);
-  
-  TH1D* hEtaJet = new TH1D(Form("etaJet_icent%d",icent),";#eta_{Jet} ; ",160,-3,3);
-  corrFunctionTrk* cEtaJet = new corrFunctionTrk();
-  TString varEtaJet         = Form("eta");
-	  
-  gammaTrkSingle( gSpec,  tObj, cEtaJet,  purity, 
-		  collision, varEtaJet, jetCut2, jetWeight,
-		  phoCandCut, phoDecayCut,  hEtaJet, outName);
-  
-  TH1D* hEtaPhoton = new TH1D(Form("etaPhoton_icent%d",icent),";#eta_{#gamma} ; ",160,-3,3);
-  corrFunctionTrk* cEtaPhoton = new corrFunctionTrk();
-  TString varEtaPhoton         = Form("photonEta");
-  
-  gammaTrkSingle( gSpec,  tObj, cEtaPhoton,  purity, 
-		  collision, varEtaPhoton, jetCut2, jetWeight,
-		  phoCandCut, phoDecayCut,  hEtaPhoton, outName);
-  
+    TH1D* hEtaPhoton = new TH1D(Form("etaPhoton_icent%d",icent),";#eta_{#gamma} ; ",160,-3,3);
+    corrFunctionTrk* cEtaPhoton = new corrFunctionTrk();
+    TString varEtaPhoton         = Form("photonEta");
+    
+    gammaTrkSingle( gSpec,  tObj, cEtaPhoton,  purity, 
+		    collision, varEtaPhoton, jetCut2, jetWeight,
+		    phoCandCut, phoDecayCut,  hEtaPhoton, outName);
+  }
   
 }
 
