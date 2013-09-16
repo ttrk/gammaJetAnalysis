@@ -15,22 +15,29 @@ void drawPbPb_pp( bool saveFigures=true) {
 
     TH1D* hxjg[7][10][6]; // [Collision][centrality][pt]
     TH1D* hJetPt[7][10][6]; // [Collision][centrality][pt]
+    TH1D* hGenJetPt[7][10][6]; // [Collision][centrality][pt]
     TH1D* hIaa[7][10][6]; // [Collision][centrality][pt]
     TH1D* hDphi[7][10][6]; // [Collision][centrality][pt]
     TH1D* hEta[7][10][6]; // [Collision][centrality][pt]
     TH1D* meanXjg[7][10];      // [Collision][centrality]
     TH1D* meanJetPt[7][10];      // [Collisi on][centrality]
+    TH1D* meanGenJetPt[7][10];      // [Collisi on][centrality]
 
     TH1D* rjg[7][5];     //  [Collision][centrality]
+    TH1D* rGenjg[7][5];     //  [Collision][centrality]
     for (int icoll=0 ; icoll<4  ; icoll++) {   // only pp and PbPb
       for (int icent=1 ; icent<= 10 ; icent++) {
 	meanXjg[icoll][icent] = new TH1D( Form("meanXjg_icoll%d_icent%d",icoll,icent), ";p_{T}^{#gamma} (GeV); <X_{J#gamma}>",nPtBin,ptBinPaDraw);
 	meanJetPt[icoll][icent] = new TH1D( Form("meanJetPt_icoll%d_icent%d",icoll,icent), ";p_{T}^{#gamma} (GeV); <p_{T}^{Jet}>",nPtBin,ptBinPaDraw);
+	meanGenJetPt[icoll][icent] = new TH1D( Form("meanGenJetPt_icoll%d_icent%d",icoll,icent), ";p_{T}^{#gamma} (GeV); <p_{T}^{Jet}>",nPtBin,ptBinPaDraw);
 	rjg[icoll][icent] = new TH1D( Form("rjg_icoll%d_icent%d",icoll,icent), ";p_{T}^{#gamma} (GeV); R_{J#gamma}",nPtBin,ptBinPaDraw);
+	rGenjg[icoll][icent] = new TH1D( Form("rGenjg_icoll%d_icent%d",icoll,icent), ";p_{T}^{#gamma} (GeV); R_{J#gamma}",nPtBin,ptBinPaDraw);
+	
 	
 	for (int ipt=1 ; ipt<=nPtBin ; ipt++) {
 	  hxjg[icoll][icent][ipt] = NULL;
 	  hJetPt[icoll][icent][ipt] = NULL;
+	  hGenJetPt[icoll][icent][ipt] = NULL;
 	  hIaa[icoll][icent][ipt] = NULL;
 	  hDphi[icoll][icent][ipt] = NULL;
 	  hEta[icoll][icent][ipt] = NULL;
@@ -55,11 +62,15 @@ void drawPbPb_pp( bool saveFigures=true) {
                     cout << " Getting histogram : " << Form("xjg_icent%d_final", icent) << endl;
                     hJetPt[icoll][icent][ipt] = (TH1D*)histFile[icoll][ipt]->Get(Form("jetPt_icent%d_final", icent)) ;
                     cout << " Getting histogram : " << Form("jetPt_icent%d_final", icent) << endl;
-                    hDphi[icoll][icent][ipt]  = (TH1D*)histFile[icoll][ipt]->Get(Form("jetDphi_icent%d_final", icent)) ;
+		    hDphi[icoll][icent][ipt]  = (TH1D*)histFile[icoll][ipt]->Get(Form("jetDphi_icent%d_final", icent)) ;
                     cout << " Getting histogram : " << Form("jetDphi_icent%d_final", icent) << endl;
                     hEta[icoll][icent][ipt]  = (TH1D*)histFile[icoll][ipt]->Get(Form("etaJg_icent%d_final", icent)) ;
                     cout << " Getting histogram : " << Form("etaJg_icent%d_final", icent) << endl;
 
+		    if ( icoll%2 == 1)  {  // if it is MC 
+		      hGenJetPt[icoll][icent][ipt] = (TH1D*)histFile[icoll][ipt]->Get(Form("genJetPt_icent%d_final", icent)) ;
+		      cout << " Getting histogram : " << Form("genJetPt_icent%d_final", icent) << endl;
+		    }
                 }
 
                 if ( ( icoll == kHIDATA) ||  (icoll == kHIMC) ) { // PbPb
@@ -72,6 +83,10 @@ void drawPbPb_pp( bool saveFigures=true) {
                         cout << " Getting histogram : " << Form("jetDphi_icent%d_final", icent)<< endl;
                         hEta[icoll][icent][ipt]  = (TH1D*)histFile[icoll][ipt]->Get(Form("etaJg_icent%d_final", centBinHI[icent] ) ) ;
                         cout << " Getting histogram : " << Form("etaJg_icent%d_final", icent)<< endl;
+			if ( icoll%2 == 1)  {  // if it is MC           
+			  hGenJetPt[icoll][icent][ipt] = (TH1D*)histFile[icoll][ipt]->Get(Form("genJetPt_icent%d_final",centBinHI[icent]));
+			  cout << " Getting histogram : " << Form("genJetPt_icent%d_final", centBinHI[icent] ) << endl;
+			}
                     }
                 }
             }
@@ -97,7 +112,15 @@ void drawPbPb_pp( bool saveFigures=true) {
                 meanJetPt[icoll][icent]->SetBinContent( ipt, hJetPt[icoll][icent][ipt]->GetMean() );
                 meanJetPt[icoll][icent]->SetBinError  ( ipt, hJetPt[icoll][icent][ipt]->GetMeanError() );
 
-
+		if ( icoll%2 == 1)  {  // if it is MC                                                                                
+		  meanGenJetPt[icoll][icent]->SetBinContent( ipt, hGenJetPt[icoll][icent][ipt]->GetMean() );
+		  meanGenJetPt[icoll][icent]->SetBinError  ( ipt, hGenJetPt[icoll][icent][ipt]->GetMeanError() );
+		  rVal = hGenJetPt[icoll][icent][ipt]->IntegralAndError(1, hGenJetPt[icoll][icent][ipt]->GetNbinsX(), rErr, "width");
+		  rGenjg[icoll][icent]->SetBinContent( ipt, rVal );
+		  rGenjg[icoll][icent]->SetBinError  ( ipt, rErr );
+		
+		}
+		
             }
         }
     }
@@ -176,7 +199,7 @@ void drawPbPb_pp( bool saveFigures=true) {
     hTempPt->GetYaxis()->SetTitleOffset(1.35);
     handsomeTH1(hTempPt,0);
     
-    TCanvas* c2 = new TCanvas("c2_xjg","",1200,350);
+    TCanvas* c2 = new TCanvas("c2_jetPt","",1200,350);
     makeMultiPanelCanvas(c2,nPtBin,1,0.0,0.0,0.2,0.15,0.02);
     for ( int ipt = 1 ; ipt<=nPtBin  ; ipt++) {
       
@@ -216,16 +239,59 @@ void drawPbPb_pp( bool saveFigures=true) {
       
       onSun(30,0,200,0);
     }
+
+
+    TCanvas* c3 = new TCanvas("c3_GenjetPt","",1200,350);
+    makeMultiPanelCanvas(c3,nPtBin,1,0.0,0.0,0.2,0.15,0.02);
+    for ( int ipt = 1 ; ipt<=nPtBin  ; ipt++) {
+      
+      c3->cd(ipt);
+      
+      // draw pp
+      hTempPt->DrawCopy();
+      hGenJetPt[kPPMC][7][ipt]->Scale(1./rGenjg[kPPMC][7]->GetBinContent(ipt)); // rjg normalization                      
+      handsomeTH1(hGenJetPt[kPPMC][7][ipt], 1);
+      hGenJetPt[kPPMC][7][ipt]->SetMarkerStyle(24);
+      hGenJetPt[kPPMC][7][ipt]->Draw("same hist");
+      // draw pbpb 
+      for ( int icent = 1; icent <= nCentBinHI ; icent++ ) {
+	handsomeTH1(hGenJetPt[kHIMC][icent][ipt],kRed);
+	hGenJetPt[kHIMC][icent][ipt]->Scale(1./rGenjg[kHIMC][icent]->GetBinContent(ipt));  // rjg normalization
+	if ( icent == 2 ) hGenJetPt[kHIMC][icent][ipt]->SetMarkerStyle(24);
+
+	if ( icent == 2 ) hGenJetPt[kHIMC][icent][ipt]->Draw("same hist");
+	if ( icent == 1 ) hGenJetPt[kHIMC][icent][ipt]->Draw("same");
+	
+      }
+       
+      double dx1=0.15;
+      if ( ipt == nPtBin ) 
+	drawText(Form("p_{T}^{#gamma} < %dGeV, ", (int)ptBin[ipt-1]), 0.15+dx1+0.25,0.85,1,15);//yeonju 130823
+      else
+	drawText(Form("%dGeV < p_{T}^{#gamma} < %dGeV, ", (int)ptBin[ipt-1], (int)ptBin[ipt]), 0.15+dx1,0.85,1,15);//yeonju 130823
+      
+      if ( ipt == nPtBin )  {
+	TLegend *l0 = new TLegend(0.1542202,0.4928762,0.9769094,0.7803873,NULL,"brNDC");
+	easyLeg(l0,"Gen Jet Used");
+	l0->AddEntry(hGenJetPt[kPPMC][7][ipt],"PYTHIA   pp ","l");
+	l0->AddEntry(hGenJetPt[kHIMC][2][ipt],"PYTHIA+HYDJET 30-100%","l");
+	l0->AddEntry(hGenJetPt[kHIMC][1][ipt],"PYTHIA+HYDJET 0-30%","p");
+	l0->Draw();
+      }
+      
+      onSun(30,0,200,0);
+    }
     
     
-    TH1D* hTempXjg = new TH1D("htempxjg",";p_{T}^{Jet} (GeV);#frac{dN}{dp_{T}} #frac{1}{N}",200,0,2);
+      
+    TCanvas* c101 = new TCanvas("c101_xjg","",1200,350);
+    makeMultiPanelCanvas(c101,nPtBin,1,0.0,0.0,0.2,0.15,0.02);
+    TH1D* hTempXjg = new TH1D("htempxjg",";x_{J#gamma};#frac{dN}{dp_{T}} #frac{1}{N}",200,0,2);
     hTempXjg->SetAxisRange(0,2,"X");
     hTempXjg->SetAxisRange(0,3,"Y");
     hTempXjg->GetYaxis()->SetTitleOffset(1.35);
     handsomeTH1(hTempXjg,0);
     
-    TCanvas* c101 = new TCanvas("c101_xjg","",1200,350);
-    makeMultiPanelCanvas(c101,nPtBin,1,0.0,0.0,0.2,0.15,0.02);
     for ( int ipt = 1 ; ipt<=nPtBin  ; ipt++) {
       
       c101->cd(ipt);
@@ -312,6 +378,29 @@ void drawPbPb_pp( bool saveFigures=true) {
       l1mc->AddEntry(meanJetPt[kHIMC][1],"PYTHIA+HYDJET 0-30%","p");
       l1mc->Draw();
     }
+    
+    TCanvas* c33_genJet = new TCanvas("c33_genJet","",500,500);
+    handsomeTH1(meanGenJetPt[kPPMC][7], 1);
+    meanGenJetPt[kPPMC][7]->SetYTitle("<p_{T}^{Jet}>  (>30GeV)");
+    meanGenJetPt[kPPMC][7]->SetMarkerStyle(24);
+    //  meanGenJetPt[kPPMC][7]->SetAxisRange(-2,2,"X");
+    meanGenJetPt[kPPMC][7]->SetAxisRange(40,80,"Y");
+    meanGenJetPt[kPPMC][7]->Draw();
+
+    for ( int icent = 1; icent <= nCentBinHI ; icent++ ) {
+        handsomeTH1(meanGenJetPt[kHIMC][icent],kRed);
+        if ( icent == 2 ) meanGenJetPt[kHIMC][icent]->SetMarkerStyle(24);
+	meanGenJetPt[kHIMC][icent]->Draw("same");
+    }
+
+    if (1 == 1) {
+      TLegend *l1mc = new TLegend(0.3810484,0.1864407,0.891129,0.4004237,NULL,"brNDC");
+      easyLeg(l1mc,"Gen Jet Used");
+      l1mc->AddEntry(meanGenJetPt[kPPMC][7],"PYTHIA   pp ","p");
+      l1mc->AddEntry(meanGenJetPt[kHIMC][2],"PYTHIA+HYDJET 30-100%","p");
+      l1mc->AddEntry(meanGenJetPt[kHIMC][1],"PYTHIA+HYDJET 0-30%","p");
+      l1mc->Draw();
+    }
 
     TCanvas* c34 = new TCanvas("c34","",500,500);
     handsomeTH1(rjg[kPPMC][7], 1);
@@ -333,6 +422,29 @@ void drawPbPb_pp( bool saveFigures=true) {
       l1mc->AddEntry(rjg[kPPMC][7],"PYTHIA   pp ","p");
       l1mc->AddEntry(rjg[kHIMC][2],"PYTHIA+HYDJET 30-100%","p");
       l1mc->AddEntry(rjg[kHIMC][1],"PYTHIA+HYDJET 0-30%","p");
+      l1mc->Draw();
+    }
+
+    TCanvas* c34_genJet = new TCanvas("c34_genJet","",500,500);
+    handsomeTH1(rGenjg[kPPMC][7], 1);
+    rGenjg[kPPMC][7]->SetYTitle("r_{j#gamma}  (>30GeV)");
+    rGenjg[kPPMC][7]->SetMarkerStyle(24);
+    //  rGenjg[kPPMC][7]->SetAxisRange(-2,2,"X");
+    rGenjg[kPPMC][7]->SetAxisRange(.2,1,"Y");
+    rGenjg[kPPMC][7]->Draw();
+
+    for ( int icent = 1; icent <= nCentBinHI ; icent++ ) {
+        handsomeTH1(rGenjg[kHIMC][icent],kRed);
+        if ( icent == 2 ) rGenjg[kHIMC][icent]->SetMarkerStyle(24);
+	rGenjg[kHIMC][icent]->Draw("same");
+    }
+
+    if (1 == 1) {
+      TLegend *l1mc = new TLegend(0.3810484,0.1864407,0.891129,0.4004237,NULL,"brNDC");
+      easyLeg(l1mc,"Gen Jet Used");
+      l1mc->AddEntry(rGenjg[kPPMC][7],"PYTHIA   pp ","p");
+      l1mc->AddEntry(rGenjg[kHIMC][2],"PYTHIA+HYDJET 30-100%","p");
+      l1mc->AddEntry(rGenjg[kHIMC][1],"PYTHIA+HYDJET 0-30%","p");
       l1mc->Draw();
     }
 
