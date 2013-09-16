@@ -43,7 +43,7 @@ void drawPbPb_pp( bool saveFigures=true) {
     for (int ipt=1 ; ipt<=nPtBin ; ipt++) {
       for (int icoll=0 ; icoll<4 ; icoll++) {
 	TString sampleName = getSampleName( icoll ) ;
-            char* fname =  Form("ffFiles/photonTrackCorr_%s_output_photonPtThr%d_to_%d_jetPtThr30_20130913.root",sampleName.Data(), (int)ptBin[ipt-1], (int)ptBin[ipt]);
+            char* fname =  Form("ffFiles/photonTrackCorr_%s_output_photonPtThr%d_to_%d_jetPtThr30_20130916.root",sampleName.Data(), (int)ptBin[ipt-1], (int)ptBin[ipt]);
             histFile[icoll][ipt] = new TFile(fname) ;
             cout << " Reading file : " << fname << endl;
 
