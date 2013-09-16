@@ -37,7 +37,8 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
 				   float cutphotonPt  = 40, 
 				   std::string outname = "testPhotonSkim.root",
 				   sampleType colli=kPADATA,
-				   bool doMix = false
+				   bool doMix = false,
+				   bool useGenJetColl = 0
 				   )
 { 
   bool isMC=true;
@@ -423,40 +424,64 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
 
     ///////////////////// Jet tree ///////////////////////////////////
     nJet = 0 ;
-    for (int ij=0; ij< theJet->nref ; ij++) {
-      jetPt[nJet] = theJet->jtpt[ij];
+
+    int jetEntries = 0;
+    if (useGenJetColl )    jetEntries = theJet->ngen;
+    else                   jetEntries = theJet->nref;
+    
+    for (int ij=0; ij< jetEntries ; ij++) {  
+      if (  useGenJetColl )   {
+        jetPt[nJet] = theJet->genpt[ij];
+        jetEta[nJet] = theJet->geneta[ij];
+        jetPhi[nJet] = theJet->genphi[ij];
+      }
+      else  {
+        jetPt[nJet] = theJet->jtpt[ij];
+        jetEta[nJet] = theJet->jteta[ij];
+        jetPhi[nJet] = theJet->jtphi[ij];
+      }
+
+
+
       if ( jetPt[nJet] < cutjetPtSkim)
 	 continue;
-      if ( fabs( theJet->jteta[ij] ) > cutjetEtaSkim )    
+      if ( fabs( jetEta[nJet] ) > cutjetEtaSkim )    
 	continue;
-      if ( getDR( theJet->jteta[ij], theJet->jtphi[ij], gj.photonEta, gj.photonPhi) < 0.3 )
+      if ( getDR( jetEta[nJet], jetPhi[nJet], gj.photonEta, gj.photonPhi) < 0.3 )
 	continue;
       
-      jetEta[nJet] = theJet->jteta[ij];
       if ( (colli==kPADATA) && ( evt.run > 211256 ) )  {
-	jetEta[nJet] = -theJet->jteta[ij];
+	jetEta[nJet] = -jetEta[nJet];
 	//	cout << " reflect eta" << endl;
       }
       
-      
-      jetPhi[nJet] = theJet->jtphi[ij];
       if (jetPt[nJet] >0) 
-	jetDphi[nJet] = getAbsDphi( theJet->jtphi[ij], gj.photonPhi) ;
+	jetDphi[nJet] = getAbsDphi( jetPhi[nJet], gj.photonPhi) ;
       else
 	jetDphi[nJet] = -1;
       
       
-      jetSubid[nJet] = theJet->subid[ij];
-      jetRefPt[nJet] = theJet->refpt[ij];
-      jetRefEta[nJet] = theJet->refeta[ij];
-      jetRefPhi[nJet] = theJet->refphi[ij];
-      if (jetRefPt[nJet] >0)
-        jetRefDphi[nJet] = getAbsDphi( jetRefPhi[nJet] , gj.photonPhi) ;
-      else
-        jetRefDphi[nJet] = -1;
-      jetRefPartonPt[nJet] = theJet->refparton_pt[ij];
-      jetRefPartonFlv[nJet] = theJet->refparton_flavor[ij];
-     
+      if (  useGenJetColl )   {
+	jetSubid[nJet] = -9999;
+        jetRefPt[nJet] = -9999;
+        jetRefEta[nJet] = -9999;
+        jetRefPhi[nJet] = -9999;
+        jetRefPt[nJet] =  -9999;
+	jetRefPartonPt[nJet] = -9999;
+        jetRefPartonFlv[nJet] = -9999;
+      }
+      else {
+	jetSubid[nJet] = theJet->subid[ij];
+	jetRefPt[nJet] = theJet->refpt[ij];
+	jetRefEta[nJet] = theJet->refeta[ij];
+	jetRefPhi[nJet] = theJet->refphi[ij];
+	if (jetRefPt[nJet] >0)
+	  jetRefDphi[nJet] = getAbsDphi( jetRefPhi[nJet] , gj.photonPhi) ;
+	else
+	  jetRefDphi[nJet] = -1;
+	jetRefPartonPt[nJet] = theJet->refparton_pt[ij];
+	jetRefPartonFlv[nJet] = theJet->refparton_flavor[ij];
+      }
 
       nJet++ ; 
     }
