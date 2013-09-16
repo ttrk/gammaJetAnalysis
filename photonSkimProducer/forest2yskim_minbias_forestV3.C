@@ -30,7 +30,8 @@ static const long MAXTREESIZE = 10000000000;
 void forest2yskim_minbias_forestV3(TString inputFile_="mergedFiles/forest_minbias-HYDJET-START44-V12-Aug29th.root",
 				   std::string outname = "skim_trackJet_minbiasTrackJet_mc.root",
 				   sampleType colli=kPADATA,
-				   int maxEvent = -1
+				   int maxEvent = -1,
+				   bool useGenJetColl = 0
 				   )
 { 
   
@@ -186,26 +187,50 @@ void forest2yskim_minbias_forestV3(TString inputFile_="mergedFiles/forest_minbia
 
     ///////////// Collection of jets 
     nJet = 0 ;
-    for (int ij=0; ij< theJet->nref ; ij++) {
-      jetPt[nJet] = theJet->jtpt[ij];
-      jetEta[nJet] = theJet->jteta[ij];
+    
+    int jetEntries = 0;
+    if (useGenJetColl )    jetEntries = theJet->ngen;
+    else                   jetEntries = theJet->nref;
+
+    for (int ij=0; ij< jetEntries ; ij++) {
+      if (  useGenJetColl )   {   
+	jetPt[nJet] = theJet->genpt[ij];
+	jetEta[nJet] = theJet->geneta[ij];
+	jetPhi[nJet] = theJet->genphi[ij];
+      }
+      else  {
+	jetPt[nJet] = theJet->jtpt[ij];
+	jetEta[nJet] = theJet->jteta[ij];
+	jetPhi[nJet] = theJet->jtphi[ij];
+      }
+
+
       if ( jetPt[nJet] < cutjetPtSkim)
 	continue;
       if ( fabs( jetEta[nJet] ) > cutjetEtaSkim )
         continue;
 
       if ( (colli==kPADATA) && ( evt.run > 211256 ) )  {
-        jetEta[nJet] = -theJet->jteta[ij];
+        jetEta[nJet] = -jetEta[nJet] ; 
         //      cout << " reflect eta" << endl;                                                                       
       }
-
-      jetPhi[nJet] = theJet->jtphi[ij];
-      jetSubid[nJet] = theJet->subid[ij];
-      jetRefPt[nJet] = theJet->refpt[ij];
-      jetRefEta[nJet] = theJet->refeta[ij];
-      jetRefPhi[nJet] = theJet->refphi[ij];
-      jetRefPartonPt[nJet] = theJet->refparton_pt[ij];
-      jetRefPartonFlv[nJet] = theJet->refparton_flavor[ij];
+      
+      if (  useGenJetColl )   {
+	jetSubid[nJet] = -9999;
+	jetRefPt[nJet] = -9999;
+	jetRefEta[nJet] = -9999;
+	jetRefPhi[nJet] = -9999;
+	jetRefPartonPt[nJet] = -9999;
+	jetRefPartonFlv[nJet] = -9999;
+      }
+      else { 
+	jetSubid[nJet] = theJet->subid[ij];
+	jetRefPt[nJet] = theJet->refpt[ij];
+	jetRefEta[nJet] = theJet->refeta[ij];
+	jetRefPhi[nJet] = theJet->refphi[ij];
+	jetRefPartonPt[nJet] = theJet->refparton_pt[ij];
+	jetRefPartonFlv[nJet] = theJet->refparton_flavor[ij];
+      }
       
       nJet++ ;
     }
