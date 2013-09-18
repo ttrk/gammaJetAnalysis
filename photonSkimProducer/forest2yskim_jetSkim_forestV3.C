@@ -38,7 +38,9 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
 				   std::string outname = "testPhotonSkim.root",
 				   sampleType colli=kPADATA,
 				   bool doMix = false,
+				   float addJetEnergyRes = 0,
 				   bool useGenJetColl = 0
+				   
 				   )
 { 
   bool isMC=true;
@@ -440,9 +442,12 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
         jetEta[nJet] = theJet->jteta[ij];
         jetPhi[nJet] = theJet->jtphi[ij];
       }
-
-
-
+      
+      // smear the jet pT 
+      float smeared = jetPt[nJet] * rand.Gaus(1,addJetEnergyRes);
+      //      cout << " before : "<< jetPt[nJet] <<"   after : " << Form("%.2f",smeared)<<endl;
+      jetPt[nJet] = smeared;
+      
       if ( jetPt[nJet] < cutjetPtSkim)
 	 continue;
       if ( fabs( jetEta[nJet] ) > cutjetEtaSkim )    
