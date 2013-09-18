@@ -4,7 +4,7 @@
 // Function : Transform hiForest files into yskim file           //
 // yskims for MinBias1, Minbias2 and photon jet skims            //
 ///////////////////////////////////////////////////////////////////         
-
+///////////////////////////////////////////////////////////////////
 #include <TH2.h>
 #include <TStyle.h>
 #include <TCanvas.h>
@@ -46,8 +46,6 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
   bool isMC=true;
   if ((colli==kPPDATA)||(colli==kPADATA)||(colli==kHIDATA))
     isMC=false;
-  
-  TString jetAlgo="akPu3PF";
   
   int seconds = time(NULL);         cout << " time = " <<seconds%10000<< endl;
   TRandom3 rand(seconds%10000);
@@ -315,7 +313,14 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
   TH1F* hEvtPlnBin = new TH1F("hEvtPlnBin", "", nPlnBin, -PI/2., PI/2.);
   // jet algos                                                                                                         
   Jets* theJet;
-  theJet = &(c->akPu3PF) ;   cout << "Using akPu3PF Jet Algo" << endl<<endl;
+  if (   (colli==kPPDATA) || (colli==kPPMC) ) {
+    theJet = &(c->ak3PF) ; 
+    cout << "pp collision.  Using ak3PF Jet Algo" << endl<<endl;
+  }
+  else { 
+    theJet = &(c->akPu3PF) ;   
+    cout << "pa, aa collision. Using akPu3PF Jet Algo" << endl<<endl;
+  }
   
   // Loop starts.
   int nentries = c->GetEntries();
@@ -444,7 +449,7 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
       }
       
       // smear the jet pT 
-      float smeared = jetPt[nJet] * rand.Gaus(1,addJetEnergyRes);
+      float smeared = jetPt[nJet] * rand.Gaus(1,addJetEnergyRes/jetPt[nJet]);
       //      cout << " before : "<< jetPt[nJet] <<"   after : " << Form("%.2f",smeared)<<endl;
       jetPt[nJet] = smeared;
       
