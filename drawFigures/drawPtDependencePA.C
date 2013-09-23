@@ -168,6 +168,7 @@ void drawPtDependencePA( bool saveFigures=true) {
 
     //if (saveFigures) c1->SaveAs("figures/pT_dependence_dphi_pA_figure1.pdf");
     if (saveFigures) c1->SaveAs("figures/pT_dependence_dphi_pA_figure1.gif");
+    if (saveFigures) c1->SaveAs("figures/pT_dependence_dphi_pA_figure1.pdf");
     
     TLegend *l1 = new TLegend(0.2199474,0.5971384,0.7283974,0.8119819,NULL,"brNDC");
     easyLeg(l1,"5.02TeV");
