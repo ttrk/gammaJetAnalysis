@@ -145,6 +145,12 @@ void drawPtDependence( bool saveFigures=true) {
 
         gPad->SetLogy();
         //    onSun(30,0,200,0);
+
+	double dx1=0.15;
+        if ( ipt == nPtBin ) 
+            drawText(Form("p_{T}^{#gamma} > %dGeV, ", (int)ptBin[ipt-1]), 0.12+dx1+0.25,0.85,1,15);//yeonju 130823
+        else
+            drawText(Form("%dGeV < p_{T}^{#gamma} < %dGeV, ", (int)ptBin[ipt-1], (int)ptBin[ipt]), 0.12+dx1,0.85,1,15);//yeonju 130823
     }
     c1->cd(1);
     // TLegend *ly = new TLegend(0.4913112,0.6561548,0.9997611,0.9431145,NULL,"brNDC");
@@ -331,8 +337,8 @@ void drawPtDependence( bool saveFigures=true) {
     meanXjg[kPADATA][1]->Draw("same");
     
     l1->Draw();
-    if (saveFigures)   c31->SaveAs("figures/pT_dependence_xjg_pA_figure1.pdf");
-    if (saveFigures)   c31->SaveAs("figures/pT_dependence_xjg_pA_figure1.gif");
+    if (saveFigures)   c31->SaveAs("figures/pT_dependence_xjg_pA_figure2.pdf");
+    if (saveFigures)   c31->SaveAs("figures/pT_dependence_xjg_pA_figure2.gif");
     
 
     TCanvas* c_rjg = new TCanvas("c_rjg","",500,500);
