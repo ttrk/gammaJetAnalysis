@@ -31,7 +31,14 @@ double a1, a2, a3, a4, a5, a6;
 
 
 ///////////// pp Data
-TString fnamePPDATA                  = "yskimmedFiles/skim_ak3PF_ppData2013_promptSkim_photon40GeV.root";
+//TString fnamePPDATA                  = "yskimmedFiles/skim_ak3PF_ppData2013_promptSkim_photon40GeV.root";
+TString fnamePPDATA                  =   "yskimmedFiles/yskim_pp_photonSKimForest_v85_jetNoSmearing.root";
+/// jet energy smeared 
+TString fnamePPDATA0010                  =   "yskimmedFiles/yskim_pp_photonSKimForest_v85_jetSmearingCent0010.root";
+TString fnamePPDATA1030                  =   "yskimmedFiles/yskim_pp_photonSKimForest_v85_jetSmearingCent1030.root";
+TString fnamePPDATA3050                  =   "yskimmedFiles/yskim_pp_photonSKimForest_v85_jetSmearingCent3050.root";
+TString fnamePPDATA5099                 =   "yskimmedFiles/yskim_pp_photonSKimForest_v85_jetSmearingCent5099.root";
+
 // pp MC
 TString fnamePPMC_AllQcdPho30to50    = "yskimmedFiles/yskim_merged_allQCDPhoton30to50_genPhotonPtCut30_CMSSW538HIp2.root";
 TString fnamePPMC_AllQcdPho50to80    = "yskimmedFiles/yskim_merged_allQCDPhoton50to80_genPhotonPtCut30_CMSSW538HIp2.root";
@@ -880,7 +887,7 @@ fitResult doFit(TH1D* hSig=0, TH1D* hBkg=0, TH1D* hData1=0, float varLow=0.001, 
    TH1D* temphSigPdf = (TH1D*)hSigPdf->Clone("temp1");
    TH1D* temphBckPdf = (TH1D*)hBckPdf->Clone("temp2");
    if(drawLeg){
-      TLegend *t3=new TLegend(0.5402006,0.5963235,0.9186019,0.7853466,NULL,"brNDC");
+      TLegend *t3=new TLegend(0.6802006,0.7963235,0.9086019,0.9453466,NULL,"brNDC");
       //      t3->AddEntry(hData1,"Pb+Pb  #sqrt{s}_{_{NN}}=2.76 TeV","pl");
       t3->AddEntry(temphSigPdf,"Signal","lf");
       t3->AddEntry(temphBckPdf,"Background","lf");

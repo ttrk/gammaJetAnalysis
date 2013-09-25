@@ -6,8 +6,9 @@
 
 void drawPAFigures(int xNorm = 1) { 
   
-  const int nCentBinPa = 3;
-  double centBinPa[nCentBinPa+1] = {0,20,30,100};
+  const int nCentBinPa = 1;
+  double centBinPa[nCentBinPa+1] = {0,100};
+  
   double AvePtBin[nCentBinPa+1] = { 10, 25, 65, 9999};
   
   TH1D* hxjg[7][1000]; // [species][centrality] 

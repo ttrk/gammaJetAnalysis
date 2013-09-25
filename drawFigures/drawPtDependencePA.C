@@ -3,7 +3,7 @@
 #include <TRandom3.h>
 #include <time.h>
 
-void drawPtDependence( bool saveFigures=true) {
+void drawPtDependencePA( bool saveFigures=true) {
 
     const int nPtBin = 4;
     double ptBin[nPtBin+1] = {40, 50,60,80,9999}; 
@@ -43,7 +43,7 @@ void drawPtDependence( bool saveFigures=true) {
     for (int ipt=1 ; ipt<=nPtBin ; ipt++) {
         for (int icoll=0 ; icoll<6 ; icoll++) {
             TString sampleName = getSampleName( icoll ) ;
-            char* fname =  Form("../histogramProducer/ffFiles/photonTrackCorr_%s_output_photonPtThr%d_to_%d_jetPtThr30_20130919.root",sampleName.Data(), (int)ptBin[ipt-1], (int)ptBin[ipt]);
+            char* fname =  Form("../histogramProducer/ffFiles/photonTrackCorr_%s_output_photonPtThr%d_to_%d_jetPtThr30_20130920.root",sampleName.Data(), (int)ptBin[ipt-1], (int)ptBin[ipt]);
             histFile[icoll][ipt] = new TFile(fname) ;
             cout << " Reading file : " << fname << endl;
 
@@ -147,10 +147,12 @@ void drawPtDependence( bool saveFigures=true) {
         //    onSun(30,0,200,0);
 
 	double dx1=0.15;
-        if ( ipt == nPtBin ) 
-            drawText(Form("p_{T}^{#gamma} > %dGeV, ", (int)ptBin[ipt-1]), 0.12+dx1+0.25,0.85,1,15);//yeonju 130823
-        else
-            drawText(Form("%dGeV < p_{T}^{#gamma} < %dGeV, ", (int)ptBin[ipt-1], (int)ptBin[ipt]), 0.12+dx1,0.85,1,15);//yeonju 130823
+	if ( ipt == nPtBin )
+	  drawText(Form("p_{T}^{#gamma} > %dGeV, ", (int)ptBin[ipt-1]), 0.12+dx1+0.25,0.85,1,15);//yeonju 130823                           
+	else
+	  drawText(Form("%dGeV < p_{T}^{#gamma} < %dGeV, ", (int)ptBin[ipt-1], (int)ptBin[ipt]), 0.12+dx1,0.85,1,15);//yeonju 130823       
+
+
     }
     c1->cd(1);
     // TLegend *ly = new TLegend(0.4913112,0.6561548,0.9997611,0.9431145,NULL,"brNDC");
@@ -167,8 +169,9 @@ void drawPtDependence( bool saveFigures=true) {
 
     //if (saveFigures) c1->SaveAs("figures/pT_dependence_dphi_pA_figure1.pdf");
     if (saveFigures) c1->SaveAs("figures/pT_dependence_dphi_pA_figure1.gif");
+    if (saveFigures) c1->SaveAs("figures/pT_dependence_dphi_pA_figure1.pdf");
     
-    TLegend *l1 = new TLegend(0.1995968,0.7097458,0.7076613,0.9237288,NULL,"brNDC");
+    TLegend *l1 = new TLegend(0.2199474,0.5971384,0.7283974,0.8119819,NULL,"brNDC");
     easyLeg(l1,"5.02TeV");
     l1->AddEntry(hDphi[kPAMC][1][1],"pA pythia+HIJING ","p");
     l1->AddEntry(hDphi[kPADATA][1][1],"pA Data","p");
@@ -255,7 +258,7 @@ void drawPtDependence( bool saveFigures=true) {
     meanJetPt[kPAMC][1]->SetYTitle("<p_{T}^{Jet}>  (>30GeV)");
     meanJetPt[kPAMC][1]->SetMarkerStyle(24);
     //  meanJetPt[kPAMC][1]->SetAxisRange(-2,2,"X");
-    meanJetPt[kPAMC][1]->SetAxisRange(40,80,"Y");
+    meanJetPt[kPAMC][1]->SetAxisRange(40,115,"Y");
     meanJetPt[kPAMC][1]->Draw();
 
     // for ( int icent = 1; icent <= nCentBinHI ; icent++ ) {
