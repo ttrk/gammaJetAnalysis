@@ -426,7 +426,10 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
     else {
       gj.clear();
     }
-    
+    if ( (colli==kPADATA) && ( evt.run > 211256 ) )  {
+      gj.photonEta = - gj.photonEta;
+      //      cout << " reflect eta" << endl;                                                                         
+    }
     
 
     ///////////////////// Jet tree ///////////////////////////////////
