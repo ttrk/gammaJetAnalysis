@@ -1,10 +1,8 @@
 ///////////////////////////////////////////////////////////////////                                
 // gammaJetHistProducer.C                                        //
 // Creator : Yongsun Kim (MIT), jazzitup@mit.edu                 //                                                 
-// Function : Make the correlation function between Photon and   //
-//            tracks.  Signal and Background are calculated      //
-//            separately, and then background subtraction is     //
-//            done.  Output histogrmas are saved in output file  //
+// Function : Studies shower shape comparison of the meson-decay //
+//            photons in various isolation condition             //
 ///////////////////////////////////////////////////////////////////         
 #include <TStyle.h>
 #include <TH1F.h>
