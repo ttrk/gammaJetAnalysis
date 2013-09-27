@@ -6,7 +6,7 @@
 void drawIaa( bool saveFigures=true) {
 
     const int nPtBin = 4;
-    double ptBin[nPtBin+1] = {40, 50,60,80,9999};
+    int ptBin[nPtBin+1] = {40, 50,60,80,9999};
     double ptBinPaDraw[nPtBin+1] = { 40.5 ,49.5, 58.5,  76.5,  123. } ;
     // double AvePtBin[nPtBin+1] = { 45, 54.1479, 67.4204, 99.6956, 9999};
     
@@ -31,8 +31,8 @@ void drawIaa( bool saveFigures=true) {
     for (int ipt=1 ; ipt<=nPtBin ; ipt++) {
       for (int icoll=0 ; icoll<6 ; icoll++) {
 	TString sampleName = getSampleName( icoll ) ;
-	//		char* fname =  Form("ffFiles/photonTrackCorr_%s_output_photonPtThr%d_to_%d_jetPtThr30_20130924.root",sampleName.Data(), (int)ptBin[ipt-1], (int)ptBin[ipt]);
-		char* fname =  Form("ffFiles/photonTrackCorr_%s_output_photonPtThr%d_to_%d_jetPtThr30_20130924.root",sampleName.Data(), (int)ptBin[ipt-1], 9999);
+	//	char* fname =  Form("ffFiles/photonTrackCorr_%s_output_photonPtThr%d_to_%d_jetPtThr30_20130924.root",sampleName.Data(), (int)ptBin[ipt-1], (int)ptBin[ipt]);
+	char* fname =  Form("ffFiles/photonTrackCorr_%s_output_photonPtThr%d_to_%d_jetPtThr30_20130924.root",sampleName.Data(), (int)ptBin[ipt-1], 9999);
 	histFile[icoll][ipt] = new TFile(fname) ;
 	cout << " Reading file : " << fname << endl;
 	if ( histFile[icoll][ipt]->IsZombie()  == false ) {
