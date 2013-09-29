@@ -43,8 +43,7 @@ void drawPtDependence( bool saveFigures=true) {
     for (int ipt=1 ; ipt<=nPtBin ; ipt++) {
         for (int icoll=0 ; icoll<6 ; icoll++) {
             TString sampleName = getSampleName( icoll ) ;
-	    //            char* fname =  Form("ffFiles/photonTrackCorr_%s_output_photonPtThr%d_to_%d_jetPtThr30_20130917.root",sampleName.Data(), (int)ptBin[ipt-1], (int)ptBin[ipt]);
-            char* fname =  Form("ffFiles/photonTrackCorr_%s_output_photonPtThr%d_to_%d_jetPtThr30_20130927_photonEnergyScaledBy0.015.root",sampleName.Data(), (int)ptBin[ipt-1], (int)ptBin[ipt]);
+            char* fname =  Form("ffFiles/photonTrackCorr_%s_output_photonPtThr%d_to_%d_jetPtThr30_20130924.root",sampleName.Data(), (int)ptBin[ipt-1], (int)ptBin[ipt]);
             histFile[icoll][ipt] = new TFile(fname) ;
             cout << " Reading file : " << fname << endl;
 
@@ -172,12 +171,16 @@ void drawPtDependence( bool saveFigures=true) {
 
         handsomeTH1(hJetPt[kPPDATA][7][ipt], 1);
         hJetPt[kPPDATA][7][ipt]->SetMarkerStyle(24);
+	hJetPt[kPPDATA][7][ipt]->Rebin(10);
+	hJetPt[kPPDATA][7][ipt]->Scale(1./10);
 	hJetPt[kPPDATA][7][ipt]->Draw("same");
 
         // draw pbpb 
         for ( int icent = 1; icent <= nCentBinHI ; icent++ ) {
             handsomeTH1(hJetPt[kHIDATA][icent][ipt],kRed);
 	    hJetPt[kHIDATA][icent][ipt]->Scale(1./rjg[kHIDATA][icent]->GetBinContent(ipt));  // rjg normalization
+	    hJetPt[kHIDATA][icent][ipt]->Rebin(10);
+	    hJetPt[kHIDATA][icent][ipt]->Scale(1/10.);
 	    if ( icent == 2 ) hJetPt[kHIDATA][icent][ipt]->SetMarkerStyle(24);
             //      if ( icent == 1 )       hJetPt[kHIDATA][icent][ipt]->Draw("same");
             if ( icent == 1 ) hJetPt[kHIDATA][icent][ipt]->Draw("same");
@@ -191,7 +194,7 @@ void drawPtDependence( bool saveFigures=true) {
 
         onSun(30,0,200,0);
         /*
-           c2->cd(ipt+nPtBin);
+	  c2->cd(ipt+nPtBin);
 
         hTempPt->SetYTitle("I_{AA}");
         hTempPt->SetAxisRange(0,3,"Y");
@@ -221,7 +224,7 @@ void drawPtDependence( bool saveFigures=true) {
     meanJetPt[kPPDATA][7]->SetYTitle("<p_{T}^{Jet}>  (>30GeV)");
     meanJetPt[kPPDATA][7]->SetMarkerStyle(24);
     //  meanJetPt[kPPDATA][7]->SetAxisRange(-2,2,"X");
-    meanJetPt[kPPDATA][7]->SetAxisRange(40,80,"Y");
+    meanJetPt[kPPDATA][7]->SetAxisRange(40,90,"Y");
     meanJetPt[kPPDATA][7]->Draw();
 
     for ( int icent = 1; icent <= nCentBinHI ; icent++ ) {
@@ -244,20 +247,24 @@ void drawPtDependence( bool saveFigures=true) {
         handsomeTH1(hxjg[kPPDATA][7][ipt], 1);
         hxjg[kPPDATA][7][ipt]->SetXTitle("x_{J#gamma}");
         hxjg[kPPDATA][7][ipt]->SetYTitle("#frac{dN}{dp_{T}} #frac{1}{N}");
-        hxjg[kPPDATA][7][ipt]->SetAxisRange(0,2,"X");
         hxjg[kPPDATA][7][ipt]->SetMarkerStyle(24);
 
 	hxjg[kPPDATA][7][ipt]->Scale(1./rjg[kPPDATA][7]->GetBinContent(ipt)); // rjg normalization                                         
 
 
+	hxjg[kPPDATA][7][ipt]->Rebin(10);
+	hxjg[kPPDATA][7][ipt]->Scale(1./10);
+        hxjg[kPPDATA][7][ipt]->SetAxisRange(0,2.5,"X");
         hxjg[kPPDATA][7][ipt]->SetAxisRange(0,3,"Y");
         hxjg[kPPDATA][7][ipt]->Draw();
 
         // draw pbpb                                                                                                                                    
         for ( int icent = 1; icent <= nCentBinHI ; icent++ ) {
             handsomeTH1(hxjg[kHIDATA][icent][ipt],kRed);
-	    hxjg[kHIDATA][icent][ipt]->Scale(1./rjg[kHIDATA][icent]->GetBinContent(ipt)); // rjg normalization                                         
-            if ( icent == 2 ) hxjg[kHIDATA][icent][ipt]->SetMarkerStyle(24);
+	    hxjg[kHIDATA][icent][ipt]->Scale(1./rjg[kHIDATA][icent]->GetBinContent(ipt)); // rjg normalization    
+	    hxjg[kHIDATA][icent][ipt]->Rebin(10);
+	    hxjg[kHIDATA][icent][ipt]->Scale(1./10);
+	    if ( icent == 2 ) hxjg[kHIDATA][icent][ipt]->SetMarkerStyle(24);
 	    //        if ( icent == 1 )       hxjg[kHIDATA][icent][ipt]->Draw("same");                                                                    
             if ( icent == 1 ) hxjg[kHIDATA][icent][ipt]->Draw("same");
 
