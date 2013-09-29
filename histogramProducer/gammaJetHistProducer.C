@@ -101,7 +101,7 @@ void gammaJetHistProducer(sampleType collision = kPADATA, float photonPtThr=60, 
 
   TCut phoCandCut   = "sigmaIetaIeta<0.010";
   TCut phoDecayCut  = "(sigmaIetaIeta>0.011) && (sigmaIetaIeta<0.017)";
-  if  ( ( collision == kHIMC ) || (collision == kPPMC) ) 
+  if  ( ( collision == kHIMC ) || (collision == kPPMC) || (collision == kPAMC))  
     phoCandCut = phoCandCut && "genIso<5 && abs(genMomId)<=22";
   
   
