@@ -4,11 +4,11 @@
 
 
 #pp data 
-root -l -b -q 'gammaJetHistProducer.C+(2, 40, 50, 30, 4)'
-root -l -b -q 'gammaJetHistProducer.C+(2, 50, 60, 30, 4)'
-root -l -b -q 'gammaJetHistProducer.C+(2, 60, 80, 30, 4)'
-root -l -b -q 'gammaJetHistProducer.C+(2, 80,9999, 30, 4)'
-root -l -b -q 'gammaJetHistProducer.C+(2, 60,9999, 30, 4)'
+root -l -b -q 'gammaJetHistProducer.C+(2, 40, 50, 30, 7)'
+root -l -b -q 'gammaJetHistProducer.C+(2, 50, 60, 30, 7)'
+root -l -b -q 'gammaJetHistProducer.C+(2, 60, 80, 30, 7)'
+root -l -b -q 'gammaJetHistProducer.C+(2, 80,9999, 30, 7)'
+root -l -b -q 'gammaJetHistProducer.C+(2, 60,9999, 30, 7)'
 
 #PbPb data, MC
 for i in  0 1

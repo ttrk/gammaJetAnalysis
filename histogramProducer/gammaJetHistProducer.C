@@ -273,8 +273,8 @@ void gammaJetHistProducer(sampleType collision = kPADATA, float photonPtThr=60, 
 		  collision, varJetPt, jetCutDphi, jetWeight,
 		  phoCandCut, phoDecayCut,  hJetPt, outName);
   
-  const int nJetIaaBin = 8;
-  double jetIaaBin[nJetIaaBin+1] = {30,40,50,60,80,110,150,200,300};
+  const int nJetIaaBin = 7;
+  double jetIaaBin[nJetIaaBin+1] = {30,40,50,60,80,100,120,200};
   TH1D* hJetPtForIaa = new TH1D(Form("jetPtForIaa_icent%d",icent),";Jet p_{T} (GeV) ;dN/dp_{T} (GeV^{-1})",nJetIaaBin, jetIaaBin);
   corrFunctionTrk* cJetIaaPt = new corrFunctionTrk();
   gammaTrkSingle( gSpec,  tObj, cJetIaaPt,  purity,
@@ -469,8 +469,6 @@ fitResult getPurity(TString fname, sampleType collision, TCut evtSeltCut, TCut s
   TH1D* hCand = new TH1D("cand","",25,0,0.025);
   TH1D* hBkg = (TH1D*)hCand->Clone("bkg");  TH1D* hSig = (TH1D*)hCand->Clone("sig");
   
-  //  tgj->Draw2(   hCand, "sigmaIetaIeta", evtSeltCut, "");
-  // tgj->Draw2(   hBkg, "sigmaIetaIeta", sbEvtCut, "");
   tgj->Draw2(   hCand, "sigmaIetaIeta", evtSeltCut , "");
   tgj->Draw2(   hBkg, "sigmaIetaIeta", sbEvtCut , "");
   tgjMC->Draw2( hSig, "sigmaIetaIeta", evtSeltCut && "genIso<5 && abs(genMomId)<=22", "");
@@ -483,10 +481,8 @@ fitResult getPurity(TString fname, sampleType collision, TCut evtSeltCut, TCut s
   fitResult  fitr = doFit ( hSig, hBkg, hCand, 0.005, 0.025);
   drawText(Form("Purity : %.2f", (float)fitr.purity010), 0.5680963,0.429118);
   drawText(Form("p_{T}^{#gamma}: %d-%d GeV", (int)photonPtThr, (int)photonPtThrUp), 0.568,0.529118);
-  //  cPurity->SaveAs( Form("%s.gif",canvasName.Data() ) );
   cPurity->SaveAs( Form("%s.pdf",canvasName.Data() ) );
   gPad->SetLogy();
-  //  cPurity->SaveAs( Form("%s_logScale.gif",canvasName.Data() ) );
   cPurity->SaveAs( Form("%s_logScale.pdf",canvasName.Data() ) );
    
   TCanvas* c1 = new TCanvas("c1","",100,100);
