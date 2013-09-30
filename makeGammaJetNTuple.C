@@ -1,4 +1,4 @@
-
+// Author Alex Barbieri
 #include "TFile.h"
 #include "TTree.h"
 #include "TNtuple.h"
@@ -9,61 +9,99 @@
 #include "TLegend.h"
 #include "TString.h"
 #include "stdio.h"
+#include "TRandom3.h"
 #include "../HiForestAnalysis/hiForest.h"
+#include "alexGammaSkim.h"
 
+const Double_t gammaEtaCut = 1.44;
+const Double_t jetEtaCut = 1.6;
 
-void makeGammaJetNTuple(TString inFile="/mnt/hadoop/cms/store/user/luck/PA2013_pyquen_allQCDPhoton_forestv78/PA2013_pyquen_allQCDPhoton50_forestv78.root",
-			collisionType cType = cPPb,
-			Bool_t montecarlo=true,
-			TString outName="gammaJets_inclusive_dphi7pi8_pA_allQCDPhoton50.root",
-			Double_t mcweight=1,
-			Float_t forestnum=0)
+// stuff related to MB mixing
+const int nCentBinSkim = 40;
+const int nVtxBin = 1;
+const TString MinbiasFname = "photonSkimProducer/minbiasSkim_HIMinBias_merged_1_1000.root";
+const int vzCut = 15;
+const int nMixing1 = 20;
+
+collisionType getCType(sampleType sType);
+
+int makeGammaJetNTuple(const char *inFile, sampleType sType, const char *outName, Float_t mcweight=1)
 {
+  bool montecarlo = false;
+  if(sType == kPPMC || sType == kPAMC || sType == kHIMC)
+    montecarlo = true;
+
+  collisionType cType = getCType(sType);
+
   TFile *outfile = new TFile(outName,"RECREATE");
 
-  TString varList = "";
-  varList += "gPt";
-  varList += ":gEta";
-  varList += ":gPhi";
-  varList += ":jPt";
-  varList += ":jEta";
-  varList += ":jPhi";
-  varList += ":HF";
-  varList += ":HFplusEta4";
-  varList += ":HFminusEta4";
-  varList += ":avgEta";
-  varList += ":dPhi";
-  varList += ":cc4";
-  varList += ":cr4";
-  varList += ":ct4PtCut20";
-  varList += ":hadronicOverEm";
-  varList += ":sigmaIetaIeta";
-  varList += ":run";
-  varList += ":r9";
-  varList += ":event";
-  varList += ":ecalRecHitSumEtConeDR04";
-  varList += ":hcalTowerSumEtConeDR04";
-  varList += ":trkSumPtHollowConeDR04";
-  
-  if(montecarlo)
-  {
-    varList += ":genMomId";
-    varList += ":genCalIsoDR04";
-    varList += ":genTrkIsoDR04";
-    varList += ":ptHat";
-    varList += ":matchedGPt";
-    varList += ":matchedJPt";
-    varList += ":jentry";
-    varList += ":mcweight";
-    varList += ":mcid";
-  }
-  
-  TNtuple *outTuple = new TNtuple("gammaJets","gammaJets",varList);
+  // prepares photonTree, jetTree, and mJetTree
+  initGammaSkim(montecarlo); //see alexGammaSkim.h
   
   HiForest *c = new HiForest(inFile, "Forest", cType, montecarlo);
-  if(cType != cPbPb) //for some reason only PbPb is init when created
-    c->InitTree();
+  c->InitTree(); //could be redundant, but doesn't hurt
+  
+  c->LoadNoTrees(); // turns off trees I'm not using: loops faster
+  c->hasPhotonTree = true;
+  c->hasSkimTree = true; // required for selectEvent()
+  c->hasEvtTree = true;
 
+  Jets jetCollection;
+  if(sType == kHIDATA || sType == kHIMC || sType == kPADATA || sType == kPAMC)
+  {
+    c->hasAkPu3JetTree = true;
+    jetCollection = c->akPu3PF;
+  }
+  else
+  {
+    c->hasAk3JetTree = true;
+    jetCollection = c->ak3PF;
+  }
+
+  // mix with minbias jets for PbPb only.
+  // wholesale imported from Yongsun's code
+  //////////////////////////////////////
+  int seconds = time(NULL);
+  TRandom3 rand(seconds%10000);
+  TH1F* hvz = new TH1F("hvz","",nVtxBin,-vzCut,vzCut);
+  // Imb = Input MinBias events 
+  //EvtSel          evtImb;
+  Int_t           nJetImb;
+  Float_t         jetPtImb[100];
+  Float_t         jetEtaImb[100];
+  Float_t         jetPhiImb[100];
+  //TBranch        *b_evt;
+  TBranch        *b_nJetImb;
+  TBranch        *b_jetPtImb;
+  TBranch        *b_jetEtaImb;
+  TBranch        *b_jetPhiImb; 
+ 
+  int nCentBins =  nCentBinSkim;
+  TChain *tjmb[100][nVtxBin+1];
+  int nMB[100][nVtxBin+1] ; 
+  int mbItr[100][nVtxBin+1];
+  if ( sType==kHIDATA ) {
+    //cout <<"  Tree initialization for MinBias mixing" << endl;
+    for( int icent = 0 ; icent< nCentBins ; icent++) {
+      for( int ivz = 1 ; ivz<=nVtxBin ; ivz++) {	
+	tjmb[icent][ivz] = new TChain(Form("trkAndJets_first_cBin2icent%d_ivz%d",icent,ivz));
+	tjmb[icent][ivz]->Add(MinbiasFname.Data());
+	//tjmb[icent][ivz]->SetBranchAddress("evt", &evtImb,&b_evt);
+	tjmb[icent][ivz]->SetBranchAddress("nJet",   &nJetImb,   &b_nJetImb);
+	tjmb[icent][ivz]->SetBranchAddress("jetPt",  &jetPtImb,  &b_jetPtImb);
+	tjmb[icent][ivz]->SetBranchAddress("jetEta", &jetEtaImb, &b_jetEtaImb);
+	tjmb[icent][ivz]->SetBranchAddress("jetPhi", &jetPhiImb, &b_jetPhiImb);	
+	
+	nMB[icent][ivz] = tjmb[icent][ivz]->GetEntries();
+	//cout << "number of evetns in (icent = " << icent << ", ivtxZ = "<< ivz << ")  = " << nMB[icent][ivz] << endl;
+	int primeSeed = rand.Integer(37324);
+	mbItr[icent][ivz] = primeSeed%(nMB[icent][ivz]);
+	//cout <<" initial itr = " << mbItr[icent][ivz] << endl;
+      }
+    }
+  }
+  ///////////////////////////////////////////////
+  
   //loop over events in each file
   Long64_t nentries = c->GetEntries();
   for(Long64_t jentry = 0; jentry<nentries; ++jentry)
@@ -75,32 +113,29 @@ void makeGammaJetNTuple(TString inFile="/mnt/hadoop/cms/store/user/luck/PA2013_p
     c->GetEntry(jentry);
 
     //event selection
-    if( cType != cPbPb &&
-	!(
-	  (montecarlo || c->skim.pHBHENoiseFilter)
-	  && c->skim.phfPosFilter1
-	  && c->skim.phfNegFilter1
-	  && c->skim.phltPixelClusterShapeFilter
-	  && c->skim.pprimaryvertexFilter
-	  )
-      ) {
+    if( !c->selectEvent() )
       continue;
-    } else if ( cType == cPbPb && !montecarlo &&
-		!(c->skim.pcollisionEventSelection)){
-      continue;
-    }
 
     if(c->photon.nPhotons == 0)
       continue;
 
     //loop over photons in the event
-    Float_t leadingPt = 0;
+    //////////////////////////////////////////
+    Float_t leadingCorrectedPt = 0;
     Int_t leadingIndex = -1;
     for(Int_t i = 0; i < c->photon.nPhotons; ++i)
     {
-      if(c->photon.pt[i] > leadingPt)
+      if(
+	(TMath::Abs(c->photon.eta[i]) > gammaEtaCut) ||
+	(c->isSpike(i)) ||
+	(!(c->isLoosePhoton(i)))
+	)
+	continue;
+      
+      Float_t correctedPt = c->getCorrEt(i);
+      if(correctedPt > leadingCorrectedPt)
       {
-	leadingPt = c->photon.pt[i];
+	leadingCorrectedPt = correctedPt;
 	leadingIndex = i;
       }
     }
@@ -108,127 +143,184 @@ void makeGammaJetNTuple(TString inFile="/mnt/hadoop/cms/store/user/luck/PA2013_p
     if(leadingIndex == -1)
       continue;
 
-    //loop over 'away' jets
-    for(Int_t i = 0; i<c->akPu3PF.nref; ++i)
+    run_ = c->evt.run;
+    event_ = c->photon.event;
+    lumi_ = c->evt.lumi;
+    gPt_ = c->photon.pt[leadingIndex];
+    corrGPt_ = leadingCorrectedPt;
+    gEta_ = c->photon.eta[leadingIndex];
+    gPhi_ = c->photon.phi[leadingIndex];
+    HF_ = c->evt.hiHF;
+    HFplusEta4_ = c->evt.hiHFplusEta4;
+    HFminusEta4_ = c->evt.hiHFminusEta4;
+    cc4_ = c->photon.cc4[leadingIndex];
+    cr4_ = c->photon.cr4[leadingIndex];
+    ct4PtCut20_ = c->photon.ct4PtCut20[leadingIndex];
+    hadronicOverEm_ = c->photon.hadronicOverEm[leadingIndex];
+    sigmaIetaIeta_ = c->photon.sigmaIetaIeta[leadingIndex];
+    r9_ = c->photon.r9[leadingIndex];
+    ecalRecHitSumEtConeDR04_ = c->photon.ecalRecHitSumEtConeDR04[leadingIndex];
+    hcalTowerSumEtConeDR04_ = c->photon.hcalTowerSumEtConeDR04[leadingIndex];
+    trkSumPtHollowConeDR04_ = c->photon.trkSumPtHollowConeDR04[leadingIndex];
+
+    if(montecarlo)
     {
-      if( TMath::Abs(c->akPu3PF.jteta[i]) > 3.0)
-	continue;
-	
-      Double_t dphi =
-	TMath::ACos(TMath::Cos(c->photon.phi[leadingIndex]
-			       - c->akPu3PF.jtphi[i]));
-      if( dphi < 7.*TMath::Pi()/8. )
-	continue;
-	
-      Float_t gPt = c->photon.pt[leadingIndex];
-      Float_t gEta = c->photon.eta[leadingIndex];
-      Float_t gPhi = c->photon.phi[leadingIndex];
-      Float_t jPt = c->akPu3PF.jtpt[i];
-      Float_t jEta = c->akPu3PF.jteta[i];
-      Float_t jPhi = c->akPu3PF.jtphi[i];
-      Float_t HF = c->evt.hiHF;
-      Float_t HFplusEta4 = c->evt.hiHFplusEta4;
-      Float_t HFminusEta4 = c->evt.hiHFminusEta4;
-      Float_t avgEta = (c->photon.eta[leadingIndex] + c->akPu3PF.jteta[i])/2.0;
-      Float_t dPhi = dphi;
-      Float_t cc4 = c->photon.cc4[leadingIndex];
-      Float_t cr4 = c->photon.cr4[leadingIndex];
-      Float_t ct4PtCut20 = c->photon.ct4PtCut20[leadingIndex];
-      Float_t hadronicOverEm = c->photon.hadronicOverEm[leadingIndex];
-      Float_t sigmaIetaIeta = c->photon.sigmaIetaIeta[leadingIndex];
-      Float_t run = c->evt.run;
-      Float_t r9 = c->photon.r9[leadingIndex];
-      Float_t event = c->photon.event;
-      Float_t ecalRecHitSumEtConeDR04 = c->photon.ecalRecHitSumEtConeDR04[leadingIndex];
-      Float_t hcalTowerSumEtConeDR04 = c->photon.hcalTowerSumEtConeDR04[leadingIndex];
-      Float_t trkSumPtHollowConeDR04 = c->photon.trkSumPtHollowConeDR04[leadingIndex];
+      genMomId_ = c->photon.genMomId[leadingIndex];
+      genCalIsoDR04_ = c->photon.genCalIsoDR04[leadingIndex];
+      genTrkIsoDR04_ = c->photon.genTrkIsoDR04[leadingIndex];
+      ptHat_ = c->photon.ptHat;
+      genGPt_ = c->photon.genMatchedPt[leadingIndex];
+      genGEta_ = c->photon.genMatchedEta[leadingIndex];
+      genGPhi_ = c->photon.genMatchedPhi[leadingIndex];
+      mcweight_ = mcweight;
+    }
+    //////////////////////////////
 
-      if(!montecarlo)
+    //loop over 'away' jets
+    ///////////////////////////////////////////
+    nJets_ = 0;
+    for(Int_t i = 0; i<jetCollection.nref; ++i)
+    {
+      if( TMath::Abs(jetCollection.jteta[i]) > jetEtaCut)
+	continue;
+
+      Float_t deltaPhi = TMath::ACos(TMath::Cos(c->photon.phi[leadingIndex]
+						- jetCollection.jtphi[i]));
+      Float_t deltaEta = TMath::Abs(c->photon.eta[leadingIndex]
+				    - jetCollection.jteta[i]);
+      Float_t deltaR = TMath::Sqrt(deltaPhi*deltaPhi + deltaEta*deltaEta);
+
+      if(deltaR < 0.3) continue; // avoid finding the photon itself
+      
+      Float_t averageEta = (c->photon.eta[leadingIndex] + jetCollection.jteta[i])/2.0;
+
+      nJets_++;
+      if(nJets_ > MAXJETS)
       {
-	Float_t x[] = {gPt,
-		       gEta,
-		       gPhi,
-		       jPt,
-		       jEta,
-		       jPhi,
-		       HF,
-		       HFplusEta4,
-		       HFminusEta4,
-		       avgEta,
-		       dPhi,
-		       cc4,
-		       cr4,
-		       ct4PtCut20,
-		       hadronicOverEm,
-		       sigmaIetaIeta,
-		       run,
-		       r9,
-		       event,
-		       ecalRecHitSumEtConeDR04,
-		       hcalTowerSumEtConeDR04,
-		       trkSumPtHollowConeDR04};
-	outTuple->Fill(x);
+	printf("ERROR: Jet arrays not large enough.\n");
+	return(1);
       }
-      else
-      {
-	Float_t genMomId = c->photon.genMomId[leadingIndex];
-	Float_t genCalIsoDR04 = c->photon.genCalIsoDR04[leadingIndex];
-	Float_t genTrkIsoDR04 = c->photon.genTrkIsoDR04[leadingIndex];
-	Float_t ptHat = c->photon.ptHat;
-	Float_t matchedGPt = c->photon.genMatchedPt[leadingIndex];
-	Float_t matchedJPt = c->akPu3PF.matchedPt[i];
-	//jentry
-	//mcweight
-	Float_t mcid = jentry + 500000*forestnum;
+      jPt_[i] = jetCollection.jtpt[i];
+      jEta_[i] = jetCollection.jteta[i];
+      jPhi_[i] = jetCollection.jtphi[i];
+      avgEta_[i] = averageEta;
+      dPhi_[i] = deltaPhi;
+      dR_[i] = deltaR;
 
-	Float_t x[] = {gPt,
-		       gEta,
-		       gPhi,
-		       jPt,
-		       jEta,
-		       jPhi,
-		       HF,
-		       HFplusEta4,
-		       HFminusEta4,
-		       avgEta,
-		       dPhi,
-		       cc4,
-		       cr4,
-		       ct4PtCut20,
-		       hadronicOverEm,
-		       sigmaIetaIeta,
-		       run,
-		       r9,
-		       event,
-		       ecalRecHitSumEtConeDR04,
-		       hcalTowerSumEtConeDR04,
-		       trkSumPtHollowConeDR04,
-		       // mc stuff
-		       genMomId,
-		       genCalIsoDR04,
-		       genTrkIsoDR04,
-		       ptHat,
-		       matchedGPt,
-		       matchedJPt,
-		       jentry,
-		       mcweight,
-		       mcid};
-	outTuple->Fill(x);
+      if(montecarlo)
+	genJPt_[i] = jetCollection.refpt[i];
+    }
+    //////////////////////////////////////////////
+
+    // for kHIDATA, mix with minbias jets
+    ///////////////////////////////////////////////
+    nMjet_ = 0;
+    if(sType == kHIDATA)
+    {
+      int nMixing = nMixing1;
+      nMjet_ = 0;
+      bool noSuchEvent = false;
+      int iMix=0;
+      int loopCounter=0;
+      int cBin = c->evt.hiBin;
+      int vzBin = hvz->FindBin(c->evt.vz);
+    
+      // if ( !(sType==kHIDATA) ) 
+      //   iMix = nMixing+1;   // Mixing step will be skipped 
+    
+      while (iMix<nMixing)  {
+	loopCounter++;
+	if ( loopCounter > nMB[cBin][vzBin]+1) {
+	  iMix = 999999 ;
+	  noSuchEvent = true;
+	  //cout << " no such event!! :  icent = " << cBin << ",  vzBin = " << vzBin << ",  pBin = " << evt.pBin << endl;
+	  continue;
+	}
+      
+	mbItr[cBin][vzBin] = mbItr[cBin][vzBin] + 1;
+	if ( mbItr[cBin][vzBin] == nMB[cBin][vzBin] )
+	  mbItr[cBin][vzBin] =  mbItr[cBin][vzBin] - nMB[cBin][vzBin];
+      
+	/// Load the minbias tracks!!
+	tjmb[cBin][vzBin]->GetEntry(mbItr[cBin][vzBin]);
+      
+	// Event plane is out of control for both pA and PbPb Sept 2013
+	//    if  ( evt.pBin != evtImb.pBin ) 
+	//   continue;
+      
+	// ok found the event!! ///////////
+	loopCounter =0;  // Re-initiate loopCounter
+
+	// Jet mixing 
+	for (int it = 0 ; it < nJetImb ; it++) {
+	  // if ( jetPtImb[it] < cutjetPtSkim ) 
+	  //   continue;
+	  if ( TMath::Abs( jetEtaImb[it] ) > jetEtaCut ) 
+	    continue;
+	
+	  mJetPt_[nMjet_]    = jetPtImb[it];
+	  mJetEta_[nMjet_]   = jetEtaImb[it];
+	  mJetPhi_[nMjet_]   = jetPhiImb[it];
+	  if  ( mJetPt_[nMjet_]>0 )
+	    mJetDphi_[nMjet_]  =  TMath::ACos(TMath::Cos(c->photon.phi[leadingIndex]
+							 - jetEtaImb[it]));
+	  else
+	    mJetDphi_[nMjet_]=-1;
+	
+	  nMjet_++; // < == Important! 
+	}
+      
+	iMix++;
+      }
+      if ( noSuchEvent )
+      {
+	printf("ERROR: No matching event for mixing.");
+	continue;
       }
     }
+    //////////////////////////////////////////////
 
+    photonTree_->Fill();
+    jetTree_->Fill();
+    mJetTree_->Fill();
   }
-
+  
   outfile->cd();
-  outTuple->Write();
+  photonTree_->Write();
+  jetTree_->Write();
+  mJetTree_->Write();
   outfile->Close();
 
   printf("Done.\n");
+  return(0);
 }
 
-
-int main()
+collisionType getCType(sampleType sType)
 {
-  makeGammaJetNTuple();
-  return 0;
+  switch (sType)
+  {
+  case kPPDATA:
+  case kPPMC:
+    return cPP;
+  case kPADATA:
+  case kPAMC:
+    return cPPb;
+  case kHIDATA:
+  case kHIMC:
+    return cPbPb;
+  }
+  return cPbPb; //probably a bad guess
+}
+			
+int main(int argc, char *argv[])
+{
+  if(argc != 4 && argc != 5)
+  {
+    printf("Usage: makeGammaJetNTuple.exe \"inForest\" sampleType \"outname\" mcweight");
+    return(1);
+  }
+  if(argc == 4)
+    return(makeGammaJetNTuple(argv[1], (sampleType)atoi(argv[2]), argv[3]));
+  else
+    return(makeGammaJetNTuple(argv[1], (sampleType)atoi(argv[2]), argv[3], atof(argv[4])));
 }
