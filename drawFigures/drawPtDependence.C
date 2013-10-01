@@ -43,7 +43,8 @@ void drawPtDependence( bool saveFigures=true) {
     for (int ipt=1 ; ipt<=nPtBin ; ipt++) {
         for (int icoll=0 ; icoll<6 ; icoll++) {
             TString sampleName = getSampleName( icoll ) ;
-            char* fname =  Form("ffFiles/photonTrackCorr_%s_output_photonPtThr%d_to_%d_jetPtThr30_20130924.root",sampleName.Data(), (int)ptBin[ipt-1], (int)ptBin[ipt]);
+	    char* fname =  Form("ffFiles/photonTrackCorr_%s_output_photonPtThr%d_to_%d_jetPtThr30_20130924.root",sampleName.Data(), (int)ptBin[ipt-1], (int)ptBin[ipt]);
+	    // char* fname =  Form("ffFiles/systematics_photonEnergyscale/photonTrackCorr_%s_output_photonPtThr%d_to_%d_jetPtThr30_20130929_photonEnergyScaledBy-0.015.root",sampleName.Data(), (int)ptBin[ipt-1], (int)ptBin[ipt]);
             histFile[icoll][ipt] = new TFile(fname) ;
             cout << " Reading file : " << fname << endl;
 
@@ -320,8 +321,47 @@ void drawPtDependence( bool saveFigures=true) {
     l1->Draw();
     if (saveFigures)   c_rjg->SaveAs("figures/pT_dependence_rjg_pp_pbpb_figure1.pdf");
     if (saveFigures)   c_rjg->SaveAs("figures/pT_dependence_rjg_pp_pbpb_figure1.gif");
-    }
 
+
+    
+    // Save the final root histogram files
+    TFile * fResults =  new TFile("resultHistograms.root","update");
+    //TFile * fResults =  new TFile("resultHistograms_photonEnergy_ScaledBy-0.015.root","update");
+    
+    // pp 
+    
+    meanJetPt[kPPDATA][7]->SetName(Form("meanJetPt_pp"));
+    meanJetPt[kPPDATA][7]->Write();
+    
+    rjg[kPPDATA][7]->SetName(Form("meanRjg_pp"));
+    rjg[kPPDATA][7]->Write();
+    
+    for ( int ipt = 1 ; ipt<=nPtBin  ; ipt++) {
+      hJetPt[kPPDATA][7][ipt]->SetName(Form("dNdJetPt_pp_ptBin%d",ipt));
+      hJetPt[kPPDATA][7][ipt]->Write();
+      
+    }
+    
+
+    // PbPb 
+    
+    for ( int icent = 1; icent <= nCentBinHI ; icent++ ) {
+      for ( int ipt = 1 ; ipt<=nPtBin  ; ipt++) {
+	hJetPt[kHIDATA][icent][ipt]->SetName(Form("dNdJetPt_pbpb_centralityBin%d_ptBin%d",icent,ipt));
+	hJetPt[kHIDATA][icent][ipt]->Write();	
+      }
+      
+      meanJetPt[kHIDATA][icent]->SetName(Form("meanJetPt_pbpb_centralityBin%d",icent));
+      meanJetPt[kHIDATA][icent]->Write();
+      
+      rjg[kHIDATA][icent]->SetName(Form("meanRjg_pbpb_centralityBin%d",icent));
+      rjg[kHIDATA][icent]->Write();
+    }
+    
+    fResults->Close();
+    
+    
+}
 
 /*  
   //    onSun(meanX[iSpecies][iglb].val - meanX[iSpecies][iglb].err, 0, meanX[iSpecies][iglb].val+meanX[iSpecies][iglb].err,0,ycolor[ipt+1],2);
