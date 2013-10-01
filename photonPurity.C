@@ -39,9 +39,9 @@ const TString LABEL = "pp #sqrt{s}_{_{NN}}=2.76 TeV";
 const Double_t sigShifts[] = {0, 0, 0, 0};
 
 //pPb
-//const TString DATA_FILE = "gammaJets_inclusive_dphi7pi8_pPbData_v2.root";
-//const TString MC_FILE = "gammaJets_pA_merged_allQCDPhoton_ntuple_v2.root";
-//const TString LABEL = "pPb #sqrt{s}_{_{NN}}=5.02 TeV";
+// const TString DATA_FILE = "gammaJets_inclusive_dphi7pi8_pPbData_v2.root";
+// const TString MC_FILE = "gammaJets_pA_merged_allQCDPhoton_ntuple_v2.root";
+// const TString LABEL = "pPb #sqrt{s}_{_{NN}}=5.02 TeV";
 //const Double_t sigShifts[] = {-0.0000989, -0.000131273, -0.00016207, -0.000170555};
 //const Double_t sigShifts[] = {-0.00015,-0.00015,-0.00015,-0.00015};
 
@@ -76,8 +76,8 @@ void photonPurity()
   TNtuple *mcTuple = (TNtuple*)mcFile->Get("gammaJets");
   use_only_unique_events(mcTuple,"mcid"); //private MC has bad event numbers
 
-  TCut sampleIsolation = "(cc4+cr4+ct4PtCut20<1) && hadronicOverEm<0.1";
-  //TCut sampleIsolation = "ecalRecHitSumEtConeDR04 < 4.2  &&  hcalTowerSumEtConeDR04 < 2.2  &&  trkSumPtHollowConeDR04 < 2 && hadronicOverEm<0.1";
+  //TCut sampleIsolation = "(cc4+cr4+ct4PtCut20<1) && hadronicOverEm<0.1";
+  TCut sampleIsolation = "ecalRecHitSumEtConeDR04 < 4.2  &&  hcalTowerSumEtConeDR04 < 2.2  &&  trkSumPtHollowConeDR04 < 2 && hadronicOverEm<0.1";
   TCut sidebandIsolation = "(cc4+cr4+ct4PtCut20>10) && (cc4+cr4+ct4PtCut20<20) && hadronicOverEm<0.1";
   TCut mcIsolation = "genCalIsoDR04<5 && abs(genMomId)<=22";
 
