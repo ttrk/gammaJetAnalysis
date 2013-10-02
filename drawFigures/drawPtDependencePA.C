@@ -15,7 +15,7 @@ void drawPtDependencePA( bool saveFigures=true) {
 
     TH1D* hxjg[7][10][6]; // [Collision][centrality][pt]
     TH1D* hJetPt[7][10][6]; // [Collision][centrality][pt]
-    TH1D* hIaa[7][10][6]; // [Collision][centrality][pt]
+    TH1D* hJetPtIaaBin[7][10][6]; // [Collision][centrality][pt]                                                                     
     TH1D* hDphi[7][10][6]; // [Collision][centrality][pt]
     TH1D* hEta[7][10][6]; // [Collision][centrality][pt]
     TH1D* meanXjg[7][10];      // [Collision][centrality]
@@ -31,8 +31,8 @@ void drawPtDependencePA( bool saveFigures=true) {
             for (int ipt=1 ; ipt<=nPtBin ; ipt++) {
                 hxjg[icoll][icent][ipt] = NULL;
                 hJetPt[icoll][icent][ipt] = NULL;
-                hIaa[icoll][icent][ipt] = NULL;
-                hDphi[icoll][icent][ipt] = NULL;
+                hJetPtIaaBin[icoll][icent][ipt] = NULL;
+		hDphi[icoll][icent][ipt] = NULL;
                 hEta[icoll][icent][ipt] = NULL;
             }
 
@@ -43,10 +43,10 @@ void drawPtDependencePA( bool saveFigures=true) {
     for (int ipt=1 ; ipt<=nPtBin ; ipt++) {
         for (int icoll=0 ; icoll<6 ; icoll++) {
 	  TString sampleName = getSampleName( icoll ) ;
-	  //char* fname =  Form("ffFiles/20131001pPb/photonTrackCorr_%s_output_photonPtThr%d_to_%d_jetPtThr30_20131001.root",sampleName.Data(), (int)ptBin[ipt-1], (int)ptBin[ipt]);
+	  char* fname =  Form("ffFiles/20131001pPb/photonTrackCorr_%s_output_photonPtThr%d_to_%d_jetPtThr30_20131001.root",sampleName.Data(), (int)ptBin[ipt-1], (int)ptBin[ipt]);
 	  //	  char* fname =  Form("ffFiles/20131001pPb/photonTrackCorr_%s_output_photonPtThr%d_to_%d_jetPtThr30_20131001_photonEnergyScaledBy0.015.root",sampleName.Data(), (int)ptBin[ipt-1], (int)ptBin[ipt]);
 	  //	  char* fname =  Form("ffFiles/20131001pPb/photonTrackCorr_%s_output_photonPtThr%d_to_%d_jetPtThr30_20131001_photonEnergyScaledBy-0.015.root",sampleName.Data(), (int)ptBin[ipt-1], (int)ptBin[ipt]);
-	  char* fname =  Form("ffFiles/20131002_jetEnergySmearedBy10percent/photonTrackCorr_%s_output_photonPtThr%d_to_%d_jetPtThr30_20131002.root",sampleName.Data(), (int)ptBin[ipt-1], (int)ptBin[ipt]);
+	  //	  char* fname =  Form("ffFiles/20131002_jetEnergySmearedBy10percent/photonTrackCorr_%s_output_photonPtThr%d_to_%d_jetPtThr30_20131002.root",sampleName.Data(), (int)ptBin[ipt-1], (int)ptBin[ipt]);
 	  
 	  histFile[icoll][ipt] = new TFile(fname) ;
 	  cout << " Reading file : " << fname << endl;
@@ -59,20 +59,25 @@ void drawPtDependencePA( bool saveFigures=true) {
                     cout << " Getting histogram : " << Form("xjg_icent%d_final", icent) << endl;
                     hJetPt[icoll][icent][ipt] = (TH1D*)histFile[icoll][ipt]->Get(Form("jetPt_icent%d_final", icent)) ;
                     cout << " Getting histogram : " << Form("jetPt_icent%d_final", icent) << endl;
-                    hDphi[icoll][icent][ipt]  = (TH1D*)histFile[icoll][ipt]->Get(Form("jetDphi_icent%d_final", icent)) ;
+		    hJetPtIaaBin[icoll][icent][ipt] = (TH1D*)histFile[icoll][ipt]->Get(Form("jetPtForIaa_icent%d_final", icent)) ;
+                    cout << " Getting histogram : " << Form("jetPtForIaa_icent%d_final", icent) << endl;
+		    hDphi[icoll][icent][ipt]  = (TH1D*)histFile[icoll][ipt]->Get(Form("jetDphi_icent%d_final", icent)) ;
                     cout << " Getting histogram : " << Form("jetDphi_icent%d_final", icent) << endl;
                     hEta[icoll][icent][ipt]  = (TH1D*)histFile[icoll][ipt]->Get(Form("etaJg_icent%d_final", icent)) ;
                     cout << " Getting histogram : " << Form("etaJg_icent%d_final", icent) << endl;
 
                 }
 
-		if ( (icoll == kPADATA) || (icoll == kPAMC) )   {  //  PP
+		if ( (icoll == kPADATA) || (icoll == kPAMC) )   {  //  PA
                     int icent = 1 ; 
                     hxjg[icoll][icent][ipt] = (TH1D*)histFile[icoll][ipt]->Get(Form("xjg_icent%d_final", icent)) ;
                     cout << " Getting histogram : " << Form("xjg_icent%d_final", icent) << endl;
                     hJetPt[icoll][icent][ipt] = (TH1D*)histFile[icoll][ipt]->Get(Form("jetPt_icent%d_final", icent)) ;
                     cout << " Getting histogram : " << Form("jetPt_icent%d_final", icent) << endl;
-                    hDphi[icoll][icent][ipt]  = (TH1D*)histFile[icoll][ipt]->Get(Form("jetDphi_icent%d_final", icent)) ;
+		    hJetPtIaaBin[icoll][icent][ipt] = (TH1D*)histFile[icoll][ipt]->Get(Form("jetPtForIaa_icent%d_final", icent ) ) ;
+		    cout << " Getting histogram : " << Form("jetPtForIaa_icent%d_final", centBinHI[icent] ) << endl;
+		    
+		    hDphi[icoll][icent][ipt]  = (TH1D*)histFile[icoll][ipt]->Get(Form("jetDphi_icent%d_final", icent)) ;
                     cout << " Getting histogram : " << Form("jetDphi_icent%d_final", icent) << endl;
                     hEta[icoll][icent][ipt]  = (TH1D*)histFile[icoll][ipt]->Get(Form("etaJg_icent%d_final", icent)) ;
                     cout << " Getting histogram : " << Form("etaJg_icent%d_final", icent) << endl;
@@ -85,6 +90,8 @@ void drawPtDependencePA( bool saveFigures=true) {
                         cout << " Getting histogram : " << Form("xjg_icent%d_final", centBinHI[icent] ) << endl;
                         hJetPt[icoll][icent][ipt] = (TH1D*)histFile[icoll][ipt]->Get(Form("jetPt_icent%d_final", centBinHI[icent] ) );
                         cout << " Getting histogram : " << Form("jetPt_icent%d_final", centBinHI[icent] ) << endl;
+                        hJetPtIaaBin[icoll][icent][ipt] = (TH1D*)histFile[icoll][ipt]->Get(Form("jetPtForIaa_icent%d_final", centBinHI[icent] ) );
+                        cout << " Getting histogram : " << Form("jetPtForIaa_icent%d_final", centBinHI[icent] ) << endl;
                         hDphi[icoll][icent][ipt]  = (TH1D*)histFile[icoll][ipt]->Get(Form("jetDphi_icent%d_final", centBinHI[icent] ) ) ;
                         cout << " Getting histogram : " << Form("jetDphi_icent%d_final", icent)<< endl;
                         hEta[icoll][icent][ipt]  = (TH1D*)histFile[icoll][ipt]->Get(Form("etaJg_icent%d_final", centBinHI[icent] ) ) ;
@@ -231,19 +238,6 @@ void drawPtDependencePA( bool saveFigures=true) {
             drawText(Form("%dGeV < p_{T}^{#gamma} < %dGeV, ", (int)ptBin[ipt-1], (int)ptBin[ipt]), 0.12+dx1,0.85,1,15);//yeonju 130823
 
         onSun(30,0,200,0);
-        /*
-           c2->cd(ipt+nPtBin);
-
-        hTempPt->SetYTitle("I_{AA}");
-        hTempPt->SetAxisRange(0,3,"Y");
-        hTempPt->DrawCopy();
-        //    for ( int icent = 1; icent <= nCentBinHI ; icent++ ) {
-        for ( int icent = 1; icent <= 1 ; icent++ ) {
-            hIaa[kHIDATA][icent][ipt] = (TH1D*)hJetPt[kHIDATA][icent][ipt]->Clone(Form("iaa_%s",hJetPt[kHIDATA][icent][ipt]->GetName()) );
-            hIaa[kHIDATA][icent][ipt]->Divide(hJetPt[kPPDATA][1][ipt]);
-            hIaa[kHIDATA][icent][ipt]->Draw("same");
-        }
-        jumSun(10,1,150,1);*/
     }
     c2->cd(1);
     l1->Draw();  
@@ -389,6 +383,9 @@ void drawPtDependencePA( bool saveFigures=true) {
     for ( int ipt = 1 ; ipt<=nPtBin  ; ipt++) {
       hJetPt[kPADATA][1][ipt]->SetName(Form("dNdJetPt_ppb_ptBin%d",ipt));
       hJetPt[kPADATA][1][ipt]->Write();
+      hJetPtIaaBin[kPADATA][1][ipt]->SetName(Form("dNdJetPt_IaaBin_ppb_ptBin%d",ipt));
+      hJetPtIaaBin[kPADATA][1][ipt]->Write();
+
     }
     
 }
