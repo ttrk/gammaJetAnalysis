@@ -37,6 +37,7 @@ Float_t r9_;
 Float_t ecalRecHitSumEtConeDR04_;
 Float_t hcalTowerSumEtConeDR04_;
 Float_t trkSumPtHollowConeDR04_;
+Int_t hiBin_;
 
 
 //jet tree
@@ -93,6 +94,7 @@ void initGammaSkim(bool montecarlo)
   photonTree_->Branch("ecalRecHitSumEtConeDR04",&ecalRecHitSumEtConeDR04_,"ecalRecHitSumEtConeDR04/F");
   photonTree_->Branch("hcalTowerSumEtConeDR04",&hcalTowerSumEtConeDR04_,"hcalTowerSumEtConeDR04/F");
   photonTree_->Branch("trkSumPtHollowConeDR04",&trkSumPtHollowConeDR04_,"trkSumPtHollowConeDR04/F");
+  photonTree_->Branch("hiBin",&hiBin_,"hiBin/I");
 
   jetTree_->Branch("nJets",&nJets_,"nJets/I");
   jetTree_->Branch("pt",jPt_,"jPt[nJets]/F");

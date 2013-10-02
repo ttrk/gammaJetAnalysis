@@ -22,39 +22,46 @@
 #include <iostream>
 #include "commonUtility.h"
 #include "fitResult.h"
-#include "uniqueEvents.C"
+//#include "uniqueEvents.C"
 
 using namespace std;
 //last forward run is 211256
 
-//pp
-const TString DATA_FILE = "gammaJets_inclusive_dphi7pi8_pp2013Data_v2.root";
-const TString MC_FILE = "gammaJets_pp_pythia_allQCDPhoton_ntuple.root";
-const TString LABEL = "pp #sqrt{s}_{_{NN}}=2.76 TeV";
+// //pp
+// const TString DATA_FILE = "gammaJets_pp_Data.root";
+// const TString MC_FILE = "gammaJets_pp_MC_PUallQCDPhoton.root";
+// const TString LABEL = "pp #sqrt{s}_{_{NN}}=2.76 TeV";
+// const TCut sampleIsolation = "ecalRecHitSumEtConeDR04 < 4.2  &&  hcalTowerSumEtConeDR04 < 2.2  &&  trkSumPtHollowConeDR04 < 2 && hadronicOverEm<0.1";
 
 //PbPb
-// const TString DATA_FILE = "gammaJets_inclusive_dphi7pi8_PbPb2011_Data.root";
-// const TString MC_FILE = "gammaJets_PbPb_pythiaHydjet_allQCDPhoton_ntuple.root";
+// const TString DATA_FILE = "gammaJets_PbPb_Data.root";
+// const TString MC_FILE = "gammaJets_PbPb_MC_allQCDPhoton.root";
 // const TString LABEL = "PbPb #sqrt{s}_{_{NN}}=2.76 TeV";
-const Double_t sigShifts[] = {0, 0, 0, 0};
+// const TCut sampleIsolation = "(cc4+cr4+ct4PtCut20<1) && hadronicOverEm<0.1";
 
-//pPb
-// const TString DATA_FILE = "gammaJets_inclusive_dphi7pi8_pPbData_v2.root";
-// const TString MC_FILE = "gammaJets_pA_merged_allQCDPhoton_ntuple_v2.root";
-// const TString LABEL = "pPb #sqrt{s}_{_{NN}}=5.02 TeV";
+// pPb
+const TString DATA_FILE = "gammaJets_pA_Data.root";
+const TString MC_FILE = "gammaJets_pA_MC_allQCDPhoton.root";
+const TString LABEL = "pPb #sqrt{s}_{_{NN}}=5.02 TeV";
+const TCut sampleIsolation = "ecalRecHitSumEtConeDR04 < 4.2  &&  hcalTowerSumEtConeDR04 < 2.2  &&  trkSumPtHollowConeDR04 < 2 && hadronicOverEm<0.1";
+
+
 //const Double_t sigShifts[] = {-0.0000989, -0.000131273, -0.00016207, -0.000170555};
+const Double_t sigShifts[] = {0, 0, 0, 0};
 //const Double_t sigShifts[] = {-0.00015,-0.00015,-0.00015,-0.00015};
+const TString SAVENAME = "photonPurity_pPb_noshift_tightIso";
 
 // last entry is upper bound on last bin
-const Double_t HFBINS[] = {0,1000};//20,30,1000};
-const Int_t nHFBINS = sizeof(HFBINS)/sizeof(Double_t) -1;
+//const Int_t CENTBINS[] = {0, 12, 40};
+const Int_t CENTBINS[] = {0, 100};
+const Int_t nCENTBINS = sizeof(CENTBINS)/sizeof(Int_t) -1;
 
 const Double_t PTBINS[] = {40, 50, 60, 80, 1000};
 //const Double_t PTBINS[] = {40, 1000};
 const Int_t nPTBINS = sizeof(PTBINS)/sizeof(Double_t) -1;
 
-const Double_t ETABINS[] = {-1.479, 1.479};
-//const Double_t ETABINS[] = {-1.479, -1, -0.5, 0, 0.5, 1, 1.479};
+const Double_t ETABINS[] = {-1.44, 1.44};
+//const Double_t ETABINS[] = {-1.44, -1, -0.5, 0, 0.5, 1, 1.44};
 const Int_t nETABINS = sizeof(ETABINS)/sizeof(Double_t) -1;
 
 // the bin which holds this value is considered the largest bin when
@@ -62,61 +69,56 @@ const Int_t nETABINS = sizeof(ETABINS)/sizeof(Double_t) -1;
 const Double_t PURITY_BIN_VAL = 0.00999;
 //const Double_t PURITY_BIN_VAL = 0.02699;
 
-//const Double_t SHIFTVAL = 0;//-0.00015; //shift signal distribution by this much
-
 void photonPurity()
 {
   TH1::SetDefaultSumw2();
 
   TFile *dataFile = TFile::Open(DATA_FILE);
-  TNtuple *dataTuple = (TNtuple*)dataFile->Get("gammaJets");
-  use_only_unique_events(dataTuple);
+  TTree *dataTree = (TTree*)dataFile->Get("photonTree");
 
   TFile *mcFile = TFile::Open(MC_FILE);
-  TNtuple *mcTuple = (TNtuple*)mcFile->Get("gammaJets");
-  use_only_unique_events(mcTuple,"mcid"); //private MC has bad event numbers
+  TTree *mcTree = (TTree*)mcFile->Get("photonTree");
 
-  //TCut sampleIsolation = "(cc4+cr4+ct4PtCut20<1) && hadronicOverEm<0.1";
-  TCut sampleIsolation = "ecalRecHitSumEtConeDR04 < 4.2  &&  hcalTowerSumEtConeDR04 < 2.2  &&  trkSumPtHollowConeDR04 < 2 && hadronicOverEm<0.1";
-  TCut sidebandIsolation = "(cc4+cr4+ct4PtCut20>10) && (cc4+cr4+ct4PtCut20<20) && hadronicOverEm<0.1";
-  TCut mcIsolation = "genCalIsoDR04<5 && abs(genMomId)<=22";
+  //const TCut sidebandIsolation = "(cc4+cr4+ct4PtCut20>10) && (cc4+cr4+ct4PtCut20<20) && hadronicOverEm<0.1";
+  const TCut sidebandIsolation = "(cc4+cr4+ct4PtCut20>5) && (cc4+cr4+ct4PtCut20<10) && hadronicOverEm<0.1";
+  const TCut mcIsolation = "genCalIsoDR04<5 && abs(genMomId)<=22";
 
   //TCanvas *cPurity[nPTBINS];  
-  TCanvas *cPurity = new TCanvas("c1","c1",1350,600);
-  cPurity->Divide(nPTBINS,2,0,0);
+  TCanvas *cPurity = new TCanvas("c1","c1",1350,600*nCENTBINS);
+  cPurity->Divide(nPTBINS,2*nCENTBINS,0,0);
   
   for(Int_t i = 0; i < nPTBINS; ++i) {
     //cPurity[i] = new TCanvas(Form("c1_%d",i),"",1920,1000);
     //cPurity[i]->Divide(nETABINS,2,0,0);
-    for(Int_t j = 0; j < nHFBINS; ++j) {
+    for(Int_t j = 0; j < nCENTBINS; ++j) {
       for(Int_t k = 0; k< nETABINS; ++k) {
-	TString ptCut = Form("(gPt >= %f) && (gPt < %f)",
+	TString ptCut = Form("(pt >= %f) && (pt < %f)",
 			     PTBINS[i], PTBINS[i+1]);
-	TString hfCut = Form("((HFplusEta4+HFminusEta4) >= %f) && ((HFplusEta4+HFminusEta4) < %f)",
-			     HFBINS[j], HFBINS[j+1]);
-	TString etaCut = Form("(gEta >= %f) && (gEta < %f)",
+	TString hfCut = Form("((hiBin) >= %i) && ((hiBin) < %i)",
+			     CENTBINS[j], CENTBINS[j+1]);
+	TString etaCut = Form("(eta >= %f) && (eta < %f)",
 			      ETABINS[k], ETABINS[k+1]);
 
-	TString pPbflipetaCut = Form("(gEta*((run>211257)*-1+(run<211257)) >=%f) && (gEta*((run>211257)*-1+(run<211257)) <%f)",
-				     ETABINS[k], ETABINS[k+1]);
+	//TString pPbflipetaCut = Form("(eta*((run>211257)*-1+(run<211257)) >=%f) && (eta*((run>211257)*-1+(run<211257)) <%f)",
+	//			     ETABINS[k], ETABINS[k+1]);
 
 	TCut dataCandidateCut = sampleIsolation && etaCut && ptCut && hfCut;
 	TCut sidebandCut =  sidebandIsolation && etaCut && ptCut && hfCut;
 	TCut mcSignalCut = dataCandidateCut && mcIsolation;
 		
-	if(nETABINS != 1)
-	{
-	  dataCandidateCut = sampleIsolation && pPbflipetaCut && ptCut && hfCut;
-	  sidebandCut =  sidebandIsolation && pPbflipetaCut && ptCut && hfCut;
-	  mcSignalCut =  sampleIsolation && etaCut && ptCut && hfCut && mcIsolation;
-	}
+	// if(nETABINS != 1)
+	// {
+	//   dataCandidateCut = sampleIsolation && pPbflipetaCut && ptCut && hfCut;
+	//   sidebandCut =  sidebandIsolation && pPbflipetaCut && ptCut && hfCut;
+	//   mcSignalCut =  sampleIsolation && etaCut && ptCut && hfCut && mcIsolation;
+	// }
 
-	fitResult fitr = getPurity(dataTuple, mcTuple,
+	fitResult fitr = getPurity(dataTree, mcTree,
 				   dataCandidateCut, sidebandCut,
 				   mcSignalCut, sigShifts[i],
 				   0.0, PURITY_BIN_VAL);
 
-	//cPurity[i*nHFBINS+j] = new TCanvas(Form("cpurity%d",i*nHFBINS+j),
+	//cPurity[i*nCENTBINS+j] = new TCanvas(Form("cpurity%d",i*nCENTBINS+j),
 	// 					 "",500,500);
 	cPurity->cd(2*(k+j)*nPTBINS+i+1);
 	//cPurity[i]->cd(k+1);
@@ -150,14 +152,16 @@ void photonPurity()
 
 	//drawText("|#eta_{#gamma}| < 1.479",0.5680963,0.9);
 	//drawText(Form("%f shift",fitr.sigMeanShift),0.57,0.82);
+	//drawText("Background Correction",0.57,0.82);
+	drawText("bkg Tighter",0.57,0.82);
 	if(nPTBINS != 1)
 	  drawText(Form("%.0f < p_{T}^{#gamma} < %.0f",
 			PTBINS[i], PTBINS[i+1]),
 		   0.57, 0.9);
-	if(nHFBINS != 1)
-	  drawText(Form("%.0f < E_{T}^{HF[|#eta|>4]} < %.0f",
-			HFBINS[j], HFBINS[j+1]),
-		   0.57, 0.82);
+	if(nCENTBINS != 1 && i ==0)
+	  drawText(Form("%.0f - %.0f%c",
+			CENTBINS[j]*100./40., CENTBINS[j+1]*100./40.,'%'),
+		   0.27, 0.82);
 	if(nETABINS != 1)
 	  drawText(Form("%.3f < #eta_{#gamma} < %.3f",
 			ETABINS[k], ETABINS[k+1]),
@@ -176,7 +180,7 @@ void photonPurity()
 	ratio->SetMaximum(3);
 	ratio->SetXTitle("#sigma_{#eta #eta}");
 	ratio->GetXaxis()->CenterTitle();      
-	ratio->SetYTitle("ratio");
+	ratio->SetYTitle("Data/Fit");
 	ratio->GetYaxis()->CenterTitle();
 	ratio->DrawCopy("E");
 	TLine *line = new TLine(0,1,maxSIGMA,1);
@@ -184,19 +188,18 @@ void photonPurity()
 	line->Draw("same");
 
 	// TString savename = Form("purity_pA_barrel_pt%.0f_hf%.0f_plot",
-	// 			PTBINS[i], HFBINS[j]);
-	// cPurity[i*nHFBINS+j]->SaveAs(savename+".C");
-	// cPurity[i*nHFBINS+j]->SaveAs(savename+".pdf");
-	// cPurity[i*nHFBINS+j]->SaveAs(savename+".png");
+	// 			PTBINS[i], CENTBINS[j]);
+	// cPurity[i*nCENTBINS+j]->SaveAs(savename+".C");
+	// cPurity[i*nCENTBINS+j]->SaveAs(savename+".pdf");
+	// cPurity[i*nCENTBINS+j]->SaveAs(savename+".png");
 
       }
     }
     //cPurity[i]->SaveAs(Form("pPb_purity_etadep_wshift_ptbin%.0f.png",PTBINS[i]));
     //cPurity[i]->SaveAs(Form("pPb_purity_etadep_noshift_inclusive.png"));
   }
-  cPurity->SaveAs("pp_purity_ptdep.C");
-  cPurity->SaveAs("pp_purity_ptdep.gif");
-  //cPurity->SaveAs("pPb_purity_shift.pdf");
+  cPurity->SaveAs(SAVENAME+".C");
+  cPurity->SaveAs(SAVENAME+".pdf");
 }
 
 int main()

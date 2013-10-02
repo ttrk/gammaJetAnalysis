@@ -113,7 +113,7 @@ void sbStyle(TH1* h=0) {
 const Int_t nSIGMABINS = 100; // number of bins in sigmaIetaIeta dist
 const Double_t maxSIGMA = 0.025; // x-axis max of sigmaIetaIeta dist
 
-fitResult getPurity(TNtuple *dataTuple, TNtuple *mcTuple,
+fitResult getPurity(TTree *dataTree, TTree *mcTree,
 		    TCut dataCandidateCut, TCut sidebandCut,
 		    TCut mcSignalCut, Double_t signalShift,
 		    Double_t backgroundShift, Double_t purityBinVal)
@@ -127,17 +127,23 @@ fitResult getPurity(TNtuple *dataTuple, TNtuple *mcTuple,
   TString bkgshift = "+";
   bkgshift += backgroundShift;
   
-  //Int_t dEntries = dataTuple->Project(hCand->GetName(), "sigmaIetaIeta", dataCandidateCut, "");
-  //Int_t sbEntries = dataTuple->Project(hBkg->GetName(), "sigmaIetaIeta"+bkgshift, sidebandCut, "");
-  //Int_t mcEntries = mcTuple->Project(hSig->GetName(), "sigmaIetaIeta"+sigshift, "mcweight"*mcSignalCut, "");
+  //Int_t dEntries = dataTree->Project(hCand->GetName(), "sigmaIetaIeta", dataCandidateCut, "");
+  //Int_t sbEntries = dataTree->Project(hBkg->GetName(), "sigmaIetaIeta"+bkgshift, sidebandCut, "");
+  //Int_t mcEntries = mcTree->Project(hSig->GetName(), "sigmaIetaIeta"+sigshift, "mcweight"*mcSignalCut, "");
 
   //cout << "# Candidates: " << dEntries << endl;
   //cout << "# Sideband: " << sbEntries << endl;
   //cout << "# MC Signal: " << mcEntries << endl;
 
-  dataTuple->Project(hCand->GetName(), "sigmaIetaIeta", dataCandidateCut, "");
-  dataTuple->Project(hBkg->GetName(), "sigmaIetaIeta"+bkgshift, sidebandCut, "");
-  mcTuple->Project(hSig->GetName(), "sigmaIetaIeta"+sigshift, "mcweight"*mcSignalCut, "");
+  dataTree->Project(hCand->GetName(), "sigmaIetaIeta", dataCandidateCut, "");
+  
+  //dataTree->Project(hBkg->GetName(), "sigmaIetaIeta"+bkgshift, "(1-40*(sigmaIetaIeta-0.01))"*sidebandCut, "");
+  dataTree->Project(hBkg->GetName(), "sigmaIetaIeta"+bkgshift, sidebandCut, "");
+  //TFile *bkgFile = TFile::Open("gammaJets_pp_MC_EmEnrichedDijet.root");
+  //TTree *bkgTree = (TTree*)bkgFile->Get("photonTree");
+  //bkgTree->Project(hBkg->GetName(), "sigmaIetaIeta"+bkgshift, "mcweight"*sidebandCut, "");
+  
+  mcTree->Project(hSig->GetName(), "sigmaIetaIeta"+sigshift, "mcweight"*mcSignalCut, "");
 
   //TCanvas *fakeCanvas = new TCanvas("fake","fake");
   fitResult fitr = doFit(hSig, hBkg, hCand, 0.005, 0.035, purityBinVal);
