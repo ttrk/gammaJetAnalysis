@@ -39,8 +39,8 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
 				   sampleType colli=kPADATA,
 				   bool doMix = false,
 				   float addJetEnergyRes = 0,
+				   float addFlatJetEnergyRes = 0,
 				   bool useGenJetColl = 0
-				   
 				   )
 { 
   bool isMC=true;
@@ -452,7 +452,8 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
       }
       
       // smear the jet pT 
-      float smeared = jetPt[nJet] * rand.Gaus(1,addJetEnergyRes/jetPt[nJet]);
+      float smeared = jetPt[nJet] * rand.Gaus(1,addJetEnergyRes/jetPt[nJet])   *  rand.Gaus(1, addFlatJetEnergyRes) ;
+            
       //      cout << " before : "<< jetPt[nJet] <<"   after : " << Form("%.2f",smeared)<<endl;
       jetPt[nJet] = smeared;
       
@@ -634,12 +635,16 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
       */
       // Jet mixing 
       for (int it = 0 ; it < nJetImb ; it++) {
-	if ( jetPtImb[it] < cutjetPtSkim ) 
+	
+	// smear the jet pT
+	float smeared = jetPtImb[it] * rand.Gaus(1,addJetEnergyRes/jetPtImb[it]) *  rand.Gaus(1, addFlatJetEnergyRes) ; 
+	
+	if ( smeared < cutjetPtSkim ) 
 	  continue;
 	if ( fabs( jetEtaImb[it] ) > cutjetEtaSkim ) 
 	  continue;
 	
-	mJetPt[nMjet]    = jetPtImb[it];
+	mJetPt[nMjet]    = smeared;
 	mJetEta[nMjet]   = jetEtaImb[it];
 	mJetPhi[nMjet]   = jetPhiImb[it];
 	if  ( mJetPt[nMjet]>0 )
