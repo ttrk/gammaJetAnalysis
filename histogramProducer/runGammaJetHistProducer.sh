@@ -4,24 +4,35 @@
 
 
 #pp data 
-root -l -b -q 'gammaJetHistProducer.C+(2, 40, 50, 30, 7)'
-root -l -b -q 'gammaJetHistProducer.C+(2, 50, 60, 30, 7)'
-root -l -b -q 'gammaJetHistProducer.C+(2, 60, 80, 30, 7)'
-root -l -b -q 'gammaJetHistProducer.C+(2, 80,9999, 30, 7)'
-root -l -b -q 'gammaJetHistProducer.C+(2, 60,9999, 30, 7)'
+for i in  2 3
+do
+root -l -b -q 'gammaJetHistProducer.C+('$i', 40, 50, 30, 7)'
+root -l -b -q 'gammaJetHistProducer.C+('$i', 50, 60, 30, 7)'
+root -l -b -q 'gammaJetHistProducer.C+('$i', 60, 80, 30, 7)'
+root -l -b -q 'gammaJetHistProducer.C+('$i', 100,9999, 30, 7)'
+root -l -b -q 'gammaJetHistProducer.C+('$i', 80,9999, 30, 7)'
+root -l -b -q 'gammaJetHistProducer.C+('$i', 60,9999, 30, 7)'
+root -l -b -q 'gammaJetHistProducer.C+('$i', 50,9999, 30, 7)'
+root -l -b -q 'gammaJetHistProducer.C+('$i', 40,9999, 30, 7)'
+done
 
-#PbPb data, MC
+#PbPb data, MC                                                                                                                              
 for i in  0 1
 do
-    for icent in 10030 13099 
+    for icent in 10030 13099 10010 11030 13050 15099
     do
-	root -l -b -q 'gammaJetHistProducer.C+('$i', 40,50, 30, '$icent')'
-	root -l -b -q 'gammaJetHistProducer.C+('$i', 50,60, 30,'$icent')'
-	root -l -b -q 'gammaJetHistProducer.C+('$i', 60,80, 30, '$icent')'
-	root -l -b -q 'gammaJetHistProducer.C+('$i', 80,9999, 30, '$icent')'
-	root -l -b -q 'gammaJetHistProducer.C+('$i', 60,9999, 30, '$icent')'
-    done
+        root -l -b -q 'gammaJetHistProducer.C+('$i', 40,50, 30, '$icent')'
+        root -l -b -q 'gammaJetHistProducer.C+('$i', 50,60, 30,'$icent')'
+        root -l -b -q 'gammaJetHistProducer.C+('$i', 60,80, 30, '$icent')'
+        root -l -b -q 'gammaJetHistProducer.C+('$i', 100,9999, 30, '$icent')'
+        root -l -b -q 'gammaJetHistProducer.C+('$i', 80,9999, 30, '$icent')'
+        root -l -b -q 'gammaJetHistProducer.C+('$i', 60,9999, 30, '$icent')'
+        root -l -b -q 'gammaJetHistProducer.C+('$i', 50,9999, 30, '$icent')'
+        root -l -b -q 'gammaJetHistProducer.C+('$i', 40,9999, 30, '$icent')'
+     done
 done
+
+
 
 
 #pPb data and MC
