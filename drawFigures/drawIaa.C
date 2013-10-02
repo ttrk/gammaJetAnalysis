@@ -34,7 +34,8 @@ void drawIaa( bool saveFigures=true) {
 
 
 	//	char* fname =  Form("ffFiles/systematics_photonEnergyscale/photonTrackCorr_%s_output_photonPtThr%d_to_%d_jetPtThr30_20130929_photonEnergyScaledBy-0.015.root",sampleName.Data(), (int)ptBin[ipt-1], 9999);
-	char* fname =  Form("ffFiles/photonTrackCorr_%s_output_photonPtThr%d_to_%d_jetPtThr30_20130924.root",sampleName.Data(), (int)ptBin[ipt-1], 9999);
+	//	char* fname =  Form("ffFiles/photonTrackCorr_%s_output_photonPtThr%d_to_%d_jetPtThr30_20130924.root",sampleName.Data(), (int)ptBin[ipt-1], 9999);
+	char* fname =  Form("ffFiles/20131002_jetEnergySmearedBy10percent/photonTrackCorr_%s_output_photonPtThr%d_to_%d_jetPtThr30_20131002.root",sampleName.Data(), (int)ptBin[ipt-1], 9999);
 	histFile[icoll][ipt] = new TFile(fname) ;
 	cout << " Reading file : " << fname << endl;
 	if ( histFile[icoll][ipt]->IsZombie()  == false ) {
@@ -114,7 +115,7 @@ void drawIaa( bool saveFigures=true) {
 
         c2->cd(ipt + nPtBin);
 	hTempPt->SetAxisRange(0,2.5,"Y");
-	hTempPt->SetYTitle("Jet I_{AA}");
+	hTempPt->SetYTitle("Ratio of Yield PbPb/pp");
 	handsomeTH1(hTempPt,0);
         hTempPt->DrawCopy();
                                                                                                                
