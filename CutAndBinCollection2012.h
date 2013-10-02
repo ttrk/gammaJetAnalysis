@@ -83,6 +83,13 @@ double  wHIMC_AllQcdPho30to50        = 32796./ 32796.;
 double  wHIMC_AllQcdPho50to80        = 21470./ 53876.;
 double  wHIMC_AllQcdPho80to9999       = 6462. / 58781.;
 
+/////// Data with jet energy smeared by 10%
+TString fnameHIDATA_10percentSmeared  = "yskimmedFiles/yskim_HiForestPhoton-v7-noDuplicate_smearedBy10Flat.root"  ;
+TString fnamePADATA_10percentSmeared  = "yskimmedFiles/yskim_pA_photonSkimForest_v85_HLT_PAPhoton30_NoCaloIdVL_v1_highPtPhoton40_smearedBy10Flat.root";
+TString fnamePPDATA_10percentSmeared  = "yskimmedFiles/yskim_pp_photonSKimForest_v85_smearedBy10Flat.root";
+
+
+
 const float awayRange= PI * 7./8.;
 
 
