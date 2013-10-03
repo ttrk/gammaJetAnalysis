@@ -43,15 +43,16 @@ void drawPtDependencePA( bool saveFigures=true) {
     for (int ipt=1 ; ipt<=nPtBin ; ipt++) {
         for (int icoll=0 ; icoll<6 ; icoll++) {
 	  TString sampleName = getSampleName( icoll ) ;
-	  //	  char* fname =  Form("ffFiles/20131001pPb/photonTrackCorr_%s_output_photonPtThr%d_to_%d_jetPtThr30_20131001.root",sampleName.Data(), (int)ptBin[ipt-1], (int)ptBin[ipt]);
+	  char* fname =  Form("ffFiles/20131001pPb/photonTrackCorr_%s_output_photonPtThr%d_to_%d_jetPtThr30_20131001.root",sampleName.Data(), (int)ptBin[ipt-1], (int)ptBin[ipt]);
 	  //	  char* fname =  Form("ffFiles/20131003pPb_eventSelectionUpdate/photonTrackCorr_%s_output_photonPtThr%d_to_%d_jetPtThr30_20131003.root",sampleName.Data(), (int)ptBin[ipt-1], (int)ptBin[ipt]);
 	  //	  char* fname =  Form("ffFiles/20131001pPb/photonTrackCorr_%s_output_photonPtThr%d_to_%d_jetPtThr30_20131001_photonEnergyScaledBy0.015.root",sampleName.Data(), (int)ptBin[ipt-1], (int)ptBin[ipt]);
-	  //char* fname =  Form("ffFiles/20131001pPb/photonTrackCorr_%s_output_photonPtThr%d_to_%d_jetPtThr30_20131001_photonEnergyScaledBy-0.015.root",sampleName.Data(), (int)ptBin[ipt-1], (int)ptBin[ipt]);
+	  //  char* fname =  Form("ffFiles/20131001pPb/photonTrackCorr_%s_output_photonPtThr%d_to_%d_jetPtThr30_20131001_photonEnergyScaledBy-0.015.root",sampleName.Data(), (int)ptBin[ipt-1], (int)ptBin[ipt]);
 	  //char* fname =  Form("ffFiles/jetEnergySmearedBy10percent/photonTrackCorr_%s_output_photonPtThr%d_to_%d_jetPtThr30_20131003.root",sampleName.Data(), (int)ptBin[ipt-1], (int)ptBin[ipt]);
-	  //char* fname =  Form("ffFiles/noElectronCorrection/photonTrackCorr_%s_output_photonPtThr%d_to_%d_jetPtThr30_20131003.root",sampleName.Data(), (int)ptBin[ipt-1], (int)ptBin[ipt]);
-	  //	  char* fname =  Form("ffFiles/jetEnergyScaled/plus/photonTrackCorr_%s_output_photonPtThr%d_to_%d_jetPtThr30_20131003.root",sampleName.Data(), (int)ptBin[ipt-1], (int)ptBin[ipt]);
-	  char* fname =  Form("ffFiles/jetEnergyScaled/minus/photonTrackCorr_%s_output_photonPtThr%d_to_%d_jetPtThr30_20131003.root",sampleName.Data(), (int)ptBin[ipt-1], (int)ptBin[ipt]);
-
+	  // char* fname =  Form("ffFiles/noElectronCorrection/photonTrackCorr_%s_output_photonPtThr%d_to_%d_jetPtThr30_20131003.root",sampleName.Data(), (int)ptBin[ipt-1], (int)ptBin[ipt]);
+	  // 	  char* fname =  Form("ffFiles/jetEnergyScaled/plus/photonTrackCorr_%s_output_photonPtThr%d_to_%d_jetPtThr30_20131003.root",sampleName.Data(), (int)ptBin[ipt-1], (int)ptBin[ipt]);
+	  //char* fname =  Form("ffFiles/jetEnergyScaled/minus/photonTrackCorr_%s_output_photonPtThr%d_to_%d_jetPtThr30_20131003.root",sampleName.Data(), (int)ptBin[ipt-1], (int)ptBin[ipt]);
+	  //  char* fname =  Form("ffFiles/systematics_photonIso/photonTrackCorr_%s_output_photonPtThr%d_to_%d_jetPtThr30_20130930_genOrReco0.root",sampleName.Data(), (int)ptBin[ipt-1], (int)ptBin[ipt]);	 
+	  
 	  histFile[icoll][ipt] = new TFile(fname) ;
 	  cout << " Reading file : " << fname << endl;
 
@@ -166,7 +167,6 @@ void drawPtDependencePA( bool saveFigures=true) {
 	  drawText(Form("p_{T}^{#gamma} > %dGeV, ", (int)ptBin[ipt-1]), 0.12+dx1+0.25,0.85,1,15);//yeonju 130823                           
 	else
 	  drawText(Form("%dGeV < p_{T}^{#gamma} < %dGeV, ", (int)ptBin[ipt-1], (int)ptBin[ipt]), 0.12+dx1,0.85,1,15);//yeonju 130823       
-
 
     }
     c1->cd(1);
@@ -295,7 +295,9 @@ void drawPtDependencePA( bool saveFigures=true) {
 
 	hxjg[kPAMC][1][ipt]->Scale(1./rjg[kPAMC][1]->GetBinContent(ipt)); // rjg normalization                                         
 
-
+	hxjg[kPAMC][1][ipt]->Rebin(10);
+	hxjg[kPAMC][1][ipt]->Scale(1./10);
+	
         hxjg[kPAMC][1][ipt]->SetAxisRange(0,3,"Y");
         hxjg[kPAMC][1][ipt]->Draw();
 
@@ -308,9 +310,14 @@ void drawPtDependencePA( bool saveFigures=true) {
         //     if ( icent == 1 ) hxjg[kHIDATA][icent][ipt]->Draw("same");
 
         // }
+
 	
 	handsomeTH1(hxjg[kPADATA][1][ipt],kRed);
 	hxjg[kPADATA][1][ipt]->Scale(1./rjg[kPADATA][1]->GetBinContent(ipt)); // rjg normalization
+
+	hxjg[kPADATA][1][ipt]->Rebin(10);
+	hxjg[kPADATA][1][ipt]->Scale(1./10);
+
 	hxjg[kPADATA][1][ipt]->Draw("same");
 	
         double dx1=0.15;
