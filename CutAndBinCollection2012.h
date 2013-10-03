@@ -75,6 +75,7 @@ double  wPAMC_AllQcdPho120to9999     = 4481. / 151511.;
 
 ///////////// PbPb Data
 TString fnameHIDATA                  = "yskimmedFiles/yskim_HiForestPhoton-v7-noDuplicate.root";
+TString fnameHIDATA_jetResCorrected    = "yskimmedFiles/yskim_HiForestPhoton-v7-noDuplicate_jetResCorrected.root";
 // PbPb MC
 TString fnameHIMC_AllQcdPho30to50    =  "yskimmedFiles/yskim_qcdAllPhoton30to50_genPhotonPtCut40_allCent.root";
 TString fnameHIMC_AllQcdPho50to80    =  "yskimmedFiles/yskim_qcdAllPhoton50to80_genPhotonPtCut40_allCent.root";
@@ -87,6 +88,10 @@ double  wHIMC_AllQcdPho80to9999       = 6462. / 58781.;
 TString fnameHIDATA_10percentSmeared  = "yskimmedFiles/yskim_HiForestPhoton-v7-noDuplicate_smearedBy10Flat.root"  ;
 TString fnamePADATA_10percentSmeared  = "yskimmedFiles/yskim_pA_photonSkimForest_v85_HLT_PAPhoton30_NoCaloIdVL_v1_highPtPhoton40_smearedBy10Flat.root";
 TString fnamePPDATA_10percentSmeared  = "yskimmedFiles/yskim_pp_photonSKimForest_v85_smearedBy10Flat.root";
+/////// Data without electron rejection
+TString fnameHIDATA_noElectronRejection  = "yskimmedFiles/yskim_HiForestPhoton-v7-noDuplicate_noElectronRejection.root";
+TString fnamePADATA_noElectronRejection  = "yskimmedFiles/yskim_pA_photonSkimForest_v85_HLT_PAPhoton30_NoCaloIdVL_v1_highPtPhoton40_noElectronRejection.root";
+TString fnamePPDATA_noElectronRejection  = "yskimmedFiles/yskim_pp_photonSKimForest_v85_noElectronRejection.root";
 
 
 
