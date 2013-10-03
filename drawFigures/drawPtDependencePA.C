@@ -380,7 +380,10 @@ void drawPtDependencePA( bool saveFigures=true) {
     
     meanJetPt[kPADATA][1]->SetName(Form("meanJetPt_ppb"));
     meanJetPt[kPADATA][1]->Write();
-      
+  
+    meanXjg[kPADATA][1]->SetName(Form("meanXjg_ppb"));
+    meanXjg[kPADATA][1]->Write();
+  
     rjg[kPADATA][1]->SetName(Form("meanRjg_ppb"));
     rjg[kPADATA][1]->Write();
 
@@ -389,6 +392,9 @@ void drawPtDependencePA( bool saveFigures=true) {
       hJetPt[kPADATA][1][ipt]->Write();
       hJetPtIaaBin[kPADATA][1][ipt]->SetName(Form("dNdJetPt_IaaBin_ppb_ptBin%d",ipt));
       hJetPtIaaBin[kPADATA][1][ipt]->Write();
+      
+      hxjg[kPADATA][1][ipt]->SetName(Form("dNdXjg_ppb_ptBin%d",ipt));
+      hxjg[kPADATA][1][ipt]->Write();
 
     }
     
