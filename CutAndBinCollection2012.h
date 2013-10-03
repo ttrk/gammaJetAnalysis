@@ -88,6 +88,17 @@ double  wHIMC_AllQcdPho80to9999       = 6462. / 58781.;
 TString fnameHIDATA_10percentSmeared  = "yskimmedFiles/yskim_HiForestPhoton-v7-noDuplicate_smearedBy10Flat.root"  ;
 TString fnamePADATA_10percentSmeared  = "yskimmedFiles/yskim_pA_photonSkimForest_v85_HLT_PAPhoton30_NoCaloIdVL_v1_highPtPhoton40_smearedBy10Flat.root";
 TString fnamePPDATA_10percentSmeared  = "yskimmedFiles/yskim_pp_photonSKimForest_v85_smearedBy10Flat.root";
+/////// Data with jet energy scaled by +2%
+TString fnameHIDATA_Plus2percentScaled  = "yskimmedFiles/yskim_HiForestPhoton-v7-noDuplicate_jetScaleBy2percent.root";
+TString fnamePADATA_Plus2percentScaled  = "yskimmedFiles/yskim_pA_photonSkimForest_v85_HLT_PAPhoton30_NoCaloIdVL_v1_highPtPhoton40_jetScaleBy2percent.root";
+TString fnamePPDATA_Plus2percentScaled  = "yskimmedFiles/yskim_pp_photonSKimForest_v85_jetScaleBy2percent.root";
+/////// Data with jet energy scaled by -2%
+TString fnameHIDATA_Minus2percentScaled  = "yskimmedFiles/yskim_HiForestPhoton-v7-noDuplicate_jetScaleBy-2percent.root";
+TString fnamePADATA_Minus2percentScaled  = "yskimmedFiles/yskim_pA_photonSkimForest_v85_HLT_PAPhoton30_NoCaloIdVL_v1_highPtPhoton40_jetScaleBy-2percent.root";
+TString fnamePPDATA_Minus2percentScaled  = "yskimmedFiles/yskim_pp_photonSKimForest_v85_jetScaleBy-2percent.root";
+
+
+
 /////// Data without electron rejection
 TString fnameHIDATA_noElectronRejection  = "yskimmedFiles/yskim_HiForestPhoton-v7-noDuplicate_noElectronRejection.root";
 TString fnamePADATA_noElectronRejection  = "yskimmedFiles/yskim_pA_photonSkimForest_v85_HLT_PAPhoton30_NoCaloIdVL_v1_highPtPhoton40_noElectronRejection.root";
