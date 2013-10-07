@@ -44,13 +44,14 @@ void drawPtDependence( bool saveFigures=true) {
         for (int icoll=0 ; icoll<6 ; icoll++) {
             TString sampleName = getSampleName( icoll ) ;
 	    //char* fname =  Form("ffFiles/photonTrackCorr_%s_output_photonPtThr%d_to_%d_jetPtThr30_20130924.root",sampleName.Data(), (int)ptBin[ipt-1], (int)ptBin[ipt]);
-	    //	    char* fname =  Form("ffFiles/jetEnergySmearedBy10percent/photonTrackCorr_%s_output_photonPtThr%d_to_%d_jetPtThr30_20131003.root",sampleName.Data(), (int)ptBin[ipt-1], (int)ptBin[ipt]);
-	    //	    char* fname =  Form("ffFiles/systematics_photonEnergyscale/photonTrackCorr_%s_output_photonPtThr%d_to_%d_jetPtThr30_20130929_photonEnergyScaledBy-0.015.root",sampleName.Data(), (int)ptBin[ipt-1], (int)ptBin[ipt]);
-	    //	    char* fname =  Form("ffFiles/systematics_photonEnergyscale/photonTrackCorr_%s_output_photonPtThr%d_to_%d_jetPtThr30_20130929_photonEnergyScaledBy0.015.root",sampleName.Data(), (int)ptBin[ipt-1], (int)ptBin[ipt]);
-	    //	    char* fname =  Form("ffFiles/noElectronCorrection/photonTrackCorr_%s_output_photonPtThr%d_to_%d_jetPtThr30_20131003.root",sampleName.Data(), (int)ptBin[ipt-1], (int)ptBin[ipt]);
+	    // char* fname =  Form("ffFiles/jetEnergySmearedBy10percent/photonTrackCorr_%s_output_photonPtThr%d_to_%d_jetPtThr30_20131003.root",sampleName.Data(), (int)ptBin[ipt-1], (int)ptBin[ipt]);
+	    // char* fname =  Form("ffFiles/systematics_photonEnergyscale/photonTrackCorr_%s_output_photonPtThr%d_to_%d_jetPtThr30_20130929_photonEnergyScaledBy-0.015.root",sampleName.Data(), (int)ptBin[ipt-1], (int)ptBin[ipt]);
+	    //char* fname =  Form("ffFiles/systematics_photonIso/photonTrackCorr_%s_output_photonPtThr%d_to_%d_jetPtThr30_20130930_genOrReco0.root",sampleName.Data(), (int)ptBin[ipt-1], (int)ptBin[ipt]);
+	    // char* fname =  Form("ffFiles/systematics_photonEnergyscale/photonTrackCorr_%s_output_photonPtThr%d_to_%d_jetPtThr30_20130929_photonEnergyScaledBy0.015.root",sampleName.Data(), (int)ptBin[ipt-1], (int)ptBin[ipt]);
+	    char* fname =  Form("ffFiles/noElectronCorrection/photonTrackCorr_%s_output_photonPtThr%d_to_%d_jetPtThr30_20131003.root",sampleName.Data(), (int)ptBin[ipt-1], (int)ptBin[ipt]);
 	    //	    char* fname =  Form("ffFiles/jetResCorrected/photonTrackCorr_%s_output_photonPtThr%d_to_%d_jetPtThr30_20131003.root",sampleName.Data(), (int)ptBin[ipt-1], (int)ptBin[ipt]);
-	    //	    char* fname =  Form("ffFiles/jetEnergyScaled/plus/photonTrackCorr_%s_output_photonPtThr%d_to_%d_jetPtThr30_20131003.root",sampleName.Data(), (int)ptBin[ipt-1], (int)ptBin[ipt]);
-	    char* fname =  Form("ffFiles/jetEnergyScaled/minus/photonTrackCorr_%s_output_photonPtThr%d_to_%d_jetPtThr30_20131003.root",sampleName.Data(), (int)ptBin[ipt-1], (int)ptBin[ipt]);
+	    //char* fname =  Form("ffFiles/jetEnergyScaled/plus/photonTrackCorr_%s_output_photonPtThr%d_to_%d_jetPtThr30_20131003.root",sampleName.Data(), (int)ptBin[ipt-1], (int)ptBin[ipt]);
+	    //char* fname =  Form("ffFiles/jetEnergyScaled/minus/photonTrackCorr_%s_output_photonPtThr%d_to_%d_jetPtThr30_20131003.root",sampleName.Data(), (int)ptBin[ipt-1], (int)ptBin[ipt]);
             histFile[icoll][ipt] = new TFile(fname) ;
             cout << " Reading file : " << fname << endl;
 
