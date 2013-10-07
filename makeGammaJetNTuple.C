@@ -48,60 +48,46 @@ int makeGammaJetNTuple(const char *inFile, sampleType sType, const char *outName
   c->hasSkimTree = true; // required for selectEvent()
   c->hasEvtTree = true;
 
-  Jets jetCollection;
+  
   //if(sType == kHIDATA || sType == kHIMC || sType == kPADATA || sType == kPAMC)
-  {
-    c->hasAkPu3JetTree = true;
-    jetCollection = c->akPu3PF;
-  }
+  //{
+  c->hasAkPu3JetTree = true;
+  //jetCollection = c->akPu3PF;
+  //}
   // else
   // {
-  //   c->hasAk3JetTree = true;
+  //c->hasAk3JetTree = true;
   //   jetCollection = c->ak3PF;
   // }
 
   // mix with minbias jets for PbPb only.
-  // wholesale imported from Yongsun's code
   //////////////////////////////////////
-  // int seconds = time(NULL);
-  // TRandom3 rand(seconds%10000);
-  // TH1F* hvz = new TH1F("hvz","",nVtxBin,-vzCut,vzCut);
-  // // Imb = Input MinBias events 
-  // //EvtSel          evtImb;
-  // Int_t           nJetImb;
-  // Float_t         jetPtImb[100];
-  // Float_t         jetEtaImb[100];
-  // Float_t         jetPhiImb[100];
-  // //TBranch        *b_evt;
-  // TBranch        *b_nJetImb;
-  // TBranch        *b_jetPtImb;
-  // TBranch        *b_jetEtaImb;
-  // TBranch        *b_jetPhiImb; 
+  int seconds = time(NULL);
+  TRandom3 rand(seconds%10000);
+  Int_t           nJetImb;
+  Float_t         jetPtImb[MAXJETS];
+  Float_t         jetEtaImb[MAXJETS];
+  Float_t         jetPhiImb[MAXJETS];
  
-  // int nCentBins =  nCentBinSkim;
-  // TChain *tjmb[100][nVtxBin+1];
-  // int nMB[100][nVtxBin+1] ; 
-  // int mbItr[100][nVtxBin+1];
-  // if ( sType==kHIDATA ) {
-  //   //cout <<"  Tree initialization for MinBias mixing" << endl;
-  //   for( int icent = 0 ; icent< nCentBins ; icent++) {
-  //     for( int ivz = 1 ; ivz<=nVtxBin ; ivz++) {	
-  // 	tjmb[icent][ivz] = new TChain(Form("trkAndJets_first_cBin2icent%d_ivz%d",icent,ivz));
-  // 	tjmb[icent][ivz]->Add(MinbiasFname.Data());
-  // 	//tjmb[icent][ivz]->SetBranchAddress("evt", &evtImb,&b_evt);
-  // 	tjmb[icent][ivz]->SetBranchAddress("nJet",   &nJetImb,   &b_nJetImb);
-  // 	tjmb[icent][ivz]->SetBranchAddress("jetPt",  &jetPtImb,  &b_jetPtImb);
-  // 	tjmb[icent][ivz]->SetBranchAddress("jetEta", &jetEtaImb, &b_jetEtaImb);
-  // 	tjmb[icent][ivz]->SetBranchAddress("jetPhi", &jetPhiImb, &b_jetPhiImb);	
+  int nCentBins =  nCentBinSkim;
+  TChain *tjmb[100][nVtxBin+1];
+  Long64_t nMB[100][nVtxBin+1] ; 
+  Long64_t mbItr[100][nVtxBin+1];
+  if ( sType==kHIDATA ) {
+    for( int icent = 0 ; icent< nCentBins ; icent++) {
+      for( int ivz = 1 ; ivz<=nVtxBin ; ivz++) {	
+  	tjmb[icent][ivz] = new TChain(Form("trkAndJets_first_cBin2icent%d_ivz%d",icent,ivz));
+  	tjmb[icent][ivz]->Add(MinbiasFname.Data());
+  	tjmb[icent][ivz]->SetBranchAddress("nJet",   &nJetImb);
+  	tjmb[icent][ivz]->SetBranchAddress("jetPt",  jetPtImb);
+	tjmb[icent][ivz]->SetBranchAddress("jetEta", jetEtaImb);
+	tjmb[icent][ivz]->SetBranchAddress("jetPhi", jetPhiImb);
 	
-  // 	nMB[icent][ivz] = tjmb[icent][ivz]->GetEntries();
-  // 	//cout << "number of evetns in (icent = " << icent << ", ivtxZ = "<< ivz << ")  = " << nMB[icent][ivz] << endl;
-  // 	int primeSeed = rand.Integer(37324);
-  // 	mbItr[icent][ivz] = primeSeed%(nMB[icent][ivz]);
-  // 	//cout <<" initial itr = " << mbItr[icent][ivz] << endl;
-  //     }
-  //   }
-  // }
+  	nMB[icent][ivz] = tjmb[icent][ivz]->GetEntries();
+	mbItr[icent][ivz] = rand.Integer(nMB[icent][ivz]);
+      }
+    }
+  }
   ///////////////////////////////////////////////
   
   //loop over events in each file
@@ -116,6 +102,9 @@ int makeGammaJetNTuple(const char *inFile, sampleType sType, const char *outName
 
     //event selection
     if( !c->selectEvent() )
+      continue;
+
+    if( TMath::Abs(c->evt.vz) > vzCut )
       continue;
 
     if(c->photon.nPhotons == 0)
@@ -182,6 +171,7 @@ int makeGammaJetNTuple(const char *inFile, sampleType sType, const char *outName
     //loop over 'away' jets
     ///////////////////////////////////////////
     nJets_ = 0;
+    Jets jetCollection = c->akPu3PF;
     for(Int_t i = 0; i<jetCollection.nref; ++i)
     {
       if( TMath::Abs(jetCollection.jteta[i]) > jetEtaCut)
@@ -197,90 +187,68 @@ int makeGammaJetNTuple(const char *inFile, sampleType sType, const char *outName
       
       Float_t averageEta = (c->photon.eta[leadingIndex] + jetCollection.jteta[i])/2.0;
 
+      jPt_[nJets_] = jetCollection.jtpt[i];
+      jEta_[nJets_] = jetCollection.jteta[i];
+      jPhi_[nJets_] = jetCollection.jtphi[i];
+      avgEta_[nJets_] = averageEta;
+      dPhi_[nJets_] = deltaPhi;
+      dR_[nJets_] = deltaR;
+
+      if(montecarlo)
+	genJPt_[i] = jetCollection.refpt[i];
+
       nJets_++;
-      if(nJets_ > MAXJETS)
+      if(nJets_ > MAXJETS-1)
       {
 	printf("ERROR: Jet arrays not large enough.\n");
 	return(1);
       }
-      jPt_[i] = jetCollection.jtpt[i];
-      jEta_[i] = jetCollection.jteta[i];
-      jPhi_[i] = jetCollection.jtphi[i];
-      avgEta_[i] = averageEta;
-      dPhi_[i] = deltaPhi;
-      dR_[i] = deltaR;
-
-      if(montecarlo)
-	genJPt_[i] = jetCollection.refpt[i];
     }
     //////////////////////////////////////////////
 
     // for kHIDATA, mix with minbias jets
     ///////////////////////////////////////////////
     nMjet_ = 0;
-    // if(sType == kHIDATA)
-    // {
-    //   int nMixing = nMixing1;
-    //   nMjet_ = 0;
-    //   bool noSuchEvent = false;
-    //   int iMix=0;
-    //   int loopCounter=0;
-    //   int cBin = c->evt.hiBin;
-    //   int vzBin = hvz->FindBin(c->evt.vz);
+    if(sType == kHIDATA)
+    {
+      int nMixing = nMixing1;
+      nMjet_ = 0;
+      int cBin = c->evt.hiBin;
+      int vzBin = 1;
     
-    //   // if ( !(sType==kHIDATA) ) 
-    //   //   iMix = nMixing+1;   // Mixing step will be skipped 
-    
-    //   while (iMix<nMixing)  {
-    // 	loopCounter++;
-    // 	if ( loopCounter > nMB[cBin][vzBin]+1) {
-    // 	  iMix = 999999 ;
-    // 	  noSuchEvent = true;
-    // 	  //cout << " no such event!! :  icent = " << cBin << ",  vzBin = " << vzBin << ",  pBin = " << evt.pBin << endl;
-    // 	  continue;
-    // 	}
+      for(int k = 0; k < nMixing; k++)
+      {
+    	mbItr[cBin][vzBin] = mbItr[cBin][vzBin] + 1;
+    	if ( mbItr[cBin][vzBin] >= nMB[cBin][vzBin] )
+	{
+	  mbItr[cBin][vzBin] = 0;
+	}
       
-    // 	mbItr[cBin][vzBin] = mbItr[cBin][vzBin] + 1;
-    // 	if ( mbItr[cBin][vzBin] == nMB[cBin][vzBin] )
-    // 	  mbItr[cBin][vzBin] =  mbItr[cBin][vzBin] - nMB[cBin][vzBin];
+    	/// Load the minbias event
+	//printf("cBin: %d, mbItr: %lld.\n",cBin,mbItr[cBin][vzBin]);
+    	tjmb[cBin][vzBin]->GetEntry(mbItr[cBin][vzBin]);
       
-    // 	/// Load the minbias tracks!!
-    // 	tjmb[cBin][vzBin]->GetEntry(mbItr[cBin][vzBin]);
-      
-    // 	// Event plane is out of control for both pA and PbPb Sept 2013
-    // 	//    if  ( evt.pBin != evtImb.pBin ) 
-    // 	//   continue;
-      
-    // 	// ok found the event!! ///////////
-    // 	loopCounter =0;  // Re-initiate loopCounter
-
-    // 	// Jet mixing 
-    // 	for (int it = 0 ; it < nJetImb ; it++) {
-    // 	  // if ( jetPtImb[it] < cutjetPtSkim ) 
-    // 	  //   continue;
-    // 	  if ( TMath::Abs( jetEtaImb[it] ) > jetEtaCut ) 
-    // 	    continue;
+    	// Jet mixing 
+    	for (int it = 0 ; it < nJetImb ; it++) {
+    	  // if ( jetPtImb[it] < cutjetPtSkim ) 
+    	  //   continue;
+    	  if ( TMath::Abs( jetEtaImb[it] ) > jetEtaCut ) 
+    	    continue;
 	
-    // 	  mJetPt_[nMjet_]    = jetPtImb[it];
-    // 	  mJetEta_[nMjet_]   = jetEtaImb[it];
-    // 	  mJetPhi_[nMjet_]   = jetPhiImb[it];
-    // 	  if  ( mJetPt_[nMjet_]>0 )
-    // 	    mJetDphi_[nMjet_]  =  TMath::ACos(TMath::Cos(c->photon.phi[leadingIndex]
-    // 							 - jetEtaImb[it]));
-    // 	  else
-    // 	    mJetDphi_[nMjet_]=-1;
-	
-    // 	  nMjet_++; // < == Important! 
-    // 	}
-      
-    // 	iMix++;
-    //   }
-    //   if ( noSuchEvent )
-    //   {
-    // 	printf("ERROR: No matching event for mixing.");
-    // 	continue;
-    //   }
-    // }
+    	  mJetPt_[nMjet_]    = jetPtImb[it];
+    	  mJetEta_[nMjet_]   = jetEtaImb[it];
+    	  mJetPhi_[nMjet_]   = jetPhiImb[it];
+	  mJetDphi_[nMjet_]  =  TMath::ACos(TMath::Cos(c->photon.phi[leadingIndex]
+						       - jetEtaImb[it]));
+    	  nMjet_++;
+	  if(nMjet_ > MAXJETS-1)
+	  {
+	    printf("ERROR: Mixed Jet arrays not large enough.\n");
+	    return(1);
+	  }
+    	}
+      }
+    }
     //////////////////////////////////////////////
 
     photonTree_->Fill();
