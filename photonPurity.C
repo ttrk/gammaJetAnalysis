@@ -34,26 +34,26 @@ using namespace std;
 // const TCut sampleIsolation = "ecalRecHitSumEtConeDR04 < 4.2  &&  hcalTowerSumEtConeDR04 < 2.2  &&  trkSumPtHollowConeDR04 < 2 && hadronicOverEm<0.1";
 
 //PbPb
-// const TString DATA_FILE = "gammaJets_PbPb_Data.root";
-// const TString MC_FILE = "gammaJets_PbPb_MC_allQCDPhoton.root";
-// const TString LABEL = "PbPb #sqrt{s}_{_{NN}}=2.76 TeV";
-// const TCut sampleIsolation = "(cc4+cr4+ct4PtCut20<1) && hadronicOverEm<0.1";
+const TString DATA_FILE = "gammaJets_PbPb_Data.root";
+const TString MC_FILE = "gammaJets_PbPb_MC_allQCDPhoton.root";
+const TString LABEL = "PbPb #sqrt{s}_{_{NN}}=2.76 TeV";
+const TCut sampleIsolation = "(cc4+cr4+ct4PtCut20<1) && hadronicOverEm<0.1";
 
 // pPb
-const TString DATA_FILE = "gammaJets_pA_Data.root";
-const TString MC_FILE = "gammaJets_pA_MC_allQCDPhoton.root";
-const TString LABEL = "pPb #sqrt{s}_{_{NN}}=5.02 TeV";
-const TCut sampleIsolation = "ecalRecHitSumEtConeDR04 < 4.2  &&  hcalTowerSumEtConeDR04 < 2.2  &&  trkSumPtHollowConeDR04 < 2 && hadronicOverEm<0.1";
+// const TString DATA_FILE = "gammaJets_pA_Data.root";
+// const TString MC_FILE = "gammaJets_pA_MC_allQCDPhoton.root";
+// const TString LABEL = "pPb #sqrt{s}_{_{NN}}=5.02 TeV";
+// const TCut sampleIsolation = "ecalRecHitSumEtConeDR04 < 4.2  &&  hcalTowerSumEtConeDR04 < 2.2  &&  trkSumPtHollowConeDR04 < 2 && hadronicOverEm<0.1";
 
 
 //const Double_t sigShifts[] = {-0.0000989, -0.000131273, -0.00016207, -0.000170555};
 const Double_t sigShifts[] = {0, 0, 0, 0};
 //const Double_t sigShifts[] = {-0.00015,-0.00015,-0.00015,-0.00015};
-const TString SAVENAME = "photonPurity_pPb_noshift_tightIso";
+const TString SAVENAME = "photonPurity_PbPb_example";
 
 // last entry is upper bound on last bin
-//const Int_t CENTBINS[] = {0, 12, 40};
-const Int_t CENTBINS[] = {0, 100};
+const Int_t CENTBINS[] = {0, 12, 40};
+//const Int_t CENTBINS[] = {0, 100};
 const Int_t nCENTBINS = sizeof(CENTBINS)/sizeof(Int_t) -1;
 
 const Double_t PTBINS[] = {40, 50, 60, 80, 1000};
@@ -79,20 +79,21 @@ void photonPurity()
   TFile *mcFile = TFile::Open(MC_FILE);
   TTree *mcTree = (TTree*)mcFile->Get("photonTree");
 
-  //const TCut sidebandIsolation = "(cc4+cr4+ct4PtCut20>10) && (cc4+cr4+ct4PtCut20<20) && hadronicOverEm<0.1";
-  const TCut sidebandIsolation = "(cc4+cr4+ct4PtCut20>5) && (cc4+cr4+ct4PtCut20<10) && hadronicOverEm<0.1";
+  const TCut sidebandIsolation = "(cc4+cr4+ct4PtCut20>10) && (cc4+cr4+ct4PtCut20<20) && hadronicOverEm<0.1";
+  //const TCut sidebandIsolation = "(cc4+cr4+ct4PtCut20>5) && (cc4+cr4+ct4PtCut20<10) && hadronicOverEm<0.1";
   const TCut mcIsolation = "genCalIsoDR04<5 && abs(genMomId)<=22";
 
   //TCanvas *cPurity[nPTBINS];  
-  TCanvas *cPurity = new TCanvas("c1","c1",1350,600*nCENTBINS);
+  TCanvas *cPurity = new TCanvas("c1","c1",1350,300*nCENTBINS*2);
   cPurity->Divide(nPTBINS,2*nCENTBINS,0,0);
+  //cPurity->Divide(nPTBINS,nCENTBINS,0,0);
   
   for(Int_t i = 0; i < nPTBINS; ++i) {
     //cPurity[i] = new TCanvas(Form("c1_%d",i),"",1920,1000);
     //cPurity[i]->Divide(nETABINS,2,0,0);
     for(Int_t j = 0; j < nCENTBINS; ++j) {
       for(Int_t k = 0; k< nETABINS; ++k) {
-	TString ptCut = Form("(pt >= %f) && (pt < %f)",
+	TString ptCut = Form("(corrPt >= %f) && (corrPt < %f)",
 			     PTBINS[i], PTBINS[i+1]);
 	TString hfCut = Form("((hiBin) >= %i) && ((hiBin) < %i)",
 			     CENTBINS[j], CENTBINS[j+1]);
@@ -121,6 +122,7 @@ void photonPurity()
 	//cPurity[i*nCENTBINS+j] = new TCanvas(Form("cpurity%d",i*nCENTBINS+j),
 	// 					 "",500,500);
 	cPurity->cd(2*(k+j)*nPTBINS+i+1);
+	//cPurity->cd((k+j)*nPTBINS+i+1);
 	//cPurity[i]->cd(k+1);
 
 	TH1F *hSigPdf = fitr.sigPdf;
@@ -153,12 +155,12 @@ void photonPurity()
 	//drawText("|#eta_{#gamma}| < 1.479",0.5680963,0.9);
 	//drawText(Form("%f shift",fitr.sigMeanShift),0.57,0.82);
 	//drawText("Background Correction",0.57,0.82);
-	drawText("bkg Tighter",0.57,0.82);
+	//drawText("bkg Tighter",0.57,0.82);
 	if(nPTBINS != 1)
 	  drawText(Form("%.0f < p_{T}^{#gamma} < %.0f",
 			PTBINS[i], PTBINS[i+1]),
 		   0.57, 0.9);
-	if(nCENTBINS != 1 && i ==0)
+	if(/*nCENTBINS != 1 && */i ==0)
 	  drawText(Form("%.0f - %.0f%c",
 			CENTBINS[j]*100./40., CENTBINS[j+1]*100./40.,'%'),
 		   0.27, 0.82);
