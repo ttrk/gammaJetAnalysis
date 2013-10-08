@@ -13,6 +13,25 @@ enum sampleType {
   kPAMC    //5
 };
 
+TString getSampleName ( sampleType colli) {
+  if (colli == kHIDATA) return "pbpbDATA";
+  if (colli == kHIMC) return "pbpbMC";
+  if (colli == kPPDATA) return "ppDATA";
+  if (colli == kPPMC) return "ppMC";
+  if (colli == kPADATA) return "ppbDATA";
+  if (colli == kPAMC) return "ppbMC";
+  return "NULL";
+}
+TString getSampleName ( int colli) {
+  if (colli == kHIDATA) return "pbpbDATA";
+  if (colli == kHIMC) return "pbpbMC";
+  if (colli == kPPDATA) return "ppDATA";
+  if (colli == kPPMC) return "ppMC";
+  if (colli == kPADATA) return "ppbDATA";
+  if (colli == kPAMC) return "ppbMC";
+  return "NULL";
+}
+
 TTree *photonTree_;
 TTree *jetTree_;
 TTree *mJetTree_;

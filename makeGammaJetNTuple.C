@@ -49,16 +49,14 @@ int makeGammaJetNTuple(const char *inFile, sampleType sType, const char *outName
   c->hasEvtTree = true;
 
   
-  //if(sType == kHIDATA || sType == kHIMC || sType == kPADATA || sType == kPAMC)
-  //{
-  c->hasAkPu3JetTree = true;
-  //jetCollection = c->akPu3PF;
-  //}
-  // else
-  // {
-  //c->hasAk3JetTree = true;
-  //   jetCollection = c->ak3PF;
-  // }
+  if(sType == kHIDATA || sType == kHIMC || sType == kPADATA || sType == kPAMC)
+  {
+    c->hasAkPu3JetTree = true;
+  }
+  else //pp
+  {
+    c->hasAk3JetTree = true;
+  }
 
   // mix with minbias jets for PbPb only.
   //////////////////////////////////////
@@ -171,7 +169,16 @@ int makeGammaJetNTuple(const char *inFile, sampleType sType, const char *outName
     //loop over 'away' jets
     ///////////////////////////////////////////
     nJets_ = 0;
-    Jets jetCollection = c->akPu3PF;
+    Jets jetCollection;
+    if(sType == kHIDATA || sType == kHIMC || sType == kPADATA || sType == kPAMC)
+    {
+      jetCollection = c->akPu3PF;
+    }
+    else //pp
+    {
+      jetCollection = c->ak3PF;
+    }
+
     for(Int_t i = 0; i<jetCollection.nref; ++i)
     {
       if( TMath::Abs(jetCollection.jteta[i]) > jetEtaCut)
