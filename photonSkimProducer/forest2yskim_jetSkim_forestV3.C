@@ -41,6 +41,7 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
 				   bool doJetResCorrection = 0,
 				   float addJetEnergyRes = 0,
 				   float addFlatJetEnergyRes = 0,
+                                   float jetEnergyScale = 1,
 				   bool useGenJetColl = 0
 				   )
 { 
@@ -454,9 +455,12 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
       
       // smear the jet pT 
       float smeared = jetPt[nJet] * rand.Gaus(1,addJetEnergyRes/jetPt[nJet])   *  rand.Gaus(1, addFlatJetEnergyRes) ;
+      // then multiply jet energy sclae
+      smeared = smeared * jetEnergyScale;
+      
       // resCorrection 
       float resCorrection =1. ;
-      if  ((colli==kHIDATA)||(colli==kHIMC)) { // do the residual correction
+      if (  (doJetResCorrection) && ((colli==kHIDATA)||(colli==kHIMC)) ) { // do the residual correction
 	if ( evt.cBin  < 12 ) {  // central
 	  if ( jetPt[nJet] < 100 ) 
 	    resCorrection  =   1.066 - jetPt[nJet]*0.001117 ; 
@@ -471,9 +475,8 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
 	}
       }
       
-      //      cout << " before : "<< jetPt[nJet] <<"   after : " << Form("%.2f",smeared)<<endl;
       jetPt[nJet] = smeared/resCorrection;
-      
+     
       if ( jetPt[nJet] < cutjetPtSkim)
 	 continue;
       if ( fabs( jetEta[nJet] ) > cutjetEtaSkim )    
@@ -655,17 +658,18 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
 	
 	// smear the jet pT
 	float smeared = jetPtImb[it] * rand.Gaus(1,addJetEnergyRes/jetPtImb[it]) *  rand.Gaus(1, addFlatJetEnergyRes) ; 
+	smeared = jetEnergyScale * smeared ;  // multiply jet energy scale 
 	float resCorrection =1. ;
-	if  ((colli==kHIDATA)||(colli==kHIMC)) { // do the residual correction                                                
+	if (  (doJetResCorrection) && ((colli==kHIDATA)||(colli==kHIMC)) ) { // do the residual correction   
 	  if ( evt.cBin  < 12 ) {  // central                                                                            
-	    if ( jetPt[nJet] < 100 )
-	      resCorrection  =   1.066 - jetPt[nJet]*0.001117 ;
+	    if ( jetPtImb[it] < 100 )
+	      resCorrection  =   1.066 - jetPtImb[it]*0.001117 ;
 	    else
 	      resCorrection  =   0.975 ;
 	  }
 	  else                  { // peripheral       
-	    if ( jetPt[nJet] < 100 )
-	      resCorrection  =  1.03440 - jetPt[nJet]*0.000601 ;
+	    if ( jetPtImb[it] < 100 )
+	      resCorrection  =  1.03440 - jetPtImb[it]*0.000601 ;
 	    else
 	      resCorrection  =   0.98 ;
 	  }
