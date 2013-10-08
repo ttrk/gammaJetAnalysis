@@ -61,6 +61,8 @@ void alexHistoProducer(sampleType collision, float photonPtThr=60, float photonP
   TCut jetCutDphi = jetCut && jetDphiCut;
   //TString jetWeight = "photonTree.mcweight";
   TString jetWeight = "";
+  if  ( ( collision == kHIMC ) || (collision == kPPMC) || (collision == kPAMC))  
+    jetWeight = "mcweight";
   TCut photonPtCut = Form("photonTree.corrPt>%f && photonTree.corrPt<%f", photonPtThr, photonPtThrUp  );
   TCut isoCut;
   if ( (collision==kHIMC) || (collision==kHIDATA) ) {
@@ -73,6 +75,8 @@ void alexHistoProducer(sampleType collision, float photonPtThr=60, float photonP
   TCut sbCut = "(cc4+cr4+ct4PtCut20>10) && (cc4+cr4+ct4PtCut20<20) && hadronicOverEm<0.1";
 
   TCut candidateCut = "sigmaIetaIeta<0.01";
+  if  ( ( collision == kHIMC ) || (collision == kPPMC) || (collision == kPAMC))  
+    candidateCut = candidateCut && "genIso<5 && abs(genMomId)<=22";
   TCut decayCut = "(sigmaIetaIeta>0.011) && (sigmaIetaIeta<0.017)";
 
   TCut dataCandidateCut = isoCut && photonEtaCut && photonPtCut && centCut;
@@ -96,22 +100,44 @@ void alexHistoProducer(sampleType collision, float photonPtThr=60, float photonP
   else if ( collision == kPPDATA) {
     DATA_FILE = "gammaJets_pp_Data.root";
     MC_FILE = "gammaJets_pp_MC_PUallQCDPhoton.root";
-  }  
+  }
+  else if ( collision == kHIMC)
+  {
+    MC_FILE = "gammaJets_PbPb_MC_allQCDPhoton.root";
+    DATA_FILE = MC_FILE;
+  }
+  else if ( collision == kPAMC)
+  {
+    MC_FILE = "gammaJets_pA_MC_allQCDPhoton.root";
+    DATA_FILE = MC_FILE;
+  }
+  else if ( collision == kPPMC) {
+    MC_FILE = "gammaJets_pp_MC_PUallQCDPhoton.root";
+    DATA_FILE = MC_FILE;
+  }
+
 
   
   TFile *dataFile = TFile::Open(DATA_FILE);
   TTree *dataTree = (TTree*)dataFile->Get("photonTree");
   dataTree->AddFriend("jetTree",DATA_FILE);
+  if ( collision == kHIDATA )
+  {
+    dataTree->AddFriend("mJetTree",DATA_FILE);
+  }
 
   TFile *mcFile = TFile::Open(MC_FILE);
   TTree *mcTree = (TTree*)mcFile->Get("photonTree");
-  mcTree->AddFriend("jetTree",MC_FILE);
 
-  fitResult fitr = getPurity(dataTree, mcTree,
-			     dataCandidateCut, sidebandCut,
-			     mcSignalCut, 0.0,
-			     0.0, 0.00999);
-  Float_t purity = fitr.purity;
+  Float_t purity = 1;
+  if ( collision == kHIDATA || collision == kHIDATA || collision == kHIDATA )
+  {
+    fitResult fitr = getPurity(dataTree, mcTree,
+			       dataCandidateCut, sidebandCut,
+			       mcSignalCut, 0.0,
+			       0.0, 0.00999);
+    purity = fitr.purity;
+  }
 
   GjSpectra* gSpec = new GjSpectra();
   gSpec->init(Form("icent%d",(int)icent) );
@@ -133,17 +159,19 @@ void alexHistoProducer(sampleType collision, float photonPtThr=60, float photonP
   gSpec->hPtPhoSig->Write();
   outf->Close();
 
-  TH1D* hJetDphi = new TH1D(Form("jetDphi_icent%d",icent),";#Delta#phi_{Jet,#gamma} ;dN/d#Delta#phi",20,0,3.141592);
+  TH1D* hJetDphi = new TH1D(Form("jetDphi_icent%d",icent),
+			    ";#Delta#phi_{Jet,#gamma} ;dN/d#Delta#phi",20,0,3.141592);
   corrFunctionTrk* cJetDphi = new corrFunctionTrk();
-  TString varJetDphi         = Form("jetTree.dPhi");
+  TString varJetDphi         = Form("dPhi");
 
   gammaTrkSingle( gSpec,  dataTree, cJetDphi,  purity, 
 		  collision, varJetDphi, jetCut, jetWeight,
 		  candidateCut, decayCut,  hJetDphi, outName);
   
-  TH1D* hJetPt = new TH1D(Form("jetPt_icent%d",icent),";Jet p_{T} (GeV) ;dN/dp_{T} (GeV^{-1})",280, 20,300);
+  TH1D* hJetPt = new TH1D(Form("jetPt_icent%d",icent),
+			  ";Jet p_{T} (GeV) ;dN/dp_{T} (GeV^{-1})",280, 20,300);
   corrFunctionTrk* cJetPt = new corrFunctionTrk();
-  TString varJetPt         = Form("jetTree.pt");
+  TString varJetPt         = Form("pt");
   
   gammaTrkSingle( gSpec,  dataTree, cJetPt,  purity, 
 		  collision, varJetPt, jetCutDphi, jetWeight,
@@ -151,23 +179,17 @@ void alexHistoProducer(sampleType collision, float photonPtThr=60, float photonP
   
   const int nJetIaaBin = 7;
   double jetIaaBin[nJetIaaBin+1] = {30,40,50,60,80,100,120,200};
-  TH1D* hJetPtForIaa = new TH1D(Form("jetPtForIaa_icent%d",icent),";Jet p_{T} (GeV) ;dN/dp_{T} (GeV^{-1})",nJetIaaBin, jetIaaBin);
+  TH1D* hJetPtForIaa = new TH1D(Form("jetPtForIaa_icent%d",icent),
+				";Jet p_{T} (GeV) ;dN/dp_{T} (GeV^{-1})",nJetIaaBin, jetIaaBin);
   corrFunctionTrk* cJetIaaPt = new corrFunctionTrk();
   gammaTrkSingle( gSpec,  dataTree, cJetIaaPt,  purity,
                   collision, varJetPt, jetCutDphi, jetWeight,
                   candidateCut, decayCut,  hJetPtForIaa, outName);
   
-  //  TH1D* hDjetPt = new TH1D(Form("dpt_icent%d",icent),";p_{T}^{#gamma} - p_{T}^{Jet} (GeV) ;dN/dp_{T} (GeV^{-1})",30,-150,150);
-  //  corrFunctionTrk* cDjetPt = new corrFunctionTrk();
-  //  TString varJetDpt         = Form("pt - photonEt");
-  // gammaTrkSingle( gSpec,  dataTree, cDjetPt,  purity, 
-  //		  collision, varJetDpt, jetCutDphi, jetWeight,
-  //		  candidateCut, decayCut,  hDjetPt, outName);
-  
-  
-  TH1D* hJetXjg = new TH1D(Form("xjg_icent%d",icent),";p_{T}^{Jet}/p_{T}^{#gamma}  ; ",400,0,5);
+  TH1D* hJetXjg = new TH1D(Form("xjg_icent%d",icent),
+			   ";p_{T}^{Jet}/p_{T}^{#gamma}  ; ",400,0,5);
   corrFunctionTrk* cJetXjg = new corrFunctionTrk();
-  TString varJetXjg         = Form("jetTree.pt/photonTree.pt");
+  TString varJetXjg         = Form("pt/photonTree.pt");
   
   gammaTrkSingle( gSpec,  dataTree, cJetXjg,  purity, 
 		  collision, varJetXjg, jetCutDphi, jetWeight,
@@ -177,10 +199,10 @@ void alexHistoProducer(sampleType collision, float photonPtThr=60, float photonP
 }
 
 
-void gammaTrkSingle(     GjSpectra* gSpec,  TTree* dataTree,   corrFunctionTrk* corr, 
-			 float purity,       sampleType collision, 	     TString var,     
-			 TCut cut, 		TString theWeight,	 TCut candidateCut,   TCut decayCut,
-			 TH1D* hTemplate,  TString outfName)
+void gammaTrkSingle(GjSpectra* gSpec,  TTree* dataTree,      corrFunctionTrk* corr, 
+		    float purity,      sampleType collision, TString var,     
+		    TCut cut,          TString theWeight,    TCut candidateCut,   TCut decayCut,
+		    TH1D* hTemplate,   TString outfName)
 {
   TH1::SetDefaultSumw2();
   
@@ -188,20 +210,23 @@ void gammaTrkSingle(     GjSpectra* gSpec,  TTree* dataTree,   corrFunctionTrk* 
   makeMultiPanelCanvas(c1,2,2,0.0,0.0,0.2,0.15,0.02);
   c1->cd(1);
   corr->init(gSpec, collision, purity, hTemplate);
-  //cout << "Filling raw jets" << endl;
-  dataTree->Project(corr->Func[kPhoCand][kTrkRaw]->GetName(),  var,  theWeight*(candidateCut  && cut));
-  // if ( dataTree[kTrkBkg]!=0)   {
-  // cout << "Filling mixed jets" << endl;
-  //   dataTree[kTrkBkg]->Project(corr->Func[kPhoCand][kTrkBkg],  var,  theWeight*(candidateCut  && cut));
-  // }
-  
+  //gamma-jet candidates
+  dataTree->Project(corr->Func[kPhoCand][kTrkRaw]->GetName(),
+		    "jetTree."+var,  theWeight*(candidateCut  && cut));
+  //gamma-jets mixed from MB
+  if ( collision == kHIDATA )   {
+    dataTree->Project(corr->Func[kPhoCand][kTrkBkg]->GetName(),
+		      "mJetTree."+var,  theWeight*(candidateCut  && cut));
+  }
+  //gamma-jets from decays
   if ( (collision==kHIDATA) || (collision==kPPDATA) || (collision==kPADATA) ) {
-    //cout << "Filling decay photon-jet correlation" << endl;
-    dataTree->Project(corr->Func[kPhoDecay][kTrkRaw]->GetName(), var, theWeight*(decayCut && cut));
-    // if (dataTree[kTrkBkg]!=0)   {
-    //   cout << "Filling decay photon- mixed jet correlation" << endl;
-    //   dataTree[kTrkBkg]->Project(corr->Func[kPhoDecay][kTrkBkg], var, theWeight*(candidateCut  && cut));
-    // }
+    dataTree->Project(corr->Func[kPhoDecay][kTrkRaw]->GetName(),
+		      "jetTree."+var, theWeight*(decayCut && cut));
+    // gamma-jets mixed from MB and decays
+    if ( collision == kHIDATA )   {
+      dataTree->Project(corr->Func[kPhoDecay][kTrkBkg]->GetName(),
+			"mJetTree."+var, theWeight*(candidateCut  && cut));
+    }
   }
   TH1ScaleByWidth( corr->Func[kPhoCand][kTrkRaw]); 
   TH1ScaleByWidth( corr->Func[kPhoCand][kTrkBkg]);
@@ -234,7 +259,7 @@ void gammaTrkSingle(     GjSpectra* gSpec,  TTree* dataTree,   corrFunctionTrk* 
   c1->cd(4);
   handsomeTH1(corr->Func[kPhoSig][kTrkSig],1);
   corr->Func[kPhoSig][kTrkSig]->Draw();
-  c1->SaveAs(Form("gifs/%s_%s.gif",outfName.Data(),c1->GetName()) );
+  //c1->SaveAs(Form("gifs/%s_%s.gif",outfName.Data(),c1->GetName()) );
   
   TFile *outf = TFile::Open(Form("ffFiles/%s",outfName.Data()),"update");
   corr->Func[kPhoCand][kTrkRaw]->Write();
@@ -252,6 +277,7 @@ void gammaTrkSingle(     GjSpectra* gSpec,  TTree* dataTree,   corrFunctionTrk* 
 
 int main(int argc, char *argv[])
 {
-  alexHistoProducer(kHIDATA);
+  if(argc != 6) return 1;
+  alexHistoProducer((sampleType)atoi(argv[1]),atof(argv[2]), atof(argv[3]), atof(argv[4]), atoi(argv[5]));
   return 0;
 }
