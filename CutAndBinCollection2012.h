@@ -121,6 +121,7 @@ TString getSampleName ( sampleType colli) {
   if (colli == kPPMC) return "ppMC";
   if (colli == kPADATA) return "ppbDATA";
   if (colli == kPAMC) return "ppbMC";
+  return "NULL";
 }
 TString getSampleName ( int colli) {
   if (colli == kHIDATA) return "pbpbDATA";
@@ -129,6 +130,7 @@ TString getSampleName ( int colli) {
   if (colli == kPPMC) return "ppMC";
   if (colli == kPADATA) return "ppbDATA";
   if (colli == kPAMC) return "ppbMC";
+  return "NULL";
 }
 
 const int nMixing1 = 20;

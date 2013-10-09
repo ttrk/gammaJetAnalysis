@@ -144,7 +144,7 @@ void multiTreeUtil::Draw2(TH1D *h, TString expression, TCut cut, TString indWeig
 {
   TH1::SetDefaultSumw2();
 
-   TH1D *hComponent[100];
+  //TH1D *hComponent[100];
    
    h->Reset();
    //   h->Sumw2();
