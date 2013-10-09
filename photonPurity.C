@@ -27,17 +27,17 @@
 using namespace std;
 //last forward run is 211256
 
-// //pp
-// const TString DATA_FILE = "gammaJets_pp_Data.root";
-// const TString MC_FILE = "gammaJets_pp_MC_PUallQCDPhoton.root";
-// const TString LABEL = "pp #sqrt{s}_{_{NN}}=2.76 TeV";
-// const TCut sampleIsolation = "ecalRecHitSumEtConeDR04 < 4.2  &&  hcalTowerSumEtConeDR04 < 2.2  &&  trkSumPtHollowConeDR04 < 2 && hadronicOverEm<0.1";
+//pp
+const TString DATA_FILE = "gammaJets_pp_Data.root";
+const TString MC_FILE = "gammaJets_pp_MC_PUallQCDPhoton.root";
+const TString LABEL = "pp #sqrt{s}_{_{NN}}=2.76 TeV";
+const TCut sampleIsolation = "ecalRecHitSumEtConeDR04 < 4.2  &&  hcalTowerSumEtConeDR04 < 2.2  &&  trkSumPtHollowConeDR04 < 2 && hadronicOverEm<0.1";
 
-//PbPb
-const TString DATA_FILE = "gammaJets_PbPb_Data.root";
-const TString MC_FILE = "gammaJets_PbPb_MC_allQCDPhoton.root";
-const TString LABEL = "PbPb #sqrt{s}_{_{NN}}=2.76 TeV";
-const TCut sampleIsolation = "(cc4+cr4+ct4PtCut20<1) && hadronicOverEm<0.1";
+// //PbPb
+// const TString DATA_FILE = "gammaJets_PbPb_Data.root";
+// const TString MC_FILE = "gammaJets_PbPb_MC_allQCDPhoton.root";
+// const TString LABEL = "PbPb #sqrt{s}_{_{NN}}=2.76 TeV";
+// const TCut sampleIsolation = "(cc4+cr4+ct4PtCut20<1) && hadronicOverEm<0.1";
 
 // pPb
 // const TString DATA_FILE = "gammaJets_pA_Data.root";
@@ -49,11 +49,11 @@ const TCut sampleIsolation = "(cc4+cr4+ct4PtCut20<1) && hadronicOverEm<0.1";
 //const Double_t sigShifts[] = {-0.0000989, -0.000131273, -0.00016207, -0.000170555};
 const Double_t sigShifts[] = {0, 0, 0, 0};
 //const Double_t sigShifts[] = {-0.00015,-0.00015,-0.00015,-0.00015};
-const TString SAVENAME = "photonPurity_PbPb_example";
+const TString SAVENAME = "test_plot";
 
 // last entry is upper bound on last bin
-const Int_t CENTBINS[] = {0, 12, 40};
-//const Int_t CENTBINS[] = {0, 100};
+//const Int_t CENTBINS[] = {0, 12, 40};
+const Int_t CENTBINS[] = {0, 100};
 const Int_t nCENTBINS = sizeof(CENTBINS)/sizeof(Int_t) -1;
 
 const Double_t PTBINS[] = {40, 50, 60, 80, 1000};
@@ -95,7 +95,7 @@ void photonPurity()
       for(Int_t k = 0; k< nETABINS; ++k) {
 	TString ptCut = Form("(corrPt >= %f) && (corrPt < %f)",
 			     PTBINS[i], PTBINS[i+1]);
-	TString hfCut = Form("((hiBin) >= %i) && ((hiBin) < %i)",
+	TString centCut = Form("((hiBin) >= %i) && ((hiBin) < %i)",
 			     CENTBINS[j], CENTBINS[j+1]);
 	TString etaCut = Form("(eta >= %f) && (eta < %f)",
 			      ETABINS[k], ETABINS[k+1]);
@@ -103,15 +103,15 @@ void photonPurity()
 	//TString pPbflipetaCut = Form("(eta*((run>211257)*-1+(run<211257)) >=%f) && (eta*((run>211257)*-1+(run<211257)) <%f)",
 	//			     ETABINS[k], ETABINS[k+1]);
 
-	TCut dataCandidateCut = sampleIsolation && etaCut && ptCut && hfCut;
-	TCut sidebandCut =  sidebandIsolation && etaCut && ptCut && hfCut;
+	TCut dataCandidateCut = sampleIsolation && etaCut && ptCut && centCut;
+	TCut sidebandCut =  sidebandIsolation && etaCut && ptCut && centCut;
 	TCut mcSignalCut = dataCandidateCut && mcIsolation;
 		
 	// if(nETABINS != 1)
 	// {
-	//   dataCandidateCut = sampleIsolation && pPbflipetaCut && ptCut && hfCut;
-	//   sidebandCut =  sidebandIsolation && pPbflipetaCut && ptCut && hfCut;
-	//   mcSignalCut =  sampleIsolation && etaCut && ptCut && hfCut && mcIsolation;
+	//   dataCandidateCut = sampleIsolation && pPbflipetaCut && ptCut && centCut;
+	//   sidebandCut =  sidebandIsolation && pPbflipetaCut && ptCut && centCut;
+	//   mcSignalCut =  sampleIsolation && etaCut && ptCut && centCut && mcIsolation;
 	// }
 
 	fitResult fitr = getPurity(dataTree, mcTree,
