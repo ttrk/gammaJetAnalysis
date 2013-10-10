@@ -115,8 +115,8 @@ const Double_t maxSIGMA = 0.025; // x-axis max of sigmaIetaIeta dist
 
 fitResult getPurity(TTree *dataTree, TTree *mcTree,
 		    TCut dataCandidateCut, TCut sidebandCut,
-		    TCut mcSignalCut, Double_t signalShift,
-		    Double_t backgroundShift, Double_t purityBinVal)
+		    TCut mcSignalCut, Double_t signalShift=0.0,
+		    Double_t backgroundShift=0.0, Double_t purityBinVal=0.00999)
 {
   TH1D* hCand = new TH1D("cand","",nSIGMABINS,0,maxSIGMA);
   TH1D* hBkg = (TH1D*)hCand->Clone("bkg");
@@ -143,7 +143,7 @@ fitResult getPurity(TTree *dataTree, TTree *mcTree,
   //TTree *bkgTree = (TTree*)bkgFile->Get("photonTree");
   //bkgTree->Project(hBkg->GetName(), "sigmaIetaIeta"+bkgshift, "mcweight"*sidebandCut, "");
   
-  mcTree->Project(hSig->GetName(), "sigmaIetaIeta"+sigshift, "mcweight"*mcSignalCut, "");
+  mcTree->Project(hSig->GetName(), "sigmaIetaIeta"+sigshift, "photonTree.mcweight"*mcSignalCut, "");
 
   //TCanvas *fakeCanvas = new TCanvas("fake","fake");
   fitResult fitr = doFit(hSig, hBkg, hCand, 0.005, 0.035, purityBinVal);
