@@ -46,7 +46,7 @@ void gammaTrkSingle(     GjSpectra* gjSpec_=nullGj,
 fitResult getPurity(TString fname="", sampleType collision=kHIDATA, TCut candEvtCut = "", TCut sbEvtCut="", TString ccanvasName="",float photonPtThr=60, float photonPtThrUp=9999);
 
 
-void gammaJetHistProducer_photonEnergySys(sampleType collision = kPADATA, float photonPtThr=60, float photonPtThrUp=9999, float jetPtThr=30, int icent =1, float scaleFactor = 0.015) {
+void gammaJetHistProducer_photonEnergySys(sampleType collision = kPADATA, float photonPtThr=60, float photonPtThrUp=9999, float jetPtThr=30, int icent =1, float scaleFactor = -0.015) {
   TH1::SetDefaultSumw2();
   
   TString stringSampleType = getSampleName(collision); "";
@@ -101,12 +101,12 @@ void gammaJetHistProducer_photonEnergySys(sampleType collision = kPADATA, float 
 
   TCut phoCandCut   = "sigmaIetaIeta<0.010";
   TCut phoDecayCut  = "(sigmaIetaIeta>0.011) && (sigmaIetaIeta<0.017)";
-  if  ( ( collision == kHIMC ) || (collision == kPPMC) ) 
+  if  ( ( collision == kHIMC ) || (collision == kPPMC) || (collision == kPAMC)) 
     phoCandCut = phoCandCut && "genIso<5 && abs(genMomId)<=22";
   
   
   TString fname = "";
-  if ( collision == kHIDATA)      fname = fnameHIDATA;
+  if ( collision == kHIDATA)      fname = fnameHIDATA_jetResCorrected;
   else if ( collision == kPADATA) fname = fnamePADATA;
   else if ( collision == kPPDATA) {
     if ( icent == 7 ) fname = fnamePPDATA;
@@ -114,6 +114,8 @@ void gammaJetHistProducer_photonEnergySys(sampleType collision = kPADATA, float 
     else if ( icent == 11030 ) fname = fnamePPDATA1030;
     else if ( icent == 13050 ) fname = fnamePPDATA3050;
     else if ( icent == 15099 ) fname = fnamePPDATA5099;
+    else if ( icent == 10030 ) fname = fnamePPDATA0030;
+    else if ( icent == 13099 ) fname = fnamePPDATA30100;
   }  
   else fname = "";
   
