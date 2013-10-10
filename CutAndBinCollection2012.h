@@ -39,6 +39,9 @@ TString fnamePPDATA1030                  =   "yskimmedFiles/yskim_pp_photonSKimF
 TString fnamePPDATA3050                  =   "yskimmedFiles/yskim_pp_photonSKimForest_v85_jetSmearingCent3050.root";
 TString fnamePPDATA5099                 =   "yskimmedFiles/yskim_pp_photonSKimForest_v85_jetSmearingCent5099.root";
 
+TString fnamePPDATA30100                =   "yskimmedFiles/yskim_pp_photonSKimForest_v85_jetSmearingCent30100.root";
+TString fnamePPDATA0030                =   "yskimmedFiles/yskim_pp_photonSKimForest_v85_jetSmearingCent0030.root";
+
 // pp MC
 TString fnamePPMC_AllQcdPho30to50    = "yskimmedFiles/yskim_merged_allQCDPhoton30to50_genPhotonPtCut30_CMSSW538HIp2.root";
 TString fnamePPMC_AllQcdPho50to80    = "yskimmedFiles/yskim_merged_allQCDPhoton50to80_genPhotonPtCut30_CMSSW538HIp2.root";
@@ -60,12 +63,12 @@ double wPPMC_emDijet120to9999      = 4284./130444.;
 
 
 ///////////// pA Data
-TString fnamePADATA                  = "yskimmedFiles/yskim_pA_photonSkimForest_v85_HLT_PAPhoton30_NoCaloIdVL_v1_highPtPhoton40.root";
+TString fnamePADATA                  = "yskimmedFiles/yskim_pA_photonSkimForest_v85_HLT_PAPhoton30_NoCaloIdVL_v1_highPtPhoton40_16HFBin.root";
 //            pA MC 
-TString fnamePAMC_AllQcdPho30to50    = "yskimmedFiles/yskim_PA2013_pyquen_allQCDPhoton30to50_forestv85.root";
-TString fnamePAMC_AllQcdPho50to80    = "yskimmedFiles/yskim_PA2013_pyquen_allQCDPhoton50to80_forestv85.root";
-TString fnamePAMC_AllQcdPho80to120   = "yskimmedFiles/yskim_PA2013_pyquen_allQCDPhoton80to120_forestv85.root";
-TString fnamePAMC_AllQcdPho120to9999 = "yskimmedFiles/yskim_PA2013_pyquen_allQCDPhoton120to9999_forestv85.root";
+TString fnamePAMC_AllQcdPho30to50    = "yskimmedFiles/yskim_PA2013_pyquen_allQCDPhoton30to50_forestv85_16HFBin.root";
+TString fnamePAMC_AllQcdPho50to80    = "yskimmedFiles/yskim_PA2013_pyquen_allQCDPhoton50to80_forestv85_16HFBin.root";
+TString fnamePAMC_AllQcdPho80to120   = "yskimmedFiles/yskim_PA2013_pyquen_allQCDPhoton80to120_forestv85_16HFBin.root";
+TString fnamePAMC_AllQcdPho120to9999 = "yskimmedFiles/yskim_PA2013_pyquen_allQCDPhoton120to9999_forestv85_16HFBin.root";
 double  wPAMC_AllQcdPho30to50        = 56669./ 50385.;
 double  wPAMC_AllQcdPho50to80        = 41906./ 114136.;
 double  wPAMC_AllQcdPho80to120       = 12044./ 103562.;
@@ -418,7 +421,8 @@ const int theEvtPlNumber = 21;
 
 
 int nCentBinSkim = 40;
-int nCentBinSkimPA = 10;
+
+int nCentBinSkimPA = 16;
 int getHfBin( float hf4Sum=-1 ) { 
   if ( hf4Sum < -1 )   return -1;
   else if ( hf4Sum < 5 )   return 0;
@@ -430,7 +434,14 @@ int getHfBin( float hf4Sum=-1 ) {
   else if ( hf4Sum < 35 )   return 6;
   else if ( hf4Sum < 40 )   return 7;
   else if ( hf4Sum < 45 )   return 8;
-  else                      return 9;
+  else if ( hf4Sum < 50 )   return 9;
+  else if ( hf4Sum < 55 )   return 10;
+  else if ( hf4Sum < 60 )   return 11;
+  else if ( hf4Sum < 65 )   return 12;
+  else if ( hf4Sum < 70 )   return 13;
+  else if ( hf4Sum < 75 )   return 14;
+  else return 15;
+
 }
 
 
