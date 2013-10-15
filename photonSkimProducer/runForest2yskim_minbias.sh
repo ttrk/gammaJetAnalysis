@@ -9,8 +9,8 @@
 
 
 # PbPb
-root -l -q -b 'forest2yskim_minbias_forestV3.C+("forestFiles/pbpb/HIMinBias_merged_1_1000.root",    "minbiasSkim_HIMinBias_merged_1_1000.root",   0 , -1)'
-root -l -q -b 'forest2yskim_minbias_forestV3.C+("forestFiles/pbpb/HydjetDrum03_HiForest_v05_merged_test02.root",    "minbiasSkim_HydjetDrum03_HiForest_v05_merged_test02.root",   1 , -1)'
+#root -l -q -b 'forest2yskim_minbias_forestV3.C+("forestFiles/pbpb/HIMinBias_merged_1_1000.root",    "minbiasSkim_HIMinBias_merged_1_1000.root",   0 , -1)'
+#root -l -q -b 'forest2yskim_minbias_forestV3.C+("forestFiles/pbpb/HydjetDrum03_HiForest_v05_merged_test02.root",    "minbiasSkim_HydjetDrum03_HiForest_v05_merged_test02.root",   1 , -1)'
 
 
 # pA 

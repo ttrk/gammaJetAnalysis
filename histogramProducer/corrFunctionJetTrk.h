@@ -177,8 +177,8 @@ void corrFunctionTrk::calCorr() {
     cout << " it's MC.. so decay photon histograms are reset to zero" << endl;
   }
   // If it is pp 
-  if ( (sampleType == kPPDATA) ) {
-    cout << " it's pp data.  background jet histogram will be set as zero.  No background subtraction for jets" << endl;
+  if ( (sampleType == kPPDATA) ||  (sampleType == kPPMC) ) {
+    cout << " it's pp data/mc.  background jet histogram will be set as zero.  No background subtraction for jets" << endl;
     Func[kPhoDecay][kTrkBkg]->Reset();
     Func[kPhoCand][kTrkBkg] ->Reset();
   }

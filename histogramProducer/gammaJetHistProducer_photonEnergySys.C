@@ -106,7 +106,7 @@ void gammaJetHistProducer_photonEnergySys(sampleType collision = kPADATA, float 
   
   
   TString fname = "";
-  if ( collision == kHIDATA)      fname = fnameHIDATA_jetResCorrected;
+  if ( collision == kHIDATA)      fname = fnameHIDATA;//_jetResCorrected;
   else if ( collision == kPADATA) fname = fnamePADATA;
   else if ( collision == kPPDATA) {
     if ( icent == 7 ) fname = fnamePPDATA;

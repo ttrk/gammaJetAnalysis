@@ -89,6 +89,18 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
   newtreePhoton->SetMaxTreeSize(MAXTREESIZE);
   newtreePhoton->Branch("order",  order, "order[nPhotons]/I");
   newtreePhoton->Branch("corrPt", corrPt,"corrPt[nPhotons]/F");
+
+  TTree* treeFullJet;
+  if (   (colli==kPPDATA) || (colli==kPPMC) ) {
+    treeFullJet = c->ak3jetTree->CloneTree(0);
+    cout << "pp collision.  Using ak3PF Jet Algo" << endl<<endl;
+  }
+  else {
+    treeFullJet = c->akPu3jetTree->CloneTree(0);
+    cout << "pPb or PbPb collision. Using akPu3PF Jet Algo" << endl<<endl;
+  }
+  treeFullJet->SetName("fullJet");
+  treeFullJet->SetMaxTreeSize(MAXTREESIZE);
    
   // jet tree! 
   int nJet;    
@@ -123,82 +135,6 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
 
 
 
-  /* No gen particle and tracks analysis at the moment 
-    // Track tree
-    int nTrk;
-    float trkPt[MAXTRK];
-    float trkEta[MAXTRK];
-    float trkPhi[MAXTRK];
-    float trkDphi[MAXTRK];
-    float trkWeight[MAXTRK];
-    TTree *newtreeTrack = new TTree("yTrk","tracks");
-    newtreeTrack->SetMaxTreeSize(MAXTREESIZE);
-    newtreeTrack->Branch("ntrk",&nTrk,"ntrk/I");
-    newtreeTrack->Branch("pt",trkPt,"pt[ntrk]/F");
-    newtreeTrack->Branch("eta",trkEta,"eta[ntrk]/F");
-    newtreeTrack->Branch("phi",trkPhi,"phi[ntrk]/F");
-    newtreeTrack->Branch("dphi", trkDphi, "dphi[ntrk]/F");
-    newtreeTrack->Branch("trkWeight",trkWeight,"trkWeight[ntrk]/F");
-    const int maxGp = 30000;
-    int nGp;
-    int   gpSube[maxGp];
-    int   gpChg[maxGp];
-    float gpPt[maxGp];
-    float gpEta[maxGp];
-    float gpPhi[maxGp];
-    float gpDphi[maxGp];
-    
-    TTree *newtreeGp;
-    if ( isMC ) { 
-    newtreeGp = new TTree("gp","gen chg particle");
-    newtreeGp->SetMaxTreeSize(MAXTREESIZE);
-    newtreeGp->Branch("nGp",&nGp,"nGp/I");
-    newtreeGp->Branch("sube",gpSube,"sube[nGp]/I");
-    newtreeGp->Branch("chg",gpChg,"chg[nGp]/I");
-    newtreeGp->Branch("pt",gpPt,"pt[nGp]/F");
-    newtreeGp->Branch("eta",gpEta,"eta[nGp]/F");
-    newtreeGp->Branch("phi",gpPhi,"phi[nGp]/F");
-    newtreeGp->Branch("dphi",gpDphi,"dphi[nGp]/F");
-    }
-    
-    int nMtrk;
-    float mTrkPt[MAXMTRK];
-    float mTrkEta[MAXMTRK];
-    float mTrkPhi[MAXMTRK];
-    float mTrkWeight[MAXMTRK];
-    float mTrkDphi[MAXMTRK];
-    
-    TTree * tmixTrk = new TTree("mTrk","Track from second minbias events");
-    tmixTrk->SetMaxTreeSize(MAXTREESIZE);
-    tmixTrk->Branch("ntrk",&nMtrk,"ntrk/I");
-    tmixTrk->Branch("pt",mTrkPt,"pt[ntrk]/F");
-    tmixTrk->Branch("eta",mTrkEta,"eta[ntrk]/F");
-    tmixTrk->Branch("phi",mTrkPhi,"phi[ntrk]/F");
-    tmixTrk->Branch("trkWeight",mTrkWeight,"trkWeight[ntrk]/F");
-    tmixTrk->Branch("dphi", mTrkDphi, "dphi[ntrk]/F");
-    
-    
-    TTree * tmixGp;
-    int   nMgp;
-    float mGpPt[MAXMTRK];
-    float mGpEta[MAXMTRK];
-    float mGpPhi[MAXMTRK];
-    float mGpDphi[MAXMTRK];
-    int   mGpChg[MAXMTRK];
-    
-    
-    if ( isMC) { 
-    tmixGp = new TTree("mGp","genParticle from second minbias events");
-    tmixGp->SetMaxTreeSize(MAXTREESIZE);
-    tmixGp->Branch("nGp",&nMgp,"nGp/I");
-    tmixGp->Branch("pt",mGpPt,"pt[nGp]/F");
-    tmixGp->Branch("eta",mGpEta,"eta[nGp]/F");
-    tmixGp->Branch("phi",mGpPhi,"phi[nGp]/F");
-    tmixGp->Branch("chg",mGpChg,"chg[nGp]/I");
-    tmixGp->Branch("dphi", mGpDphi, "dphi[nGp]/F");
-    }
-  */
-  
   int nMjet;
   float mJetPt[MAXMJET];
   float mJetEta[MAXMJET];
@@ -226,28 +162,6 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
   TBranch        *b_jetPtImb;
   TBranch        *b_jetEtaImb;
   TBranch        *b_jetPhiImb; 
-  /*
-    Int_t           nTrkImb;
-    Float_t         trkPtImb[4000];   
-    Float_t         trkEtaImb[4000];  
-    Float_t         trkPhiImb[4000];  
-    Float_t         trkWeightImb[4000];
-    Int_t           nGpImb;
-    Float_t         gpPtImb[4000];  
-    Float_t         gpEtaImb[4000]; 
-    Float_t         gpPhiImb[4000]; 
-    Int_t           gpChgImb[4000]; 
-    TBranch        *b_nTrkImb;   //!
-    TBranch        *b_trkPtImb; 
-    TBranch        *b_trkEtaImb;
-    TBranch        *b_trkPhiImb;
-    TBranch        *b_trkWeightImb;
-    TBranch        *b_nGpImb; 
-    TBranch        *b_gpPtImb;  
-    TBranch        *b_gpEtaImb; 
-    TBranch        *b_gpPhiImb; 
-    TBranch        *b_gpChgImb; 
-  */
   
   
   int nCentBins =  nCentBinSkim;
@@ -347,7 +261,7 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
     }
     else if ((colli==kPADATA)||(colli==kPAMC))   {
       evt.cBin =  getHfBin(evt.hf4Sum);
-      if (  ((evt.cBin) < 0) || (evt.cBin) > 9 )
+      if (  ((evt.cBin) < 0) || (evt.cBin) > 18 )
         cout << " Check the pA centrality..  cbin = " << evt.cBin << endl;
     }
     
@@ -359,8 +273,9 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
     evt.vz = c->evt.vz;
     
     
-    //if ( ( (colli==kHIDATA)||(colli==kHIMC)||(colli==kPADATA)||(colli==kPAMC) ) && ( c->selectEvent() == 0 ))
-    if(!c->selectEvent() )
+    if ( ( (colli==kHIDATA)||(colli==kHIMC)||(colli==kPADATA)||(colli==kPAMC) ) && ( c->selectEvent() == 0 ))
+      continue;
+    if ( ( (colli==kPADATA)||(colli==kPPDATA) ) && ( c->skim.pVertexFilterCutGplus ==0 ) ) // No Pile up events
       continue;
     
     eSel++;      // OK.  This event is a collisional and no-noise event.  
@@ -435,7 +350,8 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
     }
     
 
-    ///////////////////// Jet tree ///////////////////////////////////
+
+    ///////////////////// Skimmed Jet tree ///////////////////////////////////
     nJet = 0 ;
 
     int jetEntries = 0;
@@ -725,6 +641,7 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
     newtreeJet->Fill();
     tmixJet->Fill();     
     newtreePhoton->Fill();
+    //    treeFullJet->Fill();
     /*
       newtreeTrack->Fill();
       tmixTrk->Fill();   // No tracks saved at the moment 

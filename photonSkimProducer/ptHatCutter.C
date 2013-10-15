@@ -14,7 +14,7 @@
 #include <iomanip>
 #include <string>
 #include <TMath.h>
-#include "../../hiForestV3/hiForest.h"
+#include "../../HiForestAnalysis/hiForest.h"
 #include "../CutAndBinCollection2012.h"
 #include <time.h>
 
@@ -27,11 +27,11 @@ static const long MAXTREESIZE = 10000000000;
 
 
 
-void ptHatCutter( int ptHatCut1 = 30, int ptHatCut2=50, int genPhotonPtCut =40) {
+void ptHatCutter( int ptHatCut1 = 30, int ptHatCut2=50, int genPhotonPtCut =30) {
   //collisionType
   collisionType colli = cPPb;
-  TString inputFile_="/home/jazzitup/forestFiles/emDijet30_50_80_120_CMSSW538HIp2.root";
-  TString outname = Form("/home/jazzitup/forestFiles/emDijet%dto%d_CMSSW538HIp2_genPtCut%d.root",ptHatCut1,ptHatCut2,genPhotonPtCut);
+  TString inputFile_="/home/jazzitup/forestFiles/pp/merged_allQCDPhoton30_50_80_120_CMSSW538HIp2.root";
+  TString outname = Form("merged_allQCDPhoton%dto%d_genPtCut%d_CMSSW538HIp2.root",ptHatCut1,ptHatCut2,genPhotonPtCut);
   
   
   // start from here
@@ -45,7 +45,7 @@ void ptHatCutter( int ptHatCut1 = 30, int ptHatCut2=50, int genPhotonPtCut =40) 
   t->InitTree();
 
   int nentries = t->GetEntries();
-  //   nentries = 20000;
+  //  nentries = 100000;
   cout << "number of entries = " << nentries << endl;
   for (Long64_t jentry = 0 ; jentry < nentries; jentry++) {
     if (jentry% 10000 == 0)  {

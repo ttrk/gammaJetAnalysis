@@ -146,7 +146,7 @@ void forest2yskim_minbias_forestV3(TString inputFile_="mergedFiles/forest_minbia
     }
     else if ((colli==kPADATA)||(colli==kPAMC))   {
       evt.cBin =  getHfBin(evt.hf4Sum);
-      if (  ((evt.cBin) < 0) || (evt.cBin) > 9 )  
+      if (  ((evt.cBin) < 0) || (evt.cBin) >= nCentBinSkimPA )  
 	cout << " Check the pA centrality..  cbin = " << evt.cBin << endl;
     }
     

@@ -106,10 +106,16 @@ void gammaJetHistProducer_jetEnergySmearedBy10percent(sampleType collision = kPA
   
   
   TString fname = "";
-  if ( collision == kHIDATA)      fname = fnameHIDATA_10percentSmeared;
+  if ( collision == kHIDATA)      fname = fnameHIDATA_10percentSmeared; //_jetResCorrected; 
   else if ( collision == kPADATA) fname = fnamePADATA_10percentSmeared;
   else if ( collision == kPPDATA) {
     if ( icent == 7 ) fname = fnamePPDATA_10percentSmeared;
+    else if ( icent == 10010 ) fname = fnamePPDATA0010;
+    else if ( icent == 11030 ) fname = fnamePPDATA1030;
+    else if ( icent == 13050 ) fname = fnamePPDATA3050;
+    else if ( icent == 15099 ) fname = fnamePPDATA5099;
+    else if ( icent == 10030 ) fname = fnamePPDATA0030;
+    else if ( icent == 13099 ) fname = fnamePPDATA30100;
   }  
   else fname = "";
   
@@ -245,6 +251,7 @@ void gammaJetHistProducer_jetEnergySmearedBy10percent(sampleType collision = kPA
   tObj[kTrkBkg]->AddFriend("tgj");
   TCut jetCut     =  Form("abs(eta)<%f && pt>%f", (float)cutjetEta, (float)jetPtThr );
   TCut jetCutDphi =  jetCut && (TCut)(Form("abs(dphi)>%f",(float)awayRange));
+  TCut jetCutSBcut =  jetCut && (TCut)("abs(dphi)>0.5 && abs(dphi)<2");
   TCut genJetCut     =  Form("abs(jtEta)<%f && jtPt>%f", (float)cutjetEta, (float)jetPtThr );
   TCut genJetCutDphi =  jetCut && (TCut)(Form("abs(refDphi)>%f",(float)awayRange));
   
@@ -268,6 +275,14 @@ void gammaJetHistProducer_jetEnergySmearedBy10percent(sampleType collision = kPA
   gammaTrkSingle( gSpec,  tObj, cJetPt,  purity, 
 		  collision, varJetPt, jetCutDphi, jetWeight,
 		  phoCandCut, phoDecayCut,  hJetPt, outName);
+
+  TH1D* hJetPtSB = new TH1D(Form("jetPtDphiSideBand_icent%d",icent),";Jet p_{T} (GeV) ;dN/dp_{T} (GeV^{-1})",280, 20,300);
+  corrFunctionTrk* cJetPtSB = new corrFunctionTrk();
+  
+  gammaTrkSingle( gSpec,  tObj, cJetPtSB,  purity, 
+		  collision, varJetPt, jetCutSBcut, jetWeight,
+		  phoCandCut, phoDecayCut,  hJetPtSB, outName);
+
   
   const int nJetIaaBin = 7;
   double jetIaaBin[nJetIaaBin+1] = {30,40,50,60,80,100,120,200};
