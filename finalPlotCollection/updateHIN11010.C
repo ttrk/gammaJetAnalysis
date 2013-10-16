@@ -46,7 +46,7 @@ void DivideTG(TGraphAsymmErrors* g1=0,TGraphAsymmErrors* g2=0) {
 }
 
 
-void updateHIN11010(int etPho = 60, int etJet = 30, bool scaleByR=true) { 
+void updateHIN11010(int etPho = 60, int etJet = 30, bool scaleByR=true, bool drawMC=false) { 
   bool mcOnly=false;
 
   int percentBin[5] = {0,10,30,50,100};
@@ -214,39 +214,43 @@ void updateHIN11010(int etPho = 60, int etJet = 30, bool scaleByR=true) {
       rxhidata->GetPoint(icent, x,y);
       hxgj[khidata][icent]->Scale(y);
       cout << " scaled by PbPb R: " << y << endl;
+
+      rxhimc->GetPoint(icent, x,y);
+      hxgj[khimc][icent]->Scale(y);
+      cout << " scaled by PbPb R: " << y << endl;      
     }
 
     if ( !mcOnly )    drawXSys(icent,hxgj[khidata][icent]);
-    //    hxgj[khimc][icent]->DrawCopy("hist same");
+    if(drawMC) hxgj[khimc][icent]->DrawCopy("hist same");
     //   if ( icent==3){ }
     
     handsomeTH1(hxgj[kppdata13][icent+1]);
     hxgj[kppdata13][icent+1]->SetMarkerStyle(21);
 
-    drawSys(hxgj[kppdata13][icent+1],ppSysX[icent],kGreen);
+    drawSys(hxgj[kppdata13][icent+1],ppSysX[icent],kGreen,3001);
 
     hxgj[kppdata13][icent+1]->Draw("same ");
     
     if ( !mcOnly )   hxgj[khidata][icent]->Draw("same");
     onSun(0,0,2,0);
  
-    if ( icent == 2) {
-      TLegend *leg0  = new TLegend(0.2796373,0.7545885,0.9742202,0.9937661,NULL,"brNDC");
-        easyLeg(leg0,"");
-      //      if ( !mcOnly )       leg0->AddEntry(hxgj[khidata][icent],"PbPb Data","p");
-      //      leg0->AddEntry(hxgj[khimc][icent],"PYTHIA + HYDJET","f");
-      leg0->AddEntry(hxgjpp[kppdata],"","");
+    // if ( icent == 2) {
+    //   TLegend *leg0  = new TLegend(0.2796373,0.7545885,0.9742202,0.9937661,NULL,"brNDC");
+    //     easyLeg(leg0,"");
+    //   //      if ( !mcOnly )       leg0->AddEntry(hxgj[khidata][icent],"PbPb Data","p");
+    //   leg0->AddEntry(hxgj[khimc][icent],"PYTHIA + HYDJET","f");
+    //   leg0->AddEntry(hxgjpp[kppdata],"","");
 
-      leg0->Draw();
-    }
+    //   leg0->Draw();
+    // }
     
     if ( icent == 3) {
-      TLegend *leg0 = new TLegend(0.2916647,0.7545885,0.9862476,0.9769226,NULL,"brNDC");
+      TLegend *leg0 = new TLegend(0.2916647,0.7845885,0.9862476,0.9769226,NULL,"brNDC");
       easyLeg(leg0,"");
       if ( !mcOnly )       leg0->AddEntry(hxgj[kppdata13][icent+1],"pp Data (Smeared), 5.3 pb^{-1}","p");
       leg0->AddEntry(hxgj[khidata][icent],"PbPb Data, 150#mub^{-1}","p");
       //    leg0->AddEntry(hxgj[khidata][icent],"","");
-      leg0->AddEntry(hxgj[khimc][icent],"","");
+      if(drawMC) leg0->AddEntry(hxgj[khimc][icent],"PbPb PYTHIA + HYDJET","f");
       leg0->Draw();
       drawText("#sqrt{s_{NN}}=2.76 TeV ",0.65,0.74,0,15);
     }
@@ -285,31 +289,31 @@ void updateHIN11010(int etPho = 60, int etJet = 30, bool scaleByR=true) {
 
   
   
-  /*  TCanvas *c1all = new TCanvas("c1all","",500,500);
+  // TCanvas *c1all = new TCanvas("c1all","",500,500);
 
-  for ( int icent=0;icent<4;icent++){
-    hxgj[khimc][icent]->SetFillStyle(0);
-    hxgj[khimc][icent]->SetMarkerSize(1.5);
-  }
-  hxgj[khimc][0]->SetMarkerStyle(22);
-  hxgj[khimc][1]->SetMarkerStyle(26);
-  hxgj[khimc][2]->SetMarkerStyle(23);
-  hxgj[khimc][3]->SetMarkerStyle(32);
-  hxgj[khimc][0]->DrawCopy("");
-  hxgj[khimc][1]->DrawCopy(" same");
-  hxgj[khimc][2]->DrawCopy(" same");
-  hxgj[khimc][3]->DrawCopy(" same");
-  jumSun(0,0,2,0);
+  // for ( int icent=0;icent<4;icent++){
+  //   hxgj[khimc][icent]->SetFillStyle(0);
+  //   hxgj[khimc][icent]->SetMarkerSize(1.5);
+  // }
+  // hxgj[khimc][0]->SetMarkerStyle(22);
+  // hxgj[khimc][1]->SetMarkerStyle(26);
+  // hxgj[khimc][2]->SetMarkerStyle(23);
+  // hxgj[khimc][3]->SetMarkerStyle(32);
+  // hxgj[khimc][0]->DrawCopy("");
+  // hxgj[khimc][1]->DrawCopy(" same");
+  // hxgj[khimc][2]->DrawCopy(" same");
+  // hxgj[khimc][3]->DrawCopy(" same");
+  // jumSun(0,0,2,0);
 
-  drawText("PYTHIA+HYDJET",0.2,0.80,0,25);
-  TLegend *legc1all = new TLegend(0.6149194,0.6716102,0.9435484,0.9555085,NULL,"brNDC");
-  easyLeg(legc1all,"");
-  legc1all->AddEntry(hxgj[khimc][3],"50-100%","p");
-  legc1all->AddEntry(hxgj[khimc][2],"30-50%","p");
-  legc1all->AddEntry(hxgj[khimc][1],"10-30%","p");
-  legc1all->AddEntry(hxgj[khimc][0],"0-10%","p");
-  legc1all->Draw();
-  */
+  // drawText("PYTHIA+HYDJET",0.2,0.80,0,25);
+  // TLegend *legc1all = new TLegend(0.6149194,0.6716102,0.9435484,0.9555085,NULL,"brNDC");
+  // easyLeg(legc1all,"");
+  // legc1all->AddEntry(hxgj[khimc][3],"50-100%","p");
+  // legc1all->AddEntry(hxgj[khimc][2],"30-50%","p");
+  // legc1all->AddEntry(hxgj[khimc][1],"10-30%","p");
+  // legc1all->AddEntry(hxgj[khimc][0],"0-10%","p");
+  // legc1all->Draw();
+  
   
   TCanvas *c1ppDphi = new TCanvas("c1ppDphi","",500,500);
   TString fitFunc = "(TMath::Pi()/20.0)*exp(-(TMath::Pi()-x)/[0])/([0]*(1-exp(-TMath::Pi()/[0])))";
@@ -381,9 +385,12 @@ void updateHIN11010(int etPho = 60, int etJet = 30, bool scaleByR=true) {
     hdphi[khimc][icent]->SetAxisRange(1.00001e-3,1,"Y");
     hdphi[khimc][icent]->SetStats(0);
     TH1D* hdphitemp = (TH1D*)hdphi[khimc][icent]->Clone(Form("hdphitemp55_%d",icent));
-    for ( int i=0;i<=30;i++) { 
-      hdphitemp->SetBinContent(i,0);
-      hdphitemp->SetBinError(i,0);
+    if(!drawMC)
+    {
+      for ( int i=0;i<=30;i++) { 
+	hdphitemp->SetBinContent(i,0);
+	hdphitemp->SetBinError(i,0);
+      }
     }
     hdphitemp->Draw("hist");
     hdphi[khidata][icent]->SetAxisRange(1.00001e-3,1,"Y");
@@ -406,7 +413,7 @@ void updateHIN11010(int etPho = 60, int etJet = 30, bool scaleByR=true) {
       easyLeg(leg0,"");
       if ( !mcOnly )   leg0->AddEntry(hdphi[kppdata13][icent+1],"pp Data (Smeared)","p");
       if ( !mcOnly )      leg0->AddEntry(hdphi[khidata][icent],"PbPb Data","p");
-      //      leg0->AddEntry(hdphi[khimc][icent],"PYTHIA + HYDJET","f");
+      if(drawMC) leg0->AddEntry(hdphi[khimc][icent],"PYTHIA + HYDJET","f");
       leg0->Draw();
     }
 
@@ -482,16 +489,17 @@ void updateHIN11010(int etPho = 60, int etJet = 30, bool scaleByR=true) {
   hTemp2->Draw();
   //  TH1D* hMXpp2013_2 = new TH1D("hmxpp2013_2","",1,-10,370);
   //  hMXpp2013_2->SetBinContent(1,hMXpp2013->GetBinContent(1));
-  //  if ( !mcOnly )   drawSys(hMXpp2013_2,sysMxpp,kGreen);
+  //  if ( !mcOnly )   drawSys(hMXpp2013_2,sysMxpp,kGreen,3001);
   if ( !mcOnly )   drawSys(mxhidata,sysMx,10);
   
-  //  mxhimc->Draw("p");
+  if(drawMC) mxhimc->Draw("p");
   // mxppmc->Draw("p");
   //  if ( !mcOnly )   mxppdata->Draw("p");
-  if ( !mcOnly )  mxhidata->Draw("p");
+  if ( !mcOnly )  mxhidata->Draw("p same");
   if ( !mcOnly )  {
+    hMXpp2013[5]->SetMarkerStyle(20);
     for ( int icent = 1 ; icent<=5 ; icent++) {
-      drawSys(hMXpp2013[icent],ppSysMx,kGreen);
+      drawSys(hMXpp2013[icent],ppSysMx,kGreen,3001);
       hMXpp2013[icent]->Draw("same");
     }
   }
@@ -518,9 +526,10 @@ void updateHIN11010(int etPho = 60, int etJet = 30, bool scaleByR=true) {
 
   TLegend *leg4 =  new TLegend(0.1630303,0.7054839,0.7590909,0.9931183,NULL,"brNDC");
   easyLeg(leg4,"");
-  //  leg4->AddEntry(mxhimc,"PYTHIA + HYDJET","p");
+  if(drawMC) leg4->AddEntry(mxhimc,"PYTHIA + HYDJET","p");
   //  if ( !mcOnly )  leg4->AddEntry(mxppdata,"pp Data 231nb^{-1}","p");
-  if ( !mcOnly )  leg4->AddEntry(hDphiPP2013[1],"pp Data (Smeared), 5.3 pb^{-1}","p");
+  if ( !mcOnly )  leg4->AddEntry(hMXpp2013[5],"pp Data, 5.3 pb^{-1}","p");
+  if ( !mcOnly )  leg4->AddEntry(hDphiPP2013[2],"pp Data (Smeared), 5.3 pb^{-1}","p");
   if ( !mcOnly ) leg4->AddEntry(mxhidata,"PbPb Data, 150#mub^{-1}","p");
   //  leg4->AddEntry(mxppmc,"PYTHIA","p");
 
@@ -562,17 +571,18 @@ void updateHIN11010(int etPho = 60, int etJet = 30, bool scaleByR=true) {
   //////////////////////////////////////////////
   //  TH1D* hdphi2013_2 = new TH1D("hdphi2013_2","",1,-10,370);
   //  hdphi2013_2->SetBinContent(1,hRpp2013->GetBinContent(1));
-  //  if ( !mcOnly )   drawSys(hdphi2013_2,sysRpp,kGreen);
+  //  if ( !mcOnly )   drawSys(hdphi2013_2,sysRpp,kGreen,3001);
   if ( !mcOnly )   drawSys(rxhidata,sysR,10);
   //  if ( !mcOnly )   drawSys(rxppdata,sysRpp,10);
   // jumSun(-10,1,400,1);
-  //  rxhimc->Draw("p");
+  if(drawMC) rxhimc->Draw("p");
   //  rxppmc->Draw("p");
   //  if ( !mcOnly )   rxppdata->Draw("p");
-  if ( !mcOnly )   rxhidata->Draw("p");
+  if ( !mcOnly )   rxhidata->Draw("p same");
   if ( !mcOnly )   {
+    hRpp2013[5]->SetMarkerStyle(20);
     for ( int icent =1 ; icent<=5 ; icent++) { 
-      drawSys(hRpp2013[icent],ppSysR,kGreen);
+      drawSys(hRpp2013[icent],ppSysR,kGreen,3001);
       hRpp2013[icent]->Draw("same");
     }
   }
@@ -610,30 +620,31 @@ void updateHIN11010(int etPho = 60, int etJet = 30, bool scaleByR=true) {
   // TH1D* h2013_3 = new TH1D("hdphi2013_3","",1,-10,370);
   //  h2013_3->SetBinContent(1,hDphiPP2013->GetBinContent(1));
 
-  //  if ( !mcOnly )  drawSys(h2013_3,sysDphipp,kGreen);
+  //  if ( !mcOnly )  drawSys(h2013_3,sysDphipp,kGreen,3001);
   if ( !mcOnly )  drawSys(dphihidata,sysDphi,10);
-  // dphihimc->Draw("p");
+  if(drawMC) dphihimc->Draw("p same");
   // dphippmc->Draw("p");
   //  if ( !mcOnly )  dphippdata->Draw("p");
   for ( int icent=1 ; icent<=5 ; icent++){
-    drawSys(hDphiPP2013[icent], hDphiPPUnc, kGreen);
+    drawSys(hDphiPP2013[icent], hDphiPPUnc, kGreen,3001);
   }
   
   if ( !mcOnly )  dphihidata->Draw("p");
   TH1D* hDphiPP2013Temp = new TH1D("hDphiPP2013Temp","",1,380,400);
   hDphiPP2013Temp->SetBinContent(1,0.27);
+  hDphiPP2013[5]->SetMarkerStyle(20);
   for ( int icent=1 ; icent<=5 ; icent++){ 
     hDphiPP2013[icent]->Draw("same");
   }
 
-  TLegend *legDphi =  new TLegend(0.32,0.18,0.93,0.7,NULL,"brNDC");
-  easyLeg(legDphi,"");
-  legDphi->SetTextSize(17);
-  //  drawText("|#Delta#phi_{J#gamma}| > #frac{2}{3}#pi",0.5,0.38,0);
-  //  drawText("Fit : #frac{e^{#frac{|#Delta#phi_{J#gamma}|-#pi}{#sigma}}}{#sigma(1-e^{-#pi/#sigma})}",0.5,0.23,0);
-  legDphi->Draw();
-  //  drawText("(a)",0.22,0.87,1);
-  //  drawText("CMS",0.78,0.88,1);
+  // TLegend *legDphi =  new TLegend(0.32,0.18,0.93,0.7,NULL,"brNDC");
+  // easyLeg(legDphi,"");
+  // legDphi->SetTextSize(17);
+  // //  drawText("|#Delta#phi_{J#gamma}| > #frac{2}{3}#pi",0.5,0.38,0);
+  // //  drawText("Fit : #frac{e^{#frac{|#Delta#phi_{J#gamma}|-#pi}{#sigma}}}{#sigma(1-e^{-#pi/#sigma})}",0.5,0.23,0);
+  // legDphi->Draw();
+  // //  drawText("(a)",0.22,0.87,1);
+  // //  drawText("CMS",0.78,0.88,1);
 
 
   TH1D* hSysTemp = new TH1D("hSystemp","",1,0,1);
