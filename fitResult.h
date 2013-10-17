@@ -110,7 +110,8 @@ void sbStyle(TH1* h=0) {
 }
 
 
-const Int_t nSIGMABINS = 100; // number of bins in sigmaIetaIeta dist
+//const Int_t nSIGMABINS = 100; // number of bins in sigmaIetaIeta dist
+const Int_t nSIGMABINS = 25;
 const Double_t maxSIGMA = 0.025; // x-axis max of sigmaIetaIeta dist
 
 fitResult getPurity(TTree *dataTree, TTree *mcTree,

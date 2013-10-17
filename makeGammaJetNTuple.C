@@ -49,14 +49,15 @@ int makeGammaJetNTuple(const char *inFile, sampleType sType, const char *outName
   c->hasEvtTree = true;
 
   
-  if(sType == kHIDATA || sType == kHIMC || sType == kPADATA || sType == kPAMC)
-  {
-    c->hasAkPu3JetTree = true;
-  }
-  else //pp
-  {
-    c->hasAk3JetTree = true;
-  }
+  // if(sType == kHIDATA || sType == kHIMC || sType == kPADATA || sType == kPAMC)
+  // {
+  //   c->hasAkPu3JetTree = true;
+  // }
+  // else //pp
+  // {
+  //   c->hasAk3JetTree = true;
+  // }
+  c->hasAkPu3JetTree = true; //pp currently only has PU
 
   // mix with minbias jets for PbPb only.
   //////////////////////////////////////
@@ -170,14 +171,15 @@ int makeGammaJetNTuple(const char *inFile, sampleType sType, const char *outName
     ///////////////////////////////////////////
     nJets_ = 0;
     Jets jetCollection;
-    if(sType == kHIDATA || sType == kHIMC || sType == kPADATA || sType == kPAMC)
-    {
-      jetCollection = c->akPu3PF;
-    }
-    else //pp
-    {
-      jetCollection = c->ak3PF;
-    }
+    // if(sType == kHIDATA || sType == kHIMC || sType == kPADATA || sType == kPAMC)
+    // {
+    //   jetCollection = c->akPu3PF;
+    // }
+    // else //pp
+    // {
+    //   jetCollection = c->ak3PF;
+    // }
+    jetCollection = c->akPu3PF; //pp mc currently missing ak3PF
 
     for(Int_t i = 0; i<jetCollection.nref; ++i)
     {

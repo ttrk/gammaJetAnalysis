@@ -27,11 +27,11 @@
 using namespace std;
 //last forward run is 211256
 
-//pp
-const TString DATA_FILE = "gammaJets_pp_Data.root";
-const TString MC_FILE = "gammaJets_pp_MC_PUallQCDPhoton.root";
-const TString LABEL = "pp #sqrt{s}_{_{NN}}=2.76 TeV";
-const TCut sampleIsolation = "ecalRecHitSumEtConeDR04 < 4.2  &&  hcalTowerSumEtConeDR04 < 2.2  &&  trkSumPtHollowConeDR04 < 2 && hadronicOverEm<0.1";
+// //pp
+// const TString DATA_FILE = "gammaJets_pp_Data.root";
+// const TString MC_FILE = "gammaJets_pp_MC_PUallQCDPhoton.root";
+// const TString LABEL = "pp #sqrt{s}_{_{NN}}=2.76 TeV";
+// const TCut sampleIsolation = "ecalRecHitSumEtConeDR04 < 4.2  &&  hcalTowerSumEtConeDR04 < 2.2  &&  trkSumPtHollowConeDR04 < 2 && hadronicOverEm<0.1";
 
 // //PbPb
 // const TString DATA_FILE = "gammaJets_PbPb_Data.root";
@@ -39,25 +39,25 @@ const TCut sampleIsolation = "ecalRecHitSumEtConeDR04 < 4.2  &&  hcalTowerSumEtC
 // const TString LABEL = "PbPb #sqrt{s}_{_{NN}}=2.76 TeV";
 // const TCut sampleIsolation = "(cc4+cr4+ct4PtCut20<1) && hadronicOverEm<0.1";
 
-// pPb
-// const TString DATA_FILE = "gammaJets_pA_Data.root";
-// const TString MC_FILE = "gammaJets_pA_MC_allQCDPhoton.root";
-// const TString LABEL = "pPb #sqrt{s}_{_{NN}}=5.02 TeV";
-// const TCut sampleIsolation = "ecalRecHitSumEtConeDR04 < 4.2  &&  hcalTowerSumEtConeDR04 < 2.2  &&  trkSumPtHollowConeDR04 < 2 && hadronicOverEm<0.1";
+//pPb
+const TString DATA_FILE = "gammaJets_pA_Data.root";
+const TString MC_FILE = "gammaJets_pA_MC_allQCDPhoton.root";
+const TString LABEL = "pPb #sqrt{s}_{_{NN}}=5.02 TeV";
+const TCut sampleIsolation = "ecalRecHitSumEtConeDR04 < 4.2  &&  hcalTowerSumEtConeDR04 < 2.2  &&  trkSumPtHollowConeDR04 < 2 && hadronicOverEm<0.1";
 
 
 //const Double_t sigShifts[] = {-0.0000989, -0.000131273, -0.00016207, -0.000170555};
 const Double_t sigShifts[] = {0, 0, 0, 0};
 //const Double_t sigShifts[] = {-0.00015,-0.00015,-0.00015,-0.00015};
-const TString SAVENAME = "test_plot";
+const TString SAVENAME = "pPb_noshift";
 
 // last entry is upper bound on last bin
-//const Int_t CENTBINS[] = {0, 12, 40};
+//const Int_t CENTBINS[] = {0, 12};//, 40};
 const Int_t CENTBINS[] = {0, 100};
 const Int_t nCENTBINS = sizeof(CENTBINS)/sizeof(Int_t) -1;
 
-const Double_t PTBINS[] = {40, 50, 60, 80, 1000};
-//const Double_t PTBINS[] = {40, 1000};
+//const Double_t PTBINS[] = {40, 50, 60, 80, 1000};
+const Double_t PTBINS[] = {60, 80};
 const Int_t nPTBINS = sizeof(PTBINS)/sizeof(Double_t) -1;
 
 const Double_t ETABINS[] = {-1.44, 1.44};
@@ -84,9 +84,10 @@ void photonPurity()
   const TCut mcIsolation = "genCalIsoDR04<5 && abs(genMomId)<=22";
 
   //TCanvas *cPurity[nPTBINS];  
-  TCanvas *cPurity = new TCanvas("c1","c1",1350,300*nCENTBINS*2);
-  cPurity->Divide(nPTBINS,2*nCENTBINS,0,0);
-  //cPurity->Divide(nPTBINS,nCENTBINS,0,0);
+  //TCanvas *cPurity = new TCanvas("c1","c1",337*nPTBINS,300*nCENTBINS/**2*/);
+  TCanvas *cPurity = new TCanvas("c1","c1",666,600/**2*/);
+  //cPurity->Divide(nPTBINS,2*nCENTBINS,0,0);
+  cPurity->Divide(nPTBINS,nCENTBINS,0,0);
   
   for(Int_t i = 0; i < nPTBINS; ++i) {
     //cPurity[i] = new TCanvas(Form("c1_%d",i),"",1920,1000);
@@ -153,17 +154,17 @@ void photonPurity()
 	t3->Draw();
 
 	//drawText("|#eta_{#gamma}| < 1.479",0.5680963,0.9);
-	//drawText(Form("%f shift",fitr.sigMeanShift),0.57,0.82);
+	drawText(Form("%f shift",fitr.sigMeanShift),0.57,0.82);
 	//drawText("Background Correction",0.57,0.82);
 	//drawText("bkg Tighter",0.57,0.82);
-	if(nPTBINS != 1)
+	//if(nPTBINS != 1)
 	  drawText(Form("%.0f < p_{T}^{#gamma} < %.0f",
 			PTBINS[i], PTBINS[i+1]),
 		   0.57, 0.9);
-	if(/*nCENTBINS != 1 && */i ==0)
-	  drawText(Form("%.0f - %.0f%c",
-			CENTBINS[j]*100./40., CENTBINS[j+1]*100./40.,'%'),
-		   0.27, 0.82);
+	// if(/*nCENTBINS != 1 && */i ==0)
+	//   drawText(Form("%.0f - %.0f%c",
+	// 		CENTBINS[j]*100./40., CENTBINS[j+1]*100./40.,'%'),
+	// 	   0.27, 0.82);
 	if(nETABINS != 1)
 	  drawText(Form("%.3f < #eta_{#gamma} < %.3f",
 			ETABINS[k], ETABINS[k+1]),
@@ -173,21 +174,21 @@ void photonPurity()
 	drawText(Form("#chi^{2}/ndf : %.2f", (Float_t)fitr.chisq),
 		 0.57, 0.45);
 
-	//plot ratio
-	cPurity->cd((2*(j+k)+1)*nPTBINS+i+1);
-	//cPurity[i]->cd(nETABINS + k+ 1);
-	TH1D* ratio = (TH1D*)hData1->Clone("ratio");
-	ratio->Divide(hData1, hSigPdf, 1, 1);
-	ratio->SetMinimum(0);
-	ratio->SetMaximum(3);
-	ratio->SetXTitle("#sigma_{#eta #eta}");
-	ratio->GetXaxis()->CenterTitle();      
-	ratio->SetYTitle("Data/Fit");
-	ratio->GetYaxis()->CenterTitle();
-	ratio->DrawCopy("E");
-	TLine *line = new TLine(0,1,maxSIGMA,1);
-	line->SetLineStyle(2);
-	line->Draw("same");
+	// //plot ratio
+	// cPurity->cd((2*(j+k)+1)*nPTBINS+i+1);
+	// //cPurity[i]->cd(nETABINS + k+ 1);
+	// TH1D* ratio = (TH1D*)hData1->Clone("ratio");
+	// ratio->Divide(hData1, hSigPdf, 1, 1);
+	// ratio->SetMinimum(0);
+	// ratio->SetMaximum(3);
+	// ratio->SetXTitle("#sigma_{#eta #eta}");
+	// ratio->GetXaxis()->CenterTitle();      
+	// ratio->SetYTitle("Data/Fit");
+	// ratio->GetYaxis()->CenterTitle();
+	// ratio->DrawCopy("E");
+	// TLine *line = new TLine(0,1,maxSIGMA,1);
+	// line->SetLineStyle(2);
+	// line->Draw("same");
 
 	// TString savename = Form("purity_pA_barrel_pt%.0f_hf%.0f_plot",
 	// 			PTBINS[i], CENTBINS[j]);
@@ -200,7 +201,8 @@ void photonPurity()
     //cPurity[i]->SaveAs(Form("pPb_purity_etadep_wshift_ptbin%.0f.png",PTBINS[i]));
     //cPurity[i]->SaveAs(Form("pPb_purity_etadep_noshift_inclusive.png"));
   }
-  cPurity->SaveAs(SAVENAME+".C");
+  //cPurity->SaveAs(SAVENAME+".C");
+  cPurity->SaveAs(SAVENAME+".png");
   cPurity->SaveAs(SAVENAME+".pdf");
 }
 

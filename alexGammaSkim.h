@@ -3,6 +3,7 @@
 #define alexGammaSkim_h
 
 #include "TTree.h"
+#include "TFile.h"
 
 enum sampleType {
   kHIDATA, //0
@@ -88,12 +89,8 @@ float mJetEta_[MAXJETS];
 float mJetPhi_[MAXJETS];
 float mJetDphi_[MAXJETS];
 
-void initGammaSkim(bool montecarlo)
+void setBranches_(bool montecarlo)
 {
-  photonTree_ = new TTree("photonTree","photonTree");
-  jetTree_ = new TTree("jetTree","jetTree");
-  mJetTree_ = new TTree("mJetTree","mJetTree");
-
   photonTree_->Branch("run",&run_,"run/I");
   photonTree_->Branch("event",&event_,"event/I");
   photonTree_->Branch("lumi",&lumi_,"lumi/I");
@@ -143,5 +140,77 @@ void initGammaSkim(bool montecarlo)
   mJetTree_->Branch("phi",mJetPhi_,"phi[nJet]/F");
   mJetTree_->Branch("dPhi", mJetDphi_, "dphi[nJet]/F");
 }
+
+void getBranches_(bool montecarlo)
+{
+  photonTree_->SetBranchAddress("run",&run_);
+  photonTree_->SetBranchAddress("event",&event_);
+  photonTree_->SetBranchAddress("lumi",&lumi_);
+  photonTree_->SetBranchAddress("pt",&gPt_);
+  photonTree_->SetBranchAddress("corrPt",&corrGPt_);
+  photonTree_->SetBranchAddress("eta",&gEta_);
+  photonTree_->SetBranchAddress("phi",&gPhi_);
+  photonTree_->SetBranchAddress("HF",&HF_);
+  photonTree_->SetBranchAddress("HFplusEta4",&HFplusEta4_);
+  photonTree_->SetBranchAddress("HFminusEta4",&HFminusEta4_);
+  photonTree_->SetBranchAddress("cc4",&cc4_);
+  photonTree_->SetBranchAddress("cr4",&cr4_);
+  photonTree_->SetBranchAddress("ct4PtCut20",&ct4PtCut20_);
+  photonTree_->SetBranchAddress("hadronicOverEm",&hadronicOverEm_);
+  photonTree_->SetBranchAddress("sigmaIetaIeta",&sigmaIetaIeta_);
+  photonTree_->SetBranchAddress("r9",&r9_);
+  photonTree_->SetBranchAddress("ecalRecHitSumEtConeDR04",&ecalRecHitSumEtConeDR04_);
+  photonTree_->SetBranchAddress("hcalTowerSumEtConeDR04",&hcalTowerSumEtConeDR04_);
+  photonTree_->SetBranchAddress("trkSumPtHollowConeDR04",&trkSumPtHollowConeDR04_);
+  photonTree_->SetBranchAddress("hiBin",&hiBin_);
+
+  jetTree_->SetBranchAddress("nJets",&nJets_);
+  jetTree_->SetBranchAddress("pt",jPt_);
+  jetTree_->SetBranchAddress("eta",jEta_);
+  jetTree_->SetBranchAddress("phi",jPhi_);
+  jetTree_->SetBranchAddress("avgEta",avgEta_);
+  jetTree_->SetBranchAddress("dPhi",dPhi_);
+  jetTree_->SetBranchAddress("dR",dR_);
+  
+  if(montecarlo)
+  {
+    photonTree_->SetBranchAddress("genMomId",&genMomId_);
+    photonTree_->SetBranchAddress("genCalIsoDR04",&genCalIsoDR04_);
+    photonTree_->SetBranchAddress("genTrkIsoDR04",&genTrkIsoDR04_);
+    photonTree_->SetBranchAddress("ptHat",&ptHat_);
+    photonTree_->SetBranchAddress("genPt",&genGPt_);
+    photonTree_->SetBranchAddress("genEta",&genGEta_);
+    photonTree_->SetBranchAddress("genPhi",&genGPhi_);
+    photonTree_->SetBranchAddress("mcweight",&mcweight_);
+    
+    jetTree_->SetBranchAddress("genPt",genJPt_);
+  }
+
+  mJetTree_->SetBranchAddress("nJet",&nMjet_);
+  mJetTree_->SetBranchAddress("pt",mJetPt_);
+  mJetTree_->SetBranchAddress("eta",mJetEta_);
+  mJetTree_->SetBranchAddress("phi",mJetPhi_);
+  mJetTree_->SetBranchAddress("dPhi", mJetDphi_);
+}
+
+void readGammaSkim(TFile *filename, bool montecarlo = false)
+{
+  photonTree_ = (TTree*)filename->Get("photonTree");
+  jetTree_ = (TTree*)filename->Get("jetTree");
+  mJetTree_ = (TTree*)filename->Get("mJetTree");
+
+  getBranches_(montecarlo);
+}
+
+void initGammaSkim(bool montecarlo = false)
+{
+  photonTree_ = new TTree("photonTree","photonTree");
+  jetTree_ = new TTree("jetTree","jetTree");
+  mJetTree_ = new TTree("mJetTree","mJetTree");
+
+  setBranches_(montecarlo);
+}
+
+
 
 #endif

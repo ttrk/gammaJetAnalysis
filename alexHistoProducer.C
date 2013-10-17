@@ -53,7 +53,7 @@ void alexHistoProducer(sampleType collision, float photonPtThr=60, float photonP
       lowerCent = centBin1[icent-1];
       upperCent = centBin1[icent]-1;
     }
-    //centCut = Form("hiBin >= %d && hiBin<= %d",lowerCent,upperCent);
+    centCut = Form("hiBin >= %d && hiBin<= %d",lowerCent,upperCent);
   }
   else if (  (collision ==kPPDATA) || (collision==kPPMC)  ){  // if it's pp 
     centCut = "(1==1)";
@@ -63,7 +63,7 @@ void alexHistoProducer(sampleType collision, float photonPtThr=60, float photonP
     //centCut = Form( "hf4Sum > %f && hf4Sum <= %f", (float)centBinPa[icent-1], (float)centBinPa[icent]);
     centCut = "(1==1)";
   }
-  printf("centCut: %s\n",((TString)centCut).Data());
+  //printf("centCut: %s\n",((TString)centCut).Data());
 
   TCut photonEtaCut = "abs(photonTree.eta) < 1.44";
   TCut photonPtCut = Form("photonTree.corrPt>%f && photonTree.corrPt<%f", photonPtThr, photonPtThrUp  );

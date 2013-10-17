@@ -2,7 +2,7 @@
 #enum sampleType { kHIDATA, kHIMC, kPPDATA, kPPMC, kPADATA, kPAMC};
 #                  0        1      2        3      4        5
 #./alexHistoProducer.exe sampleType collision = kHIDATA, float photonPtThr=60, float photonPtThrUp=1000000, float jetPtThr=30, int icent =1
-g++ alexHistoProducer.C $(root-config --cflags --libs) -Werror -Wall -O2 -o alexHistoProducer.exe || exit 1
+g++ alexHistoProducer.C $(root-config --cflags --libs) -Werror -Wall -g -o alexHistoProducer.exe || exit 1
 
 rm ffFiles/*.root
 
