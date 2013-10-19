@@ -34,14 +34,13 @@ vector<jetKinem> nullVec;
 
 void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonSkimForest_v85_skimPhotonPt50_eta1.5.root",
 				   std::string MinbiasFname = "skim_trackJet_minbiasTrackJet_mc.root",
-				   float cutphotonPt  = 40, 
+				   float cutphotonPt  = 35,  // default value dropped to 35GeV  for later photon energy smearing/scaling
 				   std::string outname = "testPhotonSkim.root",
 				   sampleType colli=kPADATA,
 				   bool doMix = false,
-				   bool doJetResCorrection = 1,  // jet energy correction is done by default from Oct 19th (YS)
+				   bool doJetResCorrection = 1,  // = L2L3 * MC nonclosure correction  jet energy correction is done by default from Oct 19th (YS)
 				   float addJetEnergyRes = 0,
 				   float addFlatJetEnergyRes = 0,
-				   // float jetEnergyScale = 1,  // Jet energy scale will be contoled when histograms are made. Oct 19th(YS)
 				   bool useGenJetColl = 0
 				   )
 { 
@@ -399,6 +398,8 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
       
       // resCorrection 
       float resCorrection =1. ;
+      float l2l3Corr =1 ;  
+      
       if  (doJetResCorrection)   { 
 	if ((colli==kHIDATA)||(colli==kHIMC))  { // do the residual correction
 	  if ( evt.cBin  < 12 )   // central
@@ -409,27 +410,25 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
 	else if ((colli==kPPDATA)||(colli==kPPMC)){  // do the residual correction
 	  resCorrection  = 0.993609  +0.158418/(sqrt(jetPt[nJet])) + 0.335479 / (jetPt[nJet]);//	  0.993609   0.158418   0.335479
 	}
+	
+	// L2L3 correction!
+	if ( colli == kPPDATA)   {
+	  l2l3Corr = c_etapp->GetBinContent(c_etapp->FindBin(jetEta[nJet])) * fptpp->Eval( jetPt[nJet]);
+	}
+	else if ( colli == kPADATA)   {
+	  if ( evt.run > 211256 ) 
+	    l2l3Corr = c_etapA->GetBinContent(c_etapA->FindBin(jetEta[nJet]))  * fptpA->Eval( jetPt[nJet]);
+	  else 
+	    l2l3Corr = c_etaAp->GetBinContent(c_etaAp->FindBin(jetEta[nJet]))  * fptAp->Eval( jetPt[nJet]);
+	}	  
+	else if ( colli == kPAMC) 
+	  l2l3Corr = 1 + (fsmear_pA->Eval( jetPt[nJet] )) * fgaus->GetRandom()  ; 
       }
       
-      // L2L3 correction!
-      float l2l3Corr =1 ;  
-      if ( colli == kPPDATA)   {
-	l2l3Corr = c_etapp->GetBinContent(c_etapp->FindBin(jetEta[nJet])) * fptpp->Eval( jetPt[nJet]);
-      }
-      else if ( colli == kPADATA)   {
-	if ( evt.run > 211256 ) 
-	  l2l3Corr = c_etapA->GetBinContent(c_etapA->FindBin(jetEta[nJet]))  * fptpA->Eval( jetPt[nJet]);
-	else 
-	  l2l3Corr = c_etaAp->GetBinContent(c_etaAp->FindBin(jetEta[nJet]))  * fptAp->Eval( jetPt[nJet]);
-      }	  
-      else if ( colli == kPAMC) 
-	l2l3Corr = 1 + (fsmear_pA->Eval( jetPt[nJet] )) * fgaus->GetRandom()  ; 
-
-      //      cout << " l2l3 corr = " << l2l3Corr << endl;
       jetPt[nJet] = smeared * l2l3Corr /resCorrection;
       
       if ( jetPt[nJet] < cutjetPtSkim)  // double cutjetPtSkim = 15; Oct 19th
-	 continue;
+	continue;
       if ( fabs( jetEta[nJet] ) > cutjetEtaSkim )     // double cutjetEtaSkim = 3.0; Oct 19th
 	continue;
       if ( getDR( jetEta[nJet], jetPhi[nJet], gj.photonEta, gj.photonPhi) < 0.5 )
@@ -536,8 +535,10 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
 	// smear the jet pT
 	float smeared = jetPtImb[it] * rand.Gaus(1,addJetEnergyRes/jetPtImb[it]) *  rand.Gaus(1, addFlatJetEnergyRes) ; 
 	float resCorrection =1. ;
+	float l2l3Corr =1 ;
 
 	if  (doJetResCorrection)   {
+	  // Correction from MC closure
 	  if ((colli==kHIDATA)||(colli==kHIMC))  { // do the residual correction                               
 	    if ( evt.cBin  < 12 )   // central                                             
 	      resCorrection  =  1.04503 -1.6122  /(sqrt(jetPtImb[it])) + 9.27212 / (jetPtImb[it]);  //1.04503    -1.6122    9.27212                                
@@ -547,22 +548,19 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
 	  else if ((colli==kPPDATA)||(colli==kPPMC)){  // do the residual correction                                              
 	    resCorrection  = 0.993609  +0.158418/(sqrt(jetPtImb[it])) + 0.335479 / (jetPtImb[it]);//          0.993609   0.158418   0.335479               
 	  }
-	} 
-	
-	// L2L3 correction!                                                                                                                                 
-	float l2l3Corr =1 ;
-	if ( colli == kPPDATA)   {
-	  l2l3Corr = c_etapp->GetBinContent(c_etapp->FindBin(jetEtaImb[it])) * fptpp->Eval( jetPtImb[it]);
+	  // L2L3 
+	  if ( colli == kPPDATA)   {
+	    l2l3Corr = c_etapp->GetBinContent(c_etapp->FindBin(jetEtaImb[it])) * fptpp->Eval( jetPtImb[it]);
+	  }
+	  else if ( colli == kPADATA)   {
+	    if ( evt.run > 211256 )
+	      l2l3Corr = c_etapA->GetBinContent(c_etapA->FindBin(jetEtaImb[it]))  * fptpA->Eval( jetPtImb[it]);
+	    else
+	      l2l3Corr = c_etaAp->GetBinContent(c_etaAp->FindBin(jetEtaImb[it]))  * fptAp->Eval( jetPtImb[it]);
+	  }
+	  else if ( colli == kPAMC) 
+	    l2l3Corr = 1 + (fsmear_pA->Eval( jetPtImb[it] )) * fgaus->GetRandom()  ; 
 	}
-	else if ( colli == kPADATA)   {
-	  if ( evt.run > 211256 )
-	    l2l3Corr = c_etapA->GetBinContent(c_etapA->FindBin(jetEtaImb[it]))  * fptpA->Eval( jetPtImb[it]);
-	  else
-	    l2l3Corr = c_etaAp->GetBinContent(c_etaAp->FindBin(jetEtaImb[it]))  * fptAp->Eval( jetPtImb[it]);
-	}
-	else if ( colli == kPAMC) 
-	  l2l3Corr = 1 + (fsmear_pA->Eval( jetPtImb[it] )) * fgaus->GetRandom()  ; 
-	
 	
 	
 	float smearedCorrected  = smeared *l2l3Corr / resCorrection; // residual correction
