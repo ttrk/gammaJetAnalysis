@@ -33,13 +33,15 @@ double a1, a2, a3, a4, a5, a6;
 ///////////// pp Data
 //TString fnamePPDATA                  = "yskimmedFiles/skim_ak3PF_ppData2013_promptSkim_photon40GeV.root";
 TString fnamePPDATA                  =   "yskimmedFiles/yskim_pp_photonSKimForest_v85_jetNoSmearing.root";
+//Residual correction
+TString fnamePPDATA_jetResCorrected    = "yskimmedFiles/yskim_pp_photonSKimForest_v85_jetNoSmearing_jetResCorrected.root";
 /// jet energy smeared 
-TString fnamePPDATA0010                  =   "yskimmedFiles/yskim_pp_photonSKimForest_v85_jetSmearingCent0010.root";
+TString fnamePPDATA0010                  =   "yskimmedFiles/yskim_pp_photonSKimForest_v85_jetSmearingCent0010.root"; // Now these are smeared and thn corr
 TString fnamePPDATA1030                  =   "yskimmedFiles/yskim_pp_photonSKimForest_v85_jetSmearingCent1030.root";
 TString fnamePPDATA3050                  =   "yskimmedFiles/yskim_pp_photonSKimForest_v85_jetSmearingCent3050.root";
 TString fnamePPDATA5099                 =   "yskimmedFiles/yskim_pp_photonSKimForest_v85_jetSmearingCent5099.root";
 
-TString fnamePPDATA30100                =   "yskimmedFiles/yskim_pp_photonSKimForest_v85_jetSmearingCent30100.root";
+TString fnamePPDATA30100                =   "yskimmedFiles/yskim_pp_photonSKimForest_v85_jetSmearingCent3099.root";
 TString fnamePPDATA0030                =   "yskimmedFiles/yskim_pp_photonSKimForest_v85_jetSmearingCent0030.root";
 
 // pp MC
@@ -53,11 +55,11 @@ double  wPPMC_AllQcdPho80to120       = 1680. / 96756.;
 double  wPPMC_AllQcdPho120to9999     = 438.  / 90972.;
 
 
-TString fnamePPDATA_Cone05                  =   "yskimmedFiles/yskim_pp_photonSKimForest_v85_jetNoSmearing.root";
-TString fnamePPMC_AllQcdPho30to50_Cone05    = "yskimmedFiles/yskim_merged_allQCDPhoton30to50_genPhotonPtCut30_CMSSW538HIp2.root";
-TString fnamePPMC_AllQcdPho50to80_Cone05    = "yskimmedFiles/yskim_merged_allQCDPhoton50to80_genPhotonPtCut30_CMSSW538HIp2.root";
-TString fnamePPMC_AllQcdPho80to120_Cone05   = "yskimmedFiles/yskim_merged_allQCDPhoton80to120_genPhotonPtCut30_CMSSW538HIp2.root";
-TString fnamePPMC_AllQcdPho120to9999_Cone05 = "yskimmedFiles/yskim_merged_allQCDPhoton120to9999_genPhotonPtCut30_CMSSW538HIp2.root";
+TString fnamePPDATA_Cone05                  =   "yskimmedFiles/yskim_pp_photonSKimForest_v85_jetNoSmearing_akpu5.root";
+TString fnamePPMC_AllQcdPho30to50_Cone05    = "yskimmedFiles/yskim_merged_allQCDPhoton30to50_genPhotonPtCut30_CMSSW538HIp2_akpu5.root";
+TString fnamePPMC_AllQcdPho50to80_Cone05    = "yskimmedFiles/yskim_merged_allQCDPhoton50to80_genPhotonPtCut30_CMSSW538HIp2_akpu5.root";
+TString fnamePPMC_AllQcdPho80to120_Cone05   = "yskimmedFiles/yskim_merged_allQCDPhoton80to120_genPhotonPtCut30_CMSSW538HIp2_akpu5.root";
+TString fnamePPMC_AllQcdPho120to9999_Cone05 = "yskimmedFiles/yskim_merged_allQCDPhoton120to9999_genPhotonPtCut30_CMSSW538HIp2_akpu5.root";
 
 
 TString fnamePPMC_emDijet30to50    = "yskimmedFiles/yskim_emDijet30to50_CMSSW538HIp2.root";
@@ -72,11 +74,17 @@ double wPPMC_emDijet120to9999      = 4284./130444.;
 
 ///////////// pA Data
 TString fnamePADATA                  = "yskimmedFiles/yskim_pA_photonSkimForest_v85_HLT_PAPhoton30_NoCaloIdVL_v1_highPtPhoton40_16HFBin.root";
+TString fnamePADATA_jetResCorrected    = "yskimmedFiles/yskim_pA_photonSkimForest_v85_HLT_PAPhoton30_NoCaloIdVL_v1_highPtPhoton40.root";
 //            pA MC 
 TString fnamePAMC_AllQcdPho30to50    = "yskimmedFiles/yskim_PA2013_pyquen_allQCDPhoton30to50_forestv85_16HFBin.root";
 TString fnamePAMC_AllQcdPho50to80    = "yskimmedFiles/yskim_PA2013_pyquen_allQCDPhoton50to80_forestv85_16HFBin.root";
 TString fnamePAMC_AllQcdPho80to120   = "yskimmedFiles/yskim_PA2013_pyquen_allQCDPhoton80to120_forestv85_16HFBin.root";
 TString fnamePAMC_AllQcdPho120to9999 = "yskimmedFiles/yskim_PA2013_pyquen_allQCDPhoton120to9999_forestv85_16HFBin.root";
+//
+TString fnamePAMC_AllQcdPho30to50_jetResCorrected    = "yskimmedFiles/yskim_PA2013_pyquen_allQCDPhoton30to50_forestv85_jetResCorrected.root";
+TString fnamePAMC_AllQcdPho50to80_jetResCorrected    = "yskimmedFiles/yskim_PA2013_pyquen_allQCDPhoton50to80_forestv85_jetResCorrected.root";
+TString fnamePAMC_AllQcdPho80to120_jetResCorrected   = "yskimmedFiles/yskim_PA2013_pyquen_allQCDPhoton80to120_forestv85_jetResCorrected.root";
+TString fnamePAMC_AllQcdPho120to9999_jetResCorrected = "yskimmedFiles/yskim_PA2013_pyquen_allQCDPhoton120to9999_forestv85_jetResCorrected.root";
 
 TString fnamePADATA_Cone05                  = "yskimmedFiles/yskim_pA_photonSkimForest_v85_HLT_PAPhoton30_NoCaloIdVL_v1_highPtPhoton40_akpu5.root";
 //            pA MC 
@@ -419,7 +427,7 @@ TCut finalCutGen  =  genPhotonCut ;
 
 
 // Cuts for track and jets
-double cutjetPtSkim = 20;
+double cutjetPtSkim = 15;
 double cuttrkEtaSkim = 2.0;
 
 double cutjetEta = 1.6;

@@ -14,7 +14,7 @@
 #include <iomanip>
 #include <string>
 #include <TMath.h>
-#include "../../hiForestV3/hiForest.h"
+#include "../../HiForestAnalysis/hiForest.h"
 #include "../CutAndBinCollection2012.h"
 #include <time.h>
 #include <TRandom3.h>
@@ -38,10 +38,10 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
 				   std::string outname = "testPhotonSkim.root",
 				   sampleType colli=kPADATA,
 				   bool doMix = false,
-				   bool doJetResCorrection = 0,
+				   bool doJetResCorrection = 1,  // jet energy correction is done by default from Oct 19th (YS)
 				   float addJetEnergyRes = 0,
 				   float addFlatJetEnergyRes = 0,
-                                   float jetEnergyScale = 1,
+				   // float jetEnergyScale = 1,  // Jet energy scale will be contoled when histograms are made. Oct 19th(YS)
 				   bool useGenJetColl = 0
 				   )
 { 
@@ -76,6 +76,41 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
   
   c->InitTree();
   
+
+  // L2L3 correction 
+  TFile* fL2L3pp = new TFile("../corrL2L3/Casym_pp_double_hcalbins_algo_ak3PF_pt100_140_jet80_alphahigh_20_phicut250.root");
+  TH1D * c_etapp=(TH1D*)fL2L3pp->Get("C_asym"); 
+  TF1* fptpp = new TF1("fptpp","1-[0]/pow(x,[1])",20,300); 
+  fptpp->SetParameters(0.06971,0.8167);
+
+  TFile* fL2L3pA = new TFile("../corrL2L3/Casym_pPb_double_hcalbins_algo_akPu3PF_pt100_140_jet80_alphahigh_20_phicut250.root");
+  TH1D * c_etapA=(TH1D*)fL2L3pA->Get("C_asym"); 
+  TF1* fptpA = new TF1("fptpA","1-[0]/pow(x,[1])",20,300); 
+  fptpA->SetParameters(0.3015, 0.8913);
+
+  TFile* fL2L3Ap = new TFile("../corrL2L3/Casym_Pbp_double_hcalbins_algo_akPu3PF_pt100_140_jet80_alphahigh_20_phicut250.root");
+  TH1D * c_etaAp=(TH1D*)fL2L3Ap->Get("C_asym"); 
+  TF1* fptAp = new TF1("fptAp","1-[0]/pow(x,[1])",20,300); 
+  fptAp->SetParameters(0.3015, 0.8913);
+  
+  // pA MC
+  TF1 * fgaus=new TF1("fgaus_pA","gaus(0)",-20,20); 
+  fgaus->SetParameters(1,0,1); 
+  TF1 * fsmear_pA = new TF1("fsmear_pA","[0]/pow(x,[1])",50,300);
+  fsmear_pA->SetParameters(1.052,0.5261);
+
+
+  TCanvas* c11 = new TCanvas("c11","",1200,400);
+  c11->Divide(3,1);
+  c11->cd(1);
+  c_etapp->Draw();
+  c11->cd(2);
+  c_etaAp->Draw();
+  c11->cd(3);
+  c_etapA->Draw();
+  c11->SaveAs("f1.gif");
+
+
   
   // now open new root file
   TFile* newfile_data = new TFile(outname.data(),"recreate");
@@ -185,19 +220,7 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
 	tjmb[icent][ivz]->SetBranchAddress("jetEta", &jetEtaImb, &b_jetEtaImb);
 	tjmb[icent][ivz]->SetBranchAddress("jetPhi", &jetPhiImb, &b_jetPhiImb);	
 	
-	/*  tjmb[icent][ivz]->SetBranchAddress("nTrk", &nTrkImb,&b_nTrkImb);
-	    tjmb[icent][ivz]->SetBranchAddress("trkPt", trkPtImb, &b_trkPtImb);
-	    tjmb[icent][ivz]->SetBranchAddress("trkEta", trkEtaImb, &b_trkEtaImb);
-	    tjmb[icent][ivz]->SetBranchAddress("trkPhi", trkPhiImb, &b_trkPhiImb);
-	    tjmb[icent][ivz]->SetBranchAddress("trkWeight", trkWeightImb, &b_trkWeightImb);
-	    if ( isMC) {
-	    tjmb[icent][ivz]->SetBranchAddress("nGp", &nGpImb, &b_nGpImb);
-	    tjmb[icent][ivz]->SetBranchAddress("gpPt", gpPtImb, &b_gpPtImb);
-	    tjmb[icent][ivz]->SetBranchAddress("gpEta", gpEtaImb, &b_gpEtaImb);
-	    tjmb[icent][ivz]->SetBranchAddress("gpPhi", gpPhiImb, &b_gpPhiImb);
-	    tjmb[icent][ivz]->SetBranchAddress("gpChg", gpChgImb, &b_gpChgImb);
-	    }      
-	*/
+
 	nMB[icent][ivz] = tjmb[icent][ivz]->GetEntries();
 	cout << "number of evetns in (icent = " << icent << ", ivtxZ = "<< ivz << ")  = " << nMB[icent][ivz] << endl;
 	int primeSeed = rand.Integer(37324);
@@ -373,32 +396,43 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
       // smear the jet pT 
       float smeared = jetPt[nJet] * rand.Gaus(1,addJetEnergyRes/jetPt[nJet])   *  rand.Gaus(1, addFlatJetEnergyRes) ;
       // then multiply jet energy sclae
-      smeared = smeared * jetEnergyScale;
       
       // resCorrection 
       float resCorrection =1. ;
-      if (  (doJetResCorrection) && ((colli==kHIDATA)||(colli==kHIMC)) ) { // do the residual correction
-	if ( evt.cBin  < 12 ) {  // central
-	  if ( jetPt[nJet] < 100 ) 
-	    resCorrection  =   1.066 - jetPt[nJet]*0.001117 ; 
-	  else 
-	    resCorrection  =   0.975 ;
+      if  (doJetResCorrection)   { 
+	if ((colli==kHIDATA)||(colli==kHIMC))  { // do the residual correction
+	  if ( evt.cBin  < 12 )   // central
+	    resCorrection  =  1.04503 -1.6122  /(sqrt(jetPt[nJet])) + 9.27212 / (jetPt[nJet]);  //1.04503    -1.6122    9.27212
+	  else                  // peripheral 
+	    resCorrection  =  1.00596 -0.653191/(sqrt(jetPt[nJet])) + 4.35373 / (jetPt[nJet]);  //1.00596     -0.653191  4.35373
 	}
-	else                  {  // peripheral 
-	  if ( jetPt[nJet] < 100 )
-            resCorrection  =  1.03440 - jetPt[nJet]*0.000601 ;
-          else
-            resCorrection  =   0.98 ;
+	else if ((colli==kPPDATA)||(colli==kPPMC)){  // do the residual correction
+	  resCorrection  = 0.993609  +0.158418/(sqrt(jetPt[nJet])) + 0.335479 / (jetPt[nJet]);//	  0.993609   0.158418   0.335479
 	}
       }
       
-      jetPt[nJet] = smeared/resCorrection;
-     
-      if ( jetPt[nJet] < cutjetPtSkim)
+      // L2L3 correction!
+      float l2l3Corr =1 ;  
+      if ( colli == kPPDATA)   {
+	l2l3Corr = c_etapp->GetBinContent(c_etapp->FindBin(jetEta[nJet])) * fptpp->Eval( jetPt[nJet]);
+      }
+      else if ( colli == kPADATA)   {
+	if ( evt.run > 211256 ) 
+	  l2l3Corr = c_etapA->GetBinContent(c_etapA->FindBin(jetEta[nJet]))  * fptpA->Eval( jetPt[nJet]);
+	else 
+	  l2l3Corr = c_etaAp->GetBinContent(c_etaAp->FindBin(jetEta[nJet]))  * fptAp->Eval( jetPt[nJet]);
+      }	  
+      else if ( colli == kPAMC) 
+	l2l3Corr = 1 + (fsmear_pA->Eval( jetPt[nJet] )) * fgaus->GetRandom()  ; 
+
+      //      cout << " l2l3 corr = " << l2l3Corr << endl;
+      jetPt[nJet] = smeared * l2l3Corr /resCorrection;
+      
+      if ( jetPt[nJet] < cutjetPtSkim)  // double cutjetPtSkim = 15; Oct 19th
 	 continue;
-      if ( fabs( jetEta[nJet] ) > cutjetEtaSkim )    
+      if ( fabs( jetEta[nJet] ) > cutjetEtaSkim )     // double cutjetEtaSkim = 3.0; Oct 19th
 	continue;
-      if ( getDR( jetEta[nJet], jetPhi[nJet], gj.photonEta, gj.photonPhi) < 0.3 )
+      if ( getDR( jetEta[nJet], jetPhi[nJet], gj.photonEta, gj.photonPhi) < 0.5 )
 	continue;
       
       if ( (colli==kPADATA) && ( evt.run > 211256 ) )  {
@@ -467,59 +501,6 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
     }
     
     
-    //////////////////////////////////////////// New collection of tracks                                                 
-    // Forget about the tracks at the moment
-    /*    nTrk = 0;
-	  for (int it=0; it < c->track.nTrk; it++ ) {
-	  if ( c->track.highPurity[it] == 0 )
-	  continue;   // only high purity high pt tracks and all pixel track          
-	  if ( c->track.trkPt[it] < cuttrkPt )
-	  continue;
-	  if ( fabs( c->track.trkEta[it]  ) > cuttrkEtaSkim )
-	  continue;
-	  trkPt[nTrk]  = c->track.trkPt[it];
-	  trkEta[nTrk] = c->track.trkEta[it];
-	  trkPhi[nTrk] = c->track.trkPhi[it];
-	  if  (trkPt[nTrk] > 0 )
-	  trkDphi[nTrk] = getAbsDphi ( trkPhi[nTrk], gj.photonPhi) ;
-	  else
-	  trkDphi[nTrk] = -1;
-	  trkWeight[nTrk] = c->getTrackCorrection(it);
-	  nTrk++;
-	  }
-    */
-    
-    /// Gen Particle 
-    // Forget about the gen particle information 
-    /* nGp = 0;
-       if ( isMC ) {
-       for ( int ig = 0 ; ig < c->genparticle.mult ; ig++) {
-       if ( c->genparticle.pt[ig] < cuttrkPt )  /// not possibly though..                                 
-       continue;
-       if ( fabs( c->genparticle.eta[ig] ) > cuttrkEtaSkim )
-       continue;
-       if ( c->genparticle.chg[ig] == 0 )
-       continue;
-	 
-       gpChg[nGp] =  c->genparticle.chg[ig] ;
-	 gpPt[nGp]  = c->genparticle.pt[ig];
-	 gpEta[nGp] = c->genparticle.eta[ig];
-	 gpPhi[nGp] = c->genparticle.phi[ig];
-	 gpSube[nGp] = c->genparticle.sube[ig];
-	 if ( gpPt[nGp]>0 )
-	 gpDphi[nGp] = getAbsDphi (gpPhi[nGp], gj.photonPhi) ; 
-	 else
-	 gpDphi[nGp] = -1 ;
-	 nGp++;
-	 }
-	 }
-    */
-    
-     // now let's mix minbias tracks
-     
-     //    nMtrk = 0;
-     // nMgp  = 0;
-    
     int nMixing = nMixing1;
     nMjet = 0;
     bool noSuchEvent = false;
@@ -545,57 +526,52 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
       /// Load the minbias tracks!!
       tjmb[cBin][vzBin]->GetEntry(mbItr[cBin][vzBin]);
       
-      // Event plane is out of control for both pA and PbPb Sept 2013
-      //    if  ( evt.pBin != evtImb.pBin ) 
-      //   continue;
+ 
       
       // ok found the event!! ///////////
       loopCounter =0;  // Re-initiate loopCounter
-      /*  forget about the tracks!   
-	  for (int it = 0 ; it < nTrkImb ; it++) {
-	  if ( trkPtImb[it] < cuttrkPt )
-	  continue;
-	  if ( fabs( trkEtaImb[it] ) > cuttrkEtaSkim )
-	  continue;
-	  
-	  mTrkPt[nMtrk]    = trkPtImb[it];
-	  mTrkEta[nMtrk]   = trkEtaImb[it];
-	  mTrkPhi[nMtrk]   = trkPhiImb[it];
-	  mTrkWeight[nMtrk]= trkWeightImb[it];
-	  if  ( mTrkPt[nMtrk]>0 )  
-	  mTrkDphi[nMtrk]  =   getAbsDphi(mTrkPhi[nMtrk], gj.photonPhi) ;
-	  else 
-	  mTrkDphi[nMtrk]=-1;
-	  
-	  nMtrk++;
-	  }
-      */
       // Jet mixing 
       for (int it = 0 ; it < nJetImb ; it++) {
 	
 	// smear the jet pT
 	float smeared = jetPtImb[it] * rand.Gaus(1,addJetEnergyRes/jetPtImb[it]) *  rand.Gaus(1, addFlatJetEnergyRes) ; 
-	smeared = jetEnergyScale * smeared ;  // multiply jet energy scale 
 	float resCorrection =1. ;
-	if (  (doJetResCorrection) && ((colli==kHIDATA)||(colli==kHIMC)) ) { // do the residual correction   
-	  if ( evt.cBin  < 12 ) {  // central                                                                            
-	    if ( jetPtImb[it] < 100 )
-	      resCorrection  =   1.066 - jetPtImb[it]*0.001117 ;
-	    else
-	      resCorrection  =   0.975 ;
-	  }
-	  else                  { // peripheral       
-	    if ( jetPtImb[it] < 100 )
-	      resCorrection  =  1.03440 - jetPtImb[it]*0.000601 ;
-	    else
-	      resCorrection  =   0.98 ;
-	  }
-	}
-	float smearedCorrected  = smeared / resCorrection; // residual correction
 
-	if ( smearedCorrected < cutjetPtSkim ) 
+	if  (doJetResCorrection)   {
+	  if ((colli==kHIDATA)||(colli==kHIMC))  { // do the residual correction                               
+	    if ( evt.cBin  < 12 )   // central                                             
+	      resCorrection  =  1.04503 -1.6122  /(sqrt(jetPtImb[it])) + 9.27212 / (jetPtImb[it]);  //1.04503    -1.6122    9.27212                                
+	    else                  // peripheral                                                                        
+	      resCorrection  =  1.00596 -0.653191/(sqrt(jetPtImb[it])) + 4.35373 / (jetPtImb[it]);  //1.00596     -0.653191  4.35373  
+	  }
+	  else if ((colli==kPPDATA)||(colli==kPPMC)){  // do the residual correction                                              
+	    resCorrection  = 0.993609  +0.158418/(sqrt(jetPtImb[it])) + 0.335479 / (jetPtImb[it]);//          0.993609   0.158418   0.335479               
+	  }
+	} 
+	
+	// L2L3 correction!                                                                                                                                 
+	float l2l3Corr =1 ;
+	if ( colli == kPPDATA)   {
+	  l2l3Corr = c_etapp->GetBinContent(c_etapp->FindBin(jetEtaImb[it])) * fptpp->Eval( jetPtImb[it]);
+	}
+	else if ( colli == kPADATA)   {
+	  if ( evt.run > 211256 )
+	    l2l3Corr = c_etapA->GetBinContent(c_etapA->FindBin(jetEtaImb[it]))  * fptpA->Eval( jetPtImb[it]);
+	  else
+	    l2l3Corr = c_etaAp->GetBinContent(c_etaAp->FindBin(jetEtaImb[it]))  * fptAp->Eval( jetPtImb[it]);
+	}
+	else if ( colli == kPAMC) 
+	  l2l3Corr = 1 + (fsmear_pA->Eval( jetPtImb[it] )) * fgaus->GetRandom()  ; 
+	
+	
+	
+	float smearedCorrected  = smeared *l2l3Corr / resCorrection; // residual correction
+	
+	if ( smearedCorrected < cutjetPtSkim )  // double cutjetPtSkim = 15; Oct 19th     
 	  continue;
-	if ( fabs( jetEtaImb[it] ) > cutjetEtaSkim ) 
+	if ( fabs( jetEtaImb[it] ) > cutjetEtaSkim )   // double cutjetEtaSkim = 3.0; Oct 19th    
+	  continue;
+	if ( getDR( jetEtaImb[it], jetPhiImb[it], gj.photonEta, gj.photonPhi) < 0.5 )  // This cut added for consistency ; Oct 19th
 	  continue;
 	
 	mJetPt[nMjet]    = smearedCorrected;
@@ -609,28 +585,6 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
 	nMjet++; // < == Important! 
       }
       
-      /*      
-
-	 if ( isMC) { 
-	 for (int it = 0 ; it < nGpImb ; it++) {
-	 if ( gpPtImb[it] < cuttrkPt )
-	 continue;
-	 if ( fabs(gpEtaImb[it]) > cuttrkEtaSkim )
-	 continue;
-	 if ( gpChgImb[it] == 0 ) 
-	 continue;
-	 mGpPt[nMgp]  =   gpPtImb[it];
-	 mGpEta[nMgp]  =   gpEtaImb[it];
-	 mGpPhi[nMgp]  =   gpPhiImb[it];
-	 mGpChg[nMgp]  =   gpChgImb[it];
-	 if  (mGpPt[nMgp] > 0 ) 
-	 mGpDphi[nMgp] = getAbsDphi ( mGpPhi[nMgp], gj.photonPhi );
-	 else 
-	 mGpDphi[nMgp]=-1;
-	 nMgp++;
-	 }
-	 }
-      */
       
       iMix++;
     }
@@ -642,16 +596,6 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
     tmixJet->Fill();     
     newtreePhoton->Fill();
     //    treeFullJet->Fill();
-    /*
-      newtreeTrack->Fill();
-      tmixTrk->Fill();   // No tracks saved at the moment 
-      if ( isMC ) {
-      newtreeGp->Fill();
-      tmixGp->Fill();
-      } 
-    */ 
-    
-    
   }
   
   
