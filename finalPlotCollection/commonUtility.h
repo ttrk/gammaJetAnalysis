@@ -213,9 +213,11 @@ void mcStyle1(TH1* h=0) {
    h->SetFillStyle(3004);
 }
 void mcStyle2(TH1* h=0) {
-   h->SetLineColor(kBlue);
-   h->SetFillColor(kAzure-8);
-   h->SetFillStyle(3005);
+  //h->SetLineColor(kBlue);
+  //h->SetFillColor(kAzure-8);
+  //h->SetFillStyle(3005);
+  h->SetFillColor(kYellow);
+  h->SetFillStyle(1001);
 }
 
 void mcStyle3(TH1* h=0) {
@@ -336,7 +338,7 @@ void handsomeTH1( TH1 *a=0, int col =1, float size=1, int markerstyle=20)
   a->SetMarkerSize(size);
   a->SetMarkerStyle(markerstyle);
   a->SetLineColor(col);
-  a->GetYaxis()->SetTitleOffset(1.25);
+  //a->GetYaxis()->SetTitleOffset(1.25);
   a->GetXaxis()->CenterTitle();
   a->GetYaxis()->CenterTitle();
 }
@@ -465,7 +467,7 @@ void easyLeg( TLegend *a=0 , TString head="")
   a->SetBorderSize(0);
   a->SetHeader(head);
   a->SetTextFont(43);
-  a->SetTextSize(17);
+  a->SetTextSize(15);
   a->SetLineColor(1);
   a->SetLineStyle(1);
   a->SetLineWidth(1);
@@ -613,7 +615,21 @@ void drawCMS4(float px, float py, float nLumi, int textSize=15) {
    
 }
 
+void drawCMSppPbPb(Float_t px, Float_t py, Int_t fontsize = 15)
+{
+  TLatex *cms = new TLatex(px,py,"CMS Preliminary");
+  cms->SetTextFont(43);
+  cms->SetTextSize(fontsize);
+  cms->SetNDC();
+  cms->Draw();
 
+  TLatex *pbpb = new TLatex(px + 0.25, py ,
+			    "#sqrt{s_{NN}}=2.76TeV, PbPb 150 #mub^{-1}, pp 5.3 pb^{-1}");
+  pbpb->SetTextFont(43);
+  pbpb->SetTextSize(fontsize);
+  pbpb->SetNDC();
+  pbpb->Draw();
+}
 
 void getNiceBins( TH1* h=0, int nDiv=4) {
    int nBins = h->GetNbinsX();

@@ -46,7 +46,7 @@ void DivideTG(TGraphAsymmErrors* g1=0,TGraphAsymmErrors* g2=0) {
 }
 
 
-void updateHIN11010(int etPho = 60, int etJet = 30, bool scaleByR=true, bool drawMC=false) { 
+void updateHIN11010(int etPho = 60, int etJet = 30, bool scaleByR=true, bool drawMC=true) { 
   bool mcOnly=false;
 
   int percentBin[5] = {0,10,30,50,100};
@@ -182,10 +182,14 @@ void updateHIN11010(int etPho = 60, int etJet = 30, bool scaleByR=true, bool dra
   
   
   TCanvas *c1 = new TCanvas("c1","",1100,330);
-  makeMultiPanelCanvas(c1,4,1,0.0,0.0,0.24,0.15,0.02);
+  makeMultiPanelCanvas(c1,4,1,0.0,0.0,0.24,0.15,0.075);
+  c1->cd(0);
+  drawCMSppPbPb(0.1,0.95);
+  //c1->Divide(4,1,0.0,0.0);
   for ( int icent=0; icent<=3 ; icent++) {
     c1->cd( 4 - icent);
-    hxgj[khimc][icent]->SetAxisRange(-.2,2.5,"Y");
+    //hxgj[khimc][icent]->SetAxisRange(-.2,2.5,"Y");
+    hxgj[khimc][icent]->SetAxisRange(0,2.5,"Y");
     hxgj[khimc][icent]->SetNdivisions(505);
     hxgj[khimc][icent]->SetTitle(";x_{J#gamma} = p^{Jet}_{T}/p^{#gamma}_{T}; #frac{1}{N_{J#gamma}} #frac{dN_{J#gamma}}{dx_{J#gamma}}");
     //    hxgj[khimc][icent]->SetTitle(";x_{J#gamma} = p_{T,jet}/p_{T,#gamma}; N^(-1) dN/dx_{J#gamma} x10");
@@ -201,7 +205,7 @@ void updateHIN11010(int etPho = 60, int etJet = 30, bool scaleByR=true, bool dra
       htemp41->SetBinError(i,0);
     }
     if (scaleByR) {
-      htemp41->SetAxisRange(-.2,2,"Y");
+      htemp41->SetAxisRange(0,2,"Y");
       htemp41->SetYTitle("#frac{1}{N_{#gamma}} #frac{dN_{J#gamma}}{dx_{J#gamma}}");
     }
     htemp41->DrawCopy("hist");
@@ -219,9 +223,9 @@ void updateHIN11010(int etPho = 60, int etJet = 30, bool scaleByR=true, bool dra
       hxgj[khimc][icent]->Scale(y);
       cout << " scaled by PbPb R: " << y << endl;      
     }
+    if(drawMC) hxgj[khimc][icent]->DrawCopy("hist same");
 
     if ( !mcOnly )    drawXSys(icent,hxgj[khidata][icent]);
-    if(drawMC) hxgj[khimc][icent]->DrawCopy("hist same");
     //   if ( icent==3){ }
     
     handsomeTH1(hxgj[kppdata13][icent+1]);
@@ -232,7 +236,7 @@ void updateHIN11010(int etPho = 60, int etJet = 30, bool scaleByR=true, bool dra
     hxgj[kppdata13][icent+1]->Draw("same ");
     
     if ( !mcOnly )   hxgj[khidata][icent]->Draw("same");
-    onSun(0,0,2,0);
+    //onSun(0,0,2,0);
  
     // if ( icent == 2) {
     //   TLegend *leg0  = new TLegend(0.2796373,0.7545885,0.9742202,0.9937661,NULL,"brNDC");
@@ -245,20 +249,20 @@ void updateHIN11010(int etPho = 60, int etJet = 30, bool scaleByR=true, bool dra
     // }
     
     if ( icent == 3) {
-      TLegend *leg0 = new TLegend(0.2916647,0.7845885,0.9862476,0.9769226,NULL,"brNDC");
-      easyLeg(leg0,"");
-      if ( !mcOnly )       leg0->AddEntry(hxgj[kppdata13][icent+1],"pp Data (Smeared), 5.3 pb^{-1}","p");
-      leg0->AddEntry(hxgj[khidata][icent],"PbPb Data, 150#mub^{-1}","p");
+      TLegend *leg0 = new TLegend(0.2916647,0.7045885,0.9862476,0.9069226,NULL,"brNDC");
+      easyLeg(leg0);
+      if ( !mcOnly )       leg0->AddEntry(hxgj[kppdata13][icent+1],"pp Data (Smeared)","p");
+      leg0->AddEntry(hxgj[khidata][icent],"PbPb Data","p");
       //    leg0->AddEntry(hxgj[khidata][icent],"","");
       if(drawMC) leg0->AddEntry(hxgj[khimc][icent],"PbPb PYTHIA + HYDJET","f");
       leg0->Draw();
-      drawText("#sqrt{s_{NN}}=2.76 TeV ",0.65,0.74,0,15);
+      //drawText("#sqrt{s_{NN}}=2.76 TeV ",0.65,0.74,0,15);
     }
         
     if ( icent == 2) {
-      drawText(Form("p^{#gamma}_{T} > %d GeV/c     |#eta^{#gamma}| < 1.44",etPho),0.2,0.9,0,15);
-      drawText(Form("p^{Jet}_{T} > %d GeV/c    |#eta^{Jet}| < 1.6",etJet),0.2,0.8,0,15);
-      drawText("#Delta#phi_{J#gamma} > #frac{7}{8}#pi",0.6,0.7,0,15);
+      drawText(Form("p^{#gamma}_{T} > %d GeV/c     |#eta^{#gamma}| < 1.44",etPho),0.2,0.8,0,15);
+      drawText(Form("p^{Jet}_{T} > %d GeV/c    |#eta^{Jet}| < 1.6",etJet),0.2,0.7,0,15);
+      drawText("#Delta#phi_{J#gamma} > #frac{7}{8}#pi",0.6,0.6,0,15);
     }
     
     if ( icent == 0 ) {
@@ -267,25 +271,25 @@ void updateHIN11010(int etPho = 60, int etJet = 30, bool scaleByR=true, bool dra
     }
     
     if ( icent == 3) 
-      drawText(Form("%d%% - %d%%",percentBin[icent],percentBin[icent+1]),0.72,0.6,1,16);
+      drawText(Form("%d%% - %d%%",percentBin[icent],percentBin[icent+1]),0.72,0.5,0,15);
     else 
-      drawText(Form("%d%% - %d%%",percentBin[icent],percentBin[icent+1]),0.67,0.6,1,16);
+      drawText(Form("%d%% - %d%%",percentBin[icent],percentBin[icent+1]),0.67,0.5,0,15);
     
     if ( icent == 3)
-      drawText("(a)",0.275,0.9,1);
+      drawText("(a)",0.275,0.8,1);
     if ( icent == 2)
-      drawText("(b)",0.05,0.9,1);  
+      drawText("(b)",0.05,0.8,1);  
     if ( icent == 1)
-      drawText("(c)",0.05,0.9,1);   
+      drawText("(c)",0.05,0.8,1);   
     if ( icent == 0)
-      drawText("(d)",0.05,0.9,1);
+      drawText("(d)",0.05,0.8,1);
     
   }
   gPad->RedrawAxis();
 
   c1->SaveAs("plotPPPbPb/inclusivePt_ppPbPb_xjg_distribution.pdf");
-  c1->SaveAs("plotPPPbPb/inclusivePt_ppPbPb_xjg_distribution.gif");
-  c1->SaveAs("plotPPPbPb/inclusivePt_ppPbPb_xjg_distribution.C");
+  //c1->SaveAs("plotPPPbPb/inclusivePt_ppPbPb_xjg_distribution.gif");
+  //c1->SaveAs("plotPPPbPb/inclusivePt_ppPbPb_xjg_distribution.C");
 
   
   
@@ -355,7 +359,9 @@ void updateHIN11010(int etPho = 60, int etJet = 30, bool scaleByR=true, bool dra
   }
 
   TCanvas *c1dphi = new TCanvas("c1dphi","",1100,330);
-  makeMultiPanelCanvas(c1dphi,4,1,0.0,0.0,0.24,0.18,0.02);
+  makeMultiPanelCanvas(c1dphi,4,1,0.0,0.0,0.24,0.18,0.075);
+  c1dphi->cd(0);
+  drawCMSppPbPb(0.1,0.95);
 
   for ( int icent=0; icent<=3 ; icent++) {
     c1dphi->cd( 4 - icent);
@@ -409,8 +415,8 @@ void updateHIN11010(int etPho = 60, int etJet = 30, bool scaleByR=true, bool dra
 
     
     if ( icent == 3) {
-      TLegend *leg0  = new TLegend(0.32,0.8,0.9,0.99,NULL,"brNDC");
-      easyLeg(leg0,"");
+      TLegend *leg0  = new TLegend(0.32,0.7,0.9,0.89,NULL,"brNDC");
+      easyLeg(leg0);
       if ( !mcOnly )   leg0->AddEntry(hdphi[kppdata13][icent+1],"pp Data (Smeared)","p");
       if ( !mcOnly )      leg0->AddEntry(hdphi[khidata][icent],"PbPb Data","p");
       if(drawMC) leg0->AddEntry(hdphi[khimc][icent],"PYTHIA + HYDJET","f");
@@ -418,13 +424,13 @@ void updateHIN11010(int etPho = 60, int etJet = 30, bool scaleByR=true, bool dra
     }
 
     if (( !mcOnly ) && ( icent == 2)) {
-      drawText("#sqrt{s_{NN}}=2.76 TeV ",0.4,0.88,0,15);
-      drawText("#int L dt = 150 #mub^{-1}",0.4,0.75,0,15);
+      //drawText("#sqrt{s_{NN}}=2.76 TeV ",0.4,0.88,0,15);
+      //drawText("#int L dt = 150 #mub^{-1}",0.4,0.75,0,15);
     }
 
     if ( icent == 1) {
-      drawText(Form("p^{#gamma}_{T} > %d GeV/c     |#eta^{#gamma}| < 1.44",etPho),0.15,0.9,0,15);
-      drawText(Form("p^{Jet}_{T} > %d GeV/c    |#eta^{Jet}| < 1.6",etJet),0.15,0.8,0,15);
+      drawText(Form("p^{#gamma}_{T} > %d GeV/c     |#eta^{#gamma}| < 1.44",etPho),0.15,0.8,0,15);
+      drawText(Form("p^{Jet}_{T} > %d GeV/c    |#eta^{Jet}| < 1.6",etJet),0.15,0.7,0,15);
     }
 
     if ( icent == 0 ) {
@@ -434,18 +440,18 @@ void updateHIN11010(int etPho = 60, int etJet = 30, bool scaleByR=true, bool dra
 
 
     if ( icent == 3)
-      drawText(Form("%d%% - %d%%",percentBin[icent],percentBin[icent+1]),0.313,0.6,1,16);
+      drawText(Form("%d%% - %d%%",percentBin[icent],percentBin[icent+1]),0.313,0.6,0,15);
     else
-      drawText(Form("%d%% - %d%%",percentBin[icent],percentBin[icent+1]),0.1,0.6,1,16);
+      drawText(Form("%d%% - %d%%",percentBin[icent],percentBin[icent+1]),0.1,0.6,0,15);
 
     if ( icent == 3)
-      drawText("(a)",0.275,0.9,1);
+      drawText("(a)",0.275,0.8,1);
     if ( icent == 2)
-      drawText("(b)",0.05,0.9,1);
+      drawText("(b)",0.05,0.8,1);
     if ( icent == 1)
-      drawText("(c)",0.05,0.9,1);
+      drawText("(c)",0.05,0.8,1);
     if ( icent == 0)
-      drawText("(d)",0.05,0.9,1);
+      drawText("(d)",0.05,0.8,1);
     
     double bottomY = 0.0009;
     double pi = TMath::Pi();
@@ -466,12 +472,11 @@ void updateHIN11010(int etPho = 60, int etJet = 30, bool scaleByR=true, bool dra
 
   gPad->RedrawAxis();
   c1dphi->SaveAs("plotPPPbPb/inclusivePt_ppPbPb_dPhi_dist.pdf");
-  c1dphi->SaveAs("plotPPPbPb/inclusivePt_ppPbPb_dPhi_dist.gif");
-  c1dphi->SaveAs("plotPPPbPb/inclusivePt_ppPbPb_dPhi_dist.C");
+  //c1dphi->SaveAs("plotPPPbPb/inclusivePt_ppPbPb_dPhi_dist.gif");
+  //c1dphi->SaveAs("plotPPPbPb/inclusivePt_ppPbPb_dPhi_dist.C");
   
   ////////////////////////////// summary plots
   TCanvas *c2 = new TCanvas("c2","",350,350);
-  
   TH1D* hTemp2 = new TH1D("htemp2",";N_{part};<x_{J#gamma}>",100,-20,400);
   hTemp2->SetNdivisions(505);
   handsomeTH1(hTemp2,1);
@@ -520,17 +525,18 @@ void updateHIN11010(int etPho = 60, int etJet = 30, bool scaleByR=true, bool dra
   //  drawText("#sqrt{s_{NN}}=2.76 TeV ",0.5,0.85,0,15);
   //  drawText("#int L dt = 150 #mub^{-1}",0.5,0.72,0,15);
   //  drawText("(a)",0.22,0.87,1);
-  drawText("#Delta#phi_{J#gamma} > #frac{7}{8}#pi",0.7,0.85,0);
+  drawText("#Delta#phi_{J#gamma} > #frac{7}{8}#pi",0.7,0.75,0);
+  drawCMSppPbPb(0.1,0.95,12);
   //  drawText("#Delta#phi_{J#gamma} > #frac{7}{8}#pi",0.5,0.38,0);
   // drawText("CMS",0.78,0.88,1);
 
-  TLegend *leg4 =  new TLegend(0.1630303,0.7054839,0.7590909,0.9931183,NULL,"brNDC");
+  TLegend *leg4 =  new TLegend(0.1630303,0.6054839,0.7590909,0.8931183,NULL,"brNDC");
   easyLeg(leg4,"");
   if(drawMC) leg4->AddEntry(mxhimc,"PYTHIA + HYDJET","p");
   //  if ( !mcOnly )  leg4->AddEntry(mxppdata,"pp Data 231nb^{-1}","p");
-  if ( !mcOnly )  leg4->AddEntry(hMXpp2013[5],"pp Data, 5.3 pb^{-1}","p");
-  if ( !mcOnly )  leg4->AddEntry(hDphiPP2013[2],"pp Data (Smeared), 5.3 pb^{-1}","p");
-  if ( !mcOnly ) leg4->AddEntry(mxhidata,"PbPb Data, 150#mub^{-1}","p");
+  if ( !mcOnly )  leg4->AddEntry(hMXpp2013[5],"pp Data","p");
+  if ( !mcOnly )  leg4->AddEntry(hDphiPP2013[2],"pp Data (Smeared)","p");
+  if ( !mcOnly ) leg4->AddEntry(mxhidata,"PbPb Data","p");
   //  leg4->AddEntry(mxppmc,"PYTHIA","p");
 
 
@@ -543,8 +549,8 @@ void updateHIN11010(int etPho = 60, int etJet = 30, bool scaleByR=true, bool dra
   gPad->RedrawAxis();
   
   c2->SaveAs("plotPPPbPb/inclusivePt_ppPbPb_xjg_npart.pdf");
-  c2->SaveAs("plotPPPbPb/inclusivePt_ppPbPb_xjg_npart.gif");
-  c2->SaveAs("plotPPPbPb/inclusivePt_ppPbPb_xjg_npart.C");
+  //c2->SaveAs("plotPPPbPb/inclusivePt_ppPbPb_xjg_npart.gif");
+  //c2->SaveAs("plotPPPbPb/inclusivePt_ppPbPb_xjg_npart.C");
   
   ////////////////////////////// rx 
   TCanvas *c3 = new TCanvas("c3","",350,350);
@@ -590,14 +596,15 @@ void updateHIN11010(int etPho = 60, int etJet = 30, bool scaleByR=true, bool dra
   //  drawText(Form("p^{Jet}_{T} > %d GeV/c",etJet),0.6,0.67,0,15);
   //  drawText("CMS",0.78,0.88,1);
   //  drawText("(b)",0.22,0.87,1);
-  drawText("#Delta#phi_{J#gamma} > #frac{7}{8}#pi",0.7,0.85,0);
+  drawText("#Delta#phi_{J#gamma} > #frac{7}{8}#pi",0.7,0.75,0);
+  drawCMSppPbPb(0.1,0.95,12);
 
   leg4->Draw();
   gPad->RedrawAxis();
 
   c3->SaveAs("plotPPPbPb/inclusivePt_ppPbPb_r_npart.pdf");
-  c3->SaveAs("plotPPPbPb/inclusivePt_ppPbPb_r_npart.gif");
-  c3->SaveAs("plotPPPbPb/inclusivePt_ppPbPb_r_npart.C");
+  //c3->SaveAs("plotPPPbPb/inclusivePt_ppPbPb_r_npart.gif");
+  //c3->SaveAs("plotPPPbPb/inclusivePt_ppPbPb_r_npart.C");
   
   TCanvas *c4 = new TCanvas("c4","",350,350);
 
@@ -653,24 +660,25 @@ void updateHIN11010(int etPho = 60, int etJet = 30, bool scaleByR=true, bool dra
 
   leg4->Draw();
 
-  drawText(Form("p^{#gamma}_{T} > %d GeV/c     |#eta^{#gamma}| < 1.44",etPho),0.25,0.4,0,15);
-  drawText(Form("p^{Jet}_{T} > %d GeV/c    |#eta^{Jet}| < 1.6",etJet),0.25,0.3,0,15);
+  drawText(Form("p^{#gamma}_{T} > %d GeV/c     |#eta^{#gamma}| < 1.44",etPho),0.25,0.3,0,15);
+  drawText(Form("p^{Jet}_{T} > %d GeV/c    |#eta^{Jet}| < 1.6",etJet),0.25,0.2,0,15);
+  drawCMSppPbPb(0.1,0.95,12);
 
   gPad->RedrawAxis();
   c4->SaveAs("plotPPPbPb/inclusivePt_ppPbPb_dphi_npart.pdf");
-  c4->SaveAs("plotPPPbPb/inclusivePt_ppPbPb_dphi_npart.gif");
-  c4->SaveAs("plotPPPbPb/inclusivePt_ppPbPb_dphi_npart.C");
+  //c4->SaveAs("plotPPPbPb/inclusivePt_ppPbPb_dphi_npart.gif");
+  //c4->SaveAs("plotPPPbPb/inclusivePt_ppPbPb_dphi_npart.C");
 
-   // print numbers
-   cout << " Summary of Points for PbPb " << endl;
-   PrintGraphAndSys(dphihidata,sysDphi);
-   PrintGraphAndSys(mxhidata,sysMx);
-   PrintGraphAndSys(rxhidata,sysR);
+   // // print numbers
+   // cout << " Summary of Points for PbPb " << endl;
+   // PrintGraphAndSys(dphihidata,sysDphi);
+   // PrintGraphAndSys(mxhidata,sysMx);
+   // PrintGraphAndSys(rxhidata,sysR);
 
-   cout << " Summary of Points for PYTHIA + HYDJET " << endl;
-   PrintGraph(dphihimc);
-   PrintGraph(mxhimc);
-   PrintGraph(rxhimc);
+   // cout << " Summary of Points for PYTHIA + HYDJET " << endl;
+   // PrintGraph(dphihimc);
+   // PrintGraph(mxhimc);
+   // PrintGraph(rxhimc);
 
    //   cout << " Summary of Points for pp " << endl;
    //  PrintGraphAndSys(dphippdata[5],sysDphipp);
