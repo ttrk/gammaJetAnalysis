@@ -30,17 +30,17 @@ double a1, a2, a3, a4, a5, a6;
 #define PI 3.141592653589
 
 
+// Updated on Oct 20th.   Jet energy residual correction is done by default. 
 ///////////// pp Data
-//TString fnamePPDATA                  = "yskimmedFiles/skim_ak3PF_ppData2013_promptSkim_photon40GeV.root";
-TString fnamePPDATA                  =   "yskimmedFiles/yskim_pp_photonSKimForest_v85_jetNoSmearing.root";
-//Residual correction
-TString fnamePPDATA_jetResCorrected    = "yskimmedFiles/yskim_pp_photonSKimForest_v85_jetNoSmearing_jetResCorrected.root";
+
+TString fnamePPDATA                  =   "yskimmedFiles/yskim_pp_photonSKimForest_v85_jetNoSmearing.root"; 
+//no Residual correction
+TString fnamePPDATA_noJetResCorr    = "yskimmedFiles/yskim_pp_photonSKimForest_v85_jetNoSmearing_noJetResCorr.root";
 /// jet energy smeared 
 TString fnamePPDATA0010                  =   "yskimmedFiles/yskim_pp_photonSKimForest_v85_jetSmearingCent0010.root"; // Now these are smeared and thn corr
 TString fnamePPDATA1030                  =   "yskimmedFiles/yskim_pp_photonSKimForest_v85_jetSmearingCent1030.root";
 TString fnamePPDATA3050                  =   "yskimmedFiles/yskim_pp_photonSKimForest_v85_jetSmearingCent3050.root";
 TString fnamePPDATA5099                 =   "yskimmedFiles/yskim_pp_photonSKimForest_v85_jetSmearingCent5099.root";
-
 TString fnamePPDATA30100                =   "yskimmedFiles/yskim_pp_photonSKimForest_v85_jetSmearingCent3099.root";
 TString fnamePPDATA0030                =   "yskimmedFiles/yskim_pp_photonSKimForest_v85_jetSmearingCent0030.root";
 
@@ -54,7 +54,7 @@ double  wPPMC_AllQcdPho50to80        = 8098. / 87988.;
 double  wPPMC_AllQcdPho80to120       = 1680. / 96756.;
 double  wPPMC_AllQcdPho120to9999     = 438.  / 90972.;
 
-
+// not important at the moment
 TString fnamePPDATA_Cone05                  =   "yskimmedFiles/yskim_pp_photonSKimForest_v85_jetNoSmearing_akpu5.root";
 TString fnamePPMC_AllQcdPho30to50_Cone05    = "yskimmedFiles/yskim_merged_allQCDPhoton30to50_genPhotonPtCut30_CMSSW538HIp2_akpu5.root";
 TString fnamePPMC_AllQcdPho50to80_Cone05    = "yskimmedFiles/yskim_merged_allQCDPhoton50to80_genPhotonPtCut30_CMSSW538HIp2_akpu5.root";
@@ -72,20 +72,21 @@ double wPPMC_emDijet80to120        = 17265./121988.;
 double wPPMC_emDijet120to9999      = 4284./130444.;
 
 
-///////////// pA Data
-TString fnamePADATA                  = "yskimmedFiles/yskim_pA_photonSkimForest_v85_HLT_PAPhoton30_NoCaloIdVL_v1_highPtPhoton40_16HFBin.root";
-TString fnamePADATA_jetResCorrected    = "yskimmedFiles/yskim_pA_photonSkimForest_v85_HLT_PAPhoton30_NoCaloIdVL_v1_highPtPhoton40.root";
-//            pA MC 
-TString fnamePAMC_AllQcdPho30to50    = "yskimmedFiles/yskim_PA2013_pyquen_allQCDPhoton30to50_forestv85_16HFBin.root";
-TString fnamePAMC_AllQcdPho50to80    = "yskimmedFiles/yskim_PA2013_pyquen_allQCDPhoton50to80_forestv85_16HFBin.root";
-TString fnamePAMC_AllQcdPho80to120   = "yskimmedFiles/yskim_PA2013_pyquen_allQCDPhoton80to120_forestv85_16HFBin.root";
-TString fnamePAMC_AllQcdPho120to9999 = "yskimmedFiles/yskim_PA2013_pyquen_allQCDPhoton120to9999_forestv85_16HFBin.root";
+///////////// pA Data  // File name checked on Oct 20th 
+TString fnamePADATA                  = "yskimmedFiles/yskim_pA_photonSkimForest_v85_HLT_PAPhoton30_NoCaloIdVL_v1_highPtPhoton40.root";
+TString fnamePADATA_noJetResCorr     = "yskimmedFiles/yskim_pA_photonSkimForest_v85_HLT_PAPhoton30_NoCaloIdVL_v1_highPtPhoton40_noJetResCorr.root";
+//            pA MC   // File name checked on Oct 20th 
+TString fnamePAMC_AllQcdPho30to50    = "yskimmedFiles/yskim_PA2013_pyquen_allQCDPhoton30to50_forestv85.root";
+TString fnamePAMC_AllQcdPho50to80    = "yskimmedFiles/yskim_PA2013_pyquen_allQCDPhoton50to80_forestv85.root";
+TString fnamePAMC_AllQcdPho80to120   = "yskimmedFiles/yskim_PA2013_pyquen_allQCDPhoton80to120_forestv85.root";
+TString fnamePAMC_AllQcdPho120to9999 = "yskimmedFiles/yskim_PA2013_pyquen_allQCDPhoton120to9999_forestv85.root";
 //
-TString fnamePAMC_AllQcdPho30to50_jetResCorrected    = "yskimmedFiles/yskim_PA2013_pyquen_allQCDPhoton30to50_forestv85_jetResCorrected.root";
-TString fnamePAMC_AllQcdPho50to80_jetResCorrected    = "yskimmedFiles/yskim_PA2013_pyquen_allQCDPhoton50to80_forestv85_jetResCorrected.root";
-TString fnamePAMC_AllQcdPho80to120_jetResCorrected   = "yskimmedFiles/yskim_PA2013_pyquen_allQCDPhoton80to120_forestv85_jetResCorrected.root";
-TString fnamePAMC_AllQcdPho120to9999_jetResCorrected = "yskimmedFiles/yskim_PA2013_pyquen_allQCDPhoton120to9999_forestv85_jetResCorrected.root";
+TString fnamePAMC_AllQcdPho30to50_noJetResCorr    = "yskimmedFiles/yskim_PA2013_pyquen_allQCDPhoton30to50_forestv85_noJetResCorr.root";
+TString fnamePAMC_AllQcdPho50to80_noJetResCorr    = "yskimmedFiles/yskim_PA2013_pyquen_allQCDPhoton50to80_forestv85_noJetResCorr.root";
+TString fnamePAMC_AllQcdPho80to120_noJetResCorr   = "yskimmedFiles/yskim_PA2013_pyquen_allQCDPhoton80to120_forestv85_noJetResCorr.root";
+TString fnamePAMC_AllQcdPho120to9999_noJetResCorr = "yskimmedFiles/yskim_PA2013_pyquen_allQCDPhoton120to9999_forestv85_noJetResCorr.root";
 
+// Not important  
 TString fnamePADATA_Cone05                  = "yskimmedFiles/yskim_pA_photonSkimForest_v85_HLT_PAPhoton30_NoCaloIdVL_v1_highPtPhoton40_akpu5.root";
 //            pA MC 
 TString fnamePAMC_AllQcdPho30to50_Cone05    = "yskimmedFiles/yskim_PA2013_pyquen_allQCDPhoton30to50_forestv85_akpu5.root";
@@ -100,10 +101,10 @@ double  wPAMC_AllQcdPho120to9999     = 4481. / 151511.;
 
 
 
-///////////// PbPb Data
+///////////// PbPb Data // File name checked on Oct 20th 
 TString fnameHIDATA                  = "yskimmedFiles/yskim_HiForestPhoton-v7-noDuplicate.root";
-TString fnameHIDATA_jetResCorrected    = "yskimmedFiles/yskim_HiForestPhoton-v7-noDuplicate_jetResCorrected.root";
-// PbPb MC
+TString fnameHIDATAyskim_noJetResCorr= "yskimmedFiles/yskim_HiForestPhoton-v7-noDuplicate_noJetResCorr.root";
+// PbPb MC  // File name checked on Oct 20th 
 TString fnameHIMC_AllQcdPho30to50    =  "yskimmedFiles/yskim_qcdAllPhoton30to50_genPhotonPtCut40_allCent.root";
 TString fnameHIMC_AllQcdPho50to80    =  "yskimmedFiles/yskim_qcdAllPhoton50to80_genPhotonPtCut40_allCent.root";
 TString fnameHIMC_AllQcdPho80to9999  =  "yskimmedFiles/yskim_qcdAllPhoton80to9999_genPhotonPtCut40_allCent.root";
@@ -111,22 +112,23 @@ double  wHIMC_AllQcdPho30to50        = 32796./ 32796.;
 double  wHIMC_AllQcdPho50to80        = 21470./ 53876.;
 double  wHIMC_AllQcdPho80to9999       = 6462. / 58781.;
 
+/// Jet energy is smeared and/or scaled in histogram step
 /////// Data with jet energy smeared by 10%
-TString fnameHIDATA_10percentSmeared  = "yskimmedFiles/yskim_HiForestPhoton-v7-noDuplicate_smearedBy10Flat.root"  ;
-TString fnamePADATA_10percentSmeared  = "yskimmedFiles/yskim_pA_photonSkimForest_v85_HLT_PAPhoton30_NoCaloIdVL_v1_highPtPhoton40_smearedBy10Flat.root";
-TString fnamePPDATA_10percentSmeared  = "yskimmedFiles/yskim_pp_photonSKimForest_v85_smearedBy10Flat.root";
+//TString fnameHIDATA_10percentSmeared  = "yskimmedFiles/yskim_HiForestPhoton-v7-noDuplicate_smearedBy10Flat.root"  ;
+//TString fnamePADATA_10percentSmeared  = "yskimmedFiles/yskim_pA_photonSkimForest_v85_HLT_PAPhoton30_NoCaloIdVL_v1_highPtPhoton40_smearedBy10Flat.root";
+//TString fnamePPDATA_10percentSmeared  = "yskimmedFiles/yskim_pp_photonSKimForest_v85_smearedBy10Flat.root";
 /////// Data with jet energy scaled by +2%
-TString fnameHIDATA_Plus2percentScaled  = "yskimmedFiles/yskim_HiForestPhoton-v7-noDuplicate_jetScaleBy2percent.root";
-TString fnamePADATA_Plus2percentScaled  = "yskimmedFiles/yskim_pA_photonSkimForest_v85_HLT_PAPhoton30_NoCaloIdVL_v1_highPtPhoton40_jetScaleBy2percent.root";
-TString fnamePPDATA_Plus2percentScaled  = "yskimmedFiles/yskim_pp_photonSKimForest_v85_jetScaleBy2percent.root";
+//TString fnameHIDATA_Plus2percentScaled  = "yskimmedFiles/yskim_HiForestPhoton-v7-noDuplicate_jetScaleBy2percent.root";
+//TString fnamePADATA_Plus2percentScaled  = "yskimmedFiles/yskim_pA_photonSkimForest_v85_HLT_PAPhoton30_NoCaloIdVL_v1_highPtPhoton40_jetScaleBy2percent.root";
+//TString fnamePPDATA_Plus2percentScaled  = "yskimmedFiles/yskim_pp_photonSKimForest_v85_jetScaleBy2percent.root";
 /////// Data with jet energy scaled by -2%
-TString fnameHIDATA_Minus2percentScaled  = "yskimmedFiles/yskim_HiForestPhoton-v7-noDuplicate_jetScaleBy-2percent.root";
-TString fnamePADATA_Minus2percentScaled  = "yskimmedFiles/yskim_pA_photonSkimForest_v85_HLT_PAPhoton30_NoCaloIdVL_v1_highPtPhoton40_jetScaleBy-2percent.root";
-TString fnamePPDATA_Minus2percentScaled  = "yskimmedFiles/yskim_pp_photonSKimForest_v85_jetScaleBy-2percent.root";
+//TString fnameHIDATA_Minus2percentScaled  = "yskimmedFiles/yskim_HiForestPhoton-v7-noDuplicate_jetScaleBy-2percent.root";
+//TString fnamePADATA_Minus2percentScaled  = "yskimmedFiles/yskim_pA_photonSkimForest_v85_HLT_PAPhoton30_NoCaloIdVL_v1_highPtPhoton40_jetScaleBy-2percent.root";
+//TString fnamePPDATA_Minus2percentScaled  = "yskimmedFiles/yskim_pp_photonSKimForest_v85_jetScaleBy-2percent.root";
 
 
 
-/////// Data without electron rejection
+/////// Data without electron rejection // File name checked on Oct 20th
 TString fnameHIDATA_noElectronRejection  = "yskimmedFiles/yskim_HiForestPhoton-v7-noDuplicate_noEleRejection.root";
 TString fnamePADATA_noElectronRejection  = "yskimmedFiles/yskim_pA_photonSkimForest_v85_HLT_PAPhoton30_NoCaloIdVL_v1_highPtPhoton40_noEleRejection.root";
 TString fnamePPDATA_noElectronRejection  = "yskimmedFiles/yskim_pp_photonSKimForest_v85_jetNoSmearing_noEleRejection.root";
