@@ -39,7 +39,7 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
 				   sampleType colli=kPADATA,
 				   bool doMix = false,
 				   bool doJetResCorrection = 1,  // = L2L3 * MC nonclosure correction  jet energy correction is done by default from Oct 19th (YS)
-				   int smearingCentBin = -1, //0=0-10%, 1=10-30%, 2=30-50%, 3=50-100%
+				   int smearingCentBin = -1, //0=0-10%, 1=10-30%, 2=30-50%, 3=50-100%, 4=0-30%, 5=30-100%  : Jet pT and phi smearing!
 				   bool useGenJetColl = 0
 				   )
 {
@@ -391,6 +391,22 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
         jetPhi[nJet] = theJet->jtphi[ij];
       }
 
+      // Smear phi
+      Double_t newPhi = jetPhi[nJet] ;
+      if( smearingCentBin != -1 )
+	{
+	  Double_t phiSmear  = TMath::Sqrt((cphi_pbpb[smearingCentBin]*cphi_pbpb[smearingCentBin] - cphi_pp*cphi_pp)
+					   + (sphi_pbpb[smearingCentBin]*sphi_pbpb[smearingCentBin] - sphi_pp*sphi_pp)/jetPt[nJet]
+					   + (nphi_pbpb[smearingCentBin]*nphi_pbpb[smearingCentBin] - nphi_pp*nphi_pp)/(jetPt[nJet]*jetPt[nJet]));
+	  newPhi  =  jetPhi[nJet] +   rand.Gaus(0, phiSmear);
+	  while ( fabs(newPhi) < PI )  {
+	    if ( newPhi > PI )  newPhi = newPhi - 2*PI;
+	    if ( newPhi < -PI )  newPhi = newPhi + 2*PI;
+	  }
+	}
+      jetPhi[nJet] = newPhi;
+
+
       // smear the jet pT
       //float smeared = jetPt[nJet] * rand.Gaus(1,addJetEnergyRes/jetPt[nJet])   *  rand.Gaus(1, addFlatJetEnergyRes) ;
       Double_t smeared = jetPt[nJet];
@@ -432,7 +448,14 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
 	  l2l3Corr = 1 + (fsmear_pA->Eval( jetPt[nJet] )) * fgaus->GetRandom()  ;
       }
 
+      // reflect eta! 
+      if ( (colli==kPADATA) && ( evt.run > 211256 ) )  {
+	jetEta[nJet] = -jetEta[nJet];
+      }
+
       jetPt[nJet] = smeared * l2l3Corr /resCorrection;
+
+      
 
       if ( jetPt[nJet] < cutjetPtSkim)  // double cutjetPtSkim = 15; Oct 19th
 	continue;
@@ -441,10 +464,6 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
       if ( getDR( jetEta[nJet], jetPhi[nJet], gj.photonEta, gj.photonPhi) < 0.5 )
 	continue;
 
-      if ( (colli==kPADATA) && ( evt.run > 211256 ) )  {
-	jetEta[nJet] = -jetEta[nJet];
-	//	cout << " reflect eta" << endl;
-      }
 
       if (jetPt[nJet] >0)
 	jetDphi[nJet] = getAbsDphi( jetPhi[nJet], gj.photonPhi) ;
@@ -539,14 +558,30 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
       // Jet mixing
       for (int it = 0 ; it < nJetImb ; it++) {
 
+      // Smear phi
+	Double_t newPhi = jetPhiImb[it];
+	if( smearingCentBin != -1 )
+	  {
+	    Double_t phiSmear  = TMath::Sqrt((cphi_pbpb[smearingCentBin]*cphi_pbpb[smearingCentBin] - cphi_pp*cphi_pp)
+					     + (sphi_pbpb[smearingCentBin]*sphi_pbpb[smearingCentBin] - sphi_pp*sphi_pp)/jetPtImb[it]
+					     + (nphi_pbpb[smearingCentBin]*nphi_pbpb[smearingCentBin] - nphi_pp*nphi_pp)/(jetPtImb[it]*jetPtImb[it]));
+	    newPhi  =  jetPhiImb[it] +   rand.Gaus(0, phiSmear);
+	    while ( fabs(newPhi) < PI )  {
+	      if ( newPhi > PI )  newPhi = newPhi - 2*PI;
+	      if ( newPhi < -PI )  newPhi = newPhi + 2*PI;
+	    }
+	  }
+	jetPhiImb[it] = newPhi;
+	
+	
 	// smear the jet pT
 	//float smeared = jetPtImb[it] * rand.Gaus(1,addJetEnergyRes/jetPtImb[it]) *  rand.Gaus(1, addFlatJetEnergyRes) ;
 	Double_t smeared = jetPtImb[it];
 	if( smearingCentBin != -1 )
-	{
-	  Double_t smearSigma = TMath::Sqrt((c_pbpb[smearingCentBin]*c_pbpb[smearingCentBin] - c_pp*c_pp)
-					    + (s_pbpb[smearingCentBin]*s_pbpb[smearingCentBin] - s_pp*s_pp)/jetPtImb[it]
-					    + (n_pbpb[smearingCentBin]*n_pbpb[smearingCentBin] - n_pp*n_pp)/(jetPtImb[it]*jetPtImb[it]));
+	  {
+	    Double_t smearSigma = TMath::Sqrt((c_pbpb[smearingCentBin]*c_pbpb[smearingCentBin] - c_pp*c_pp)
+					      + (s_pbpb[smearingCentBin]*s_pbpb[smearingCentBin] - s_pp*s_pp)/jetPtImb[it]
+					      + (n_pbpb[smearingCentBin]*n_pbpb[smearingCentBin] - n_pp*n_pp)/(jetPtImb[it]*jetPtImb[it]));
 	  smeared = jetPtImb[it] * rand.Gaus(1, smearSigma);
 	}
 	float resCorrection =1. ;
