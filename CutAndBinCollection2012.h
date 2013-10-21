@@ -54,6 +54,15 @@ double  wPPMC_AllQcdPho50to80        = 8098. / 87988.;
 double  wPPMC_AllQcdPho80to120       = 1680. / 96756.;
 double  wPPMC_AllQcdPho120to9999     = 438.  / 90972.;
 
+// pp MC smearing factors
+double c_pp = 0.056762;
+double s_pp = 0.808114;
+double n_pp = 0.000244992;
+
+double c_pbpb[] = {0.0560882, 0.0256674, 0.00644361, 0.0170442};
+double s_pbpb[] = {1.47838, 1.40659, 1.31446, 1.22837};
+double n_pbpb[] = {0.115188, -0.0341018, -0.0721935, 0.0511498};
+
 // not important at the moment
 TString fnamePPDATA_Cone05                  =   "yskimmedFiles/yskim_pp_photonSKimForest_v85_jetNoSmearing_akpu5.root";
 TString fnamePPMC_AllQcdPho30to50_Cone05    = "yskimmedFiles/yskim_merged_allQCDPhoton30to50_genPhotonPtCut30_CMSSW538HIp2_akpu5.root";
