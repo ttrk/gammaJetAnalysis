@@ -399,7 +399,7 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
 					   + (sphi_pbpb[smearingCentBin]*sphi_pbpb[smearingCentBin] - sphi_pp*sphi_pp)/jetPt[nJet]
 					   + (nphi_pbpb[smearingCentBin]*nphi_pbpb[smearingCentBin] - nphi_pp*nphi_pp)/(jetPt[nJet]*jetPt[nJet]));
 	  newPhi  =  jetPhi[nJet] +   rand.Gaus(0, phiSmear);
-	  while ( fabs(newPhi) < PI )  {
+	  while ( fabs(newPhi) > PI )  {
 	    if ( newPhi > PI )  newPhi = newPhi - 2*PI;
 	    if ( newPhi < -PI )  newPhi = newPhi + 2*PI;
 	  }
@@ -566,7 +566,7 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
 					     + (sphi_pbpb[smearingCentBin]*sphi_pbpb[smearingCentBin] - sphi_pp*sphi_pp)/jetPtImb[it]
 					     + (nphi_pbpb[smearingCentBin]*nphi_pbpb[smearingCentBin] - nphi_pp*nphi_pp)/(jetPtImb[it]*jetPtImb[it]));
 	    newPhi  =  jetPhiImb[it] +   rand.Gaus(0, phiSmear);
-	    while ( fabs(newPhi) < PI )  {
+	    while ( fabs(newPhi) > PI )  {
 	      if ( newPhi > PI )  newPhi = newPhi - 2*PI;
 	      if ( newPhi < -PI )  newPhi = newPhi + 2*PI;
 	    }
