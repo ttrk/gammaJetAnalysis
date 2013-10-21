@@ -36,8 +36,8 @@ double a1, a2, a3, a4, a5, a6;
 TString fnamePPDATA                  =   "yskimmedFiles/yskim_pp_photonSKimForest_v85_jetNoSmearing.root"; 
 //no Residual correction
 TString fnamePPDATA_noJetResCorr    = "yskimmedFiles/yskim_pp_photonSKimForest_v85_jetNoSmearing_noJetResCorr.root";
-/// jet energy smeared 
-TString fnamePPDATA0010                  =   "yskimmedFiles/yskim_pp_photonSKimForest_v85_jetSmearingCent0010.root"; // Now these are smeared and thn corr
+/// jet energy smeared  // Now these are smeared and thn corr by default
+TString fnamePPDATA0010                  =   "yskimmedFiles/yskim_pp_photonSKimForest_v85_jetSmearingCent0010.root"; 
 TString fnamePPDATA1030                  =   "yskimmedFiles/yskim_pp_photonSKimForest_v85_jetSmearingCent1030.root";
 TString fnamePPDATA3050                  =   "yskimmedFiles/yskim_pp_photonSKimForest_v85_jetSmearingCent3050.root";
 TString fnamePPDATA5099                 =   "yskimmedFiles/yskim_pp_photonSKimForest_v85_jetSmearingCent5099.root";
@@ -55,13 +55,22 @@ double  wPPMC_AllQcdPho80to120       = 1680. / 96756.;
 double  wPPMC_AllQcdPho120to9999     = 438.  / 90972.;
 
 // pp MC smearing factors
-double c_pp = 0.056762;
-double s_pp = 0.808114;
-double n_pp = 0.000244992;
 
-double c_pbpb[] = {0.0560882, 0.0256674, 0.00644361, 0.0170442};
-double s_pbpb[] = {1.47838, 1.40659, 1.31446, 1.22837};
-double n_pbpb[] = {0.115188, -0.0341018, -0.0721935, 0.0511498};
+// 0-10%,  10-30%,  30-50%,  50-100%,   0-30%,  30-100% 
+double c_pbpb[] = {0.0560882, 0.0256674, 0.00644361, 0.0170442, 0.0419, 0.0101  };
+double s_pbpb[] = {1.47838, 1.40659, 1.31446, 1.22837, 1.441,  1.294, };
+double n_pbpb[] = {0.115188, -0.0341018, -0.0721935, 0.0511498, 0.0807,  0.0676};
+
+// pp MC phi smearing factors
+
+double cphi_pp = 0.024497;
+double sphi_pp = -0.170472;
+double nphi_pp = -0.000188492;
+// 0-10%,  10-30%,  30-50%,  50-100%,   0-30%,  30-100% 
+double c_pbpb[] = {0.0216325, 0.0168838,  -0.0160583,   -0.0271079,   0.0215035,   -0.0223996};
+double s_pbpb[] = {0.342842,  0.328665,   -0.301696,    -0.227269,    0.32505,     -0.26666};
+double n_pbpb[] = {0.0002195, 3.79342e-05, 3.46104e-06, -1.51886e-06, 9.56424e-05 , 2.77627e-06};
+
 
 // not important at the moment
 TString fnamePPDATA_Cone05                  =   "yskimmedFiles/yskim_pp_photonSKimForest_v85_jetNoSmearing_akpu5.root";
