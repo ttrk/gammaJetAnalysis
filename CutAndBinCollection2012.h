@@ -103,7 +103,7 @@ double  wPAMC_AllQcdPho120to9999     = 4481. / 151511.;
 
 ///////////// PbPb Data // File name checked on Oct 20th 
 TString fnameHIDATA                  = "yskimmedFiles/yskim_HiForestPhoton-v7-noDuplicate.root";
-TString fnameHIDATAyskim_noJetResCorr= "yskimmedFiles/yskim_HiForestPhoton-v7-noDuplicate_noJetResCorr.root";
+TString fnameHIDATA_noJetResCorr= "yskimmedFiles/yskim_HiForestPhoton-v7-noDuplicate_noJetResCorr.root";
 // PbPb MC  // File name checked on Oct 20th 
 TString fnameHIMC_AllQcdPho30to50    =  "yskimmedFiles/yskim_qcdAllPhoton30to50_genPhotonPtCut40_allCent.root";
 TString fnameHIMC_AllQcdPho50to80    =  "yskimmedFiles/yskim_qcdAllPhoton50to80_genPhotonPtCut40_allCent.root";
