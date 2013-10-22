@@ -166,6 +166,12 @@ void updateHIN11010(int etPho = 60, int etJet = 30, bool scaleByR=true, bool dra
 
 
   TFile* fPPsys = new TFile("ffFilesPP60GeVInclusive/relativeSys_merged_pp60GeV.root");
+
+  TH1D* hdphiWidth  = (TH1D*)fPPsys->Get("dphiWidth_uncertainty_merged");
+  
+  TH1D* hDphiPPUnc = new TH1D("hdphippunc","",1,0,1);
+  hDphiPPUnc->SetBinContent(1, hdphiWidth->GetBinContent(1) );
+
   TH1D* ppSysX[4];
   ppSysX[0] = (TH1D*)fPPsys->Get("dNdXjg_uncertainty_merged");
   ppSysX[1] = (TH1D*)ppSysX[0]->Clone("ppSysx1");
@@ -334,8 +340,6 @@ void updateHIN11010(int etPho = 60, int etJet = 30, bool scaleByR=true, bool dra
   hDphiPP2013[3] = new TH1D("hDphiPP2013_icent3","",1, 116.4-10, 116.4+10);
   hDphiPP2013[4] = new TH1D("hDphiPP2013_icent4","",1, 43.6-10,  43.6 +10);
   hDphiPP2013[5] = new TH1D("hDphiPP2013_icent5","",1, -8, 18);
-  TH1D* hDphiPPUnc = new TH1D("hdphippunc","",1,0,1);
-  hDphiPPUnc->SetBinContent(1,0.077);
   
   for ( int icent=1; icent<=5 ; icent++) {
     fdphiPP[icent] = new TF1(Form("fdphiPP_icent%d",icent),fitFunc.Data(),2.0*TMath::Pi()/3.0,TMath::Pi());
