@@ -75,6 +75,23 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
   c->InitTree();
 
 
+  // vertex and centrality reweighting
+  TFile* fWeight = new TFile("vertexReweightingHistogram_pthatweighted.root");
+
+  TH1D* hWeight_vtx_data_pp = (TH1D*)fWeight->Get("vertexHistoData_pp");
+  TH1D* hWeight_vtx_mc_pp = (TH1D*)fWeight->Get("vertexHistoMC_pp");
+
+  TH1D* hWeight_vtx_data_ppb = (TH1D*)fWeight->Get("vertexHistoData_ppb");
+  TH1D* hWeight_vtx_mc_ppb = (TH1D*)fWeight->Get("vertexHistoMC_ppb");
+
+  TH1D* hWeight_vtx_data_pbpb = (TH1D*)fWeight->Get("vertexHistoData_pbpb");
+  TH1D* hWeight_vtx_mc_pbpb = (TH1D*)fWeight->Get("vertexHistoMC_pbpb");
+  TH1D* hWeight_cent_data_pbpb = (TH1D*)fWeight->Get("centBinHistoData_pbpb");
+  TH1D* hWeight_cent_mc_pbpb = (TH1D*)fWeight->Get("centBinHistoMC_pbpb");
+
+
+
+
   // L2L3 correction
   TFile* fL2L3pp = new TFile("../corrL2L3/Casym_pp_double_hcalbins_algo_ak3PF_pt100_140_jet80_alphahigh_20_phicut250.root");
   TH1D * c_etapp=(TH1D*)fL2L3pp->Get("C_asym");
@@ -286,7 +303,6 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
         cout << " Check the pA centrality..  cbin = " << evt.cBin << endl;
     }
 
-    evt.reweight = 1;
     evt.trig = 0;
     evt.offlSel = (c->skim.pcollisionEventSelection > 0);
     evt.noiseFilt = (c->skim.pHBHENoiseFilter > 0);
@@ -307,8 +323,30 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
     if ( (vzBin<1) || ( vzBin > nVtxBin) )
       continue;
 
+ 
+    // Reweight for vertex and centrality of MC 
+    evt.reweight = 1;
+    double wVtx=1;
+    double wCent=1;
+    if (colli ==kHIMC) {
+      int vBin =  hWeight_vtx_data_pbpb->FindBin(evt.vz);
+      wVtx =   hWeight_vtx_data_pbpb->GetBinContent(vBin) / hWeight_vtx_mc_pbpb->GetBinContent(vBin) ;
+      wCent =  hWeight_cent_data_pbpb->GetBinContent(evt.cBin+1) / hWeight_cent_mc_pbpb->GetBinContent(evt.cBin+1) ;
+    }
+    else if ( colli ==kPPMC) {
+      int vBin =  hWeight_vtx_data_pp->FindBin(evt.vz);
+      wVtx =   hWeight_vtx_data_pp->GetBinContent(vBin) / hWeight_vtx_mc_pp->GetBinContent(vBin) ;
+    }
+    else if ( colli ==kPAMC) {
+      int vBin =  hWeight_vtx_data_ppb->FindBin(evt.vz);
+      wVtx =   hWeight_vtx_data_ppb->GetBinContent(vBin) / hWeight_vtx_mc_ppb->GetBinContent(vBin) ;
+    }
+    evt.reweight = wVtx * wCent;
+    //    cout << " vz = " << evt.vz << "     centrality = " << evt.cBin << endl;
+    //   cout <<" reweight = " << evt.reweight << endl;
+    
     /// correct the photon energy and make order
-
+      
     for (int j=0;j< c->photon.nPhotons;j++) {
 
     if (  ( c->photon.pt[j] > preCutPhotonEt ) && ( fabs( c->photon.eta[j] ) < cutphotonEta ) ) {
