@@ -104,7 +104,8 @@ void updateHIN11010(int etPho = 60, int etJet = 30, bool scaleByR=true, bool dra
   hdphipp[kppdata] = (TH1D*)fSum3->Get("dataSrc2_reco1_cent0SubtractedExtrapExtrapNorm");
   
   // 2013 pp data!!!!!!
-  TFile* pp13 = new TFile("ffFilesPP60GeVInclusive/photonTrackCorr_ppDATA_output_photonPtThr60_to_9999_jetPtThr30_20130919.root");
+  TFile* pp13 = new TFile("ffFilesPP60GeVInclusive/photonTrackCorr_ppDATA_output_photonPtThr60_to_9999_jetPtThr30_20131021.root");
+  // TFile* pp13 = new TFile("ffFilesPP60GeVInclusive/oldSmearing.root");
 
   hdphi[kppdata13][1] =  (TH1D*)pp13->Get("jetDphi_icent10010_final");
   hxgj[kppdata13][1] = (TH1D*)pp13->Get("xjg_icent10010_final");
@@ -123,7 +124,7 @@ void updateHIN11010(int etPho = 60, int etJet = 30, bool scaleByR=true, bool dra
     for ( int i = 1 ; i<=5 ; i++) {
       hdphi[kppdata13][icent]->SetBinContent(i,-1e4);
     }
-    hxgj[kppdata13][icent]->Rebin(10);
+    //    hxgj[kppdata13][icent]->Rebin(10);  // Now the bins are already rebined from photonTrackCorr_ppDATA_output_photonPtThr60_to_9999_jetPtThr30_20131021.root
     hxgj[kppdata13][icent]->Scale(1./hxgj[kppdata13][icent]->Integral("width"));
   }
   
@@ -164,17 +165,21 @@ void updateHIN11010(int etPho = 60, int etJet = 30, bool scaleByR=true, bool dra
   }
 
 
-  TFile* fPPsys = new TFile("ffFilesPP60GeVInclusive/relativeSys_merged.root");
+  TFile* fPPsys = new TFile("ffFilesPP60GeVInclusive/relativeSys_merged_pp60GeV.root");
   TH1D* ppSysX[4];
-  ppSysX[0] = (TH1D*)fPPsys->Get("dNdXjg_pp_ptBin3_uncertainty_merged");
+  ppSysX[0] = (TH1D*)fPPsys->Get("dNdXjg_uncertainty_merged");
   ppSysX[1] = (TH1D*)ppSysX[0]->Clone("ppSysx1");
   ppSysX[2] = (TH1D*)ppSysX[0]->Clone("ppSysx2");
   ppSysX[3] = (TH1D*)ppSysX[0]->Clone("ppSysx3");
-  float ppSysMx60 = 0.0218;
+
+  TH1D* meanXpp13Sys = (TH1D*)fPPsys->Get("meanXjg_uncertainty_merged");
+
+  float ppSysMx60 = meanXpp13Sys->GetBinContent(1);    // UPDATED on Oct 22nd
   TH1D* ppSysMx = new TH1D("ppSysMx","",1,0,1);
   ppSysMx->SetBinContent(1,ppSysMx60);
 
-  float ppSysR60 = 0.031;
+  TH1D* meanRpp13Sys = (TH1D*)fPPsys->Get("meanRjg_uncertainty_merged");
+  float ppSysR60 = meanRpp13Sys->GetBinContent(1); // UPDATED on Oct 22nd
   TH1D* ppSysR = new TH1D("ppSysR","",1,0,1);
   ppSysR->SetBinContent(1,ppSysR60);
 
