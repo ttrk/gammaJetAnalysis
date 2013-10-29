@@ -299,6 +299,7 @@ void updateHIN11010(int etPho = 60, int etJet = 30, bool scaleByR=true, bool dra
   gPad->RedrawAxis();
 
   c1->SaveAs("plotPPPbPb/inclusivePt_ppPbPb_xjg_distribution.pdf");
+  c1->SaveAs("plotPPPbPb/inclusivePt_ppPbPb_xjg_distribution.png");
   //c1->SaveAs("plotPPPbPb/inclusivePt_ppPbPb_xjg_distribution.gif");
   //c1->SaveAs("plotPPPbPb/inclusivePt_ppPbPb_xjg_distribution.C");
 
@@ -481,6 +482,7 @@ void updateHIN11010(int etPho = 60, int etJet = 30, bool scaleByR=true, bool dra
 
   gPad->RedrawAxis();
   c1dphi->SaveAs("plotPPPbPb/inclusivePt_ppPbPb_dPhi_dist.pdf");
+  c1dphi->SaveAs("plotPPPbPb/inclusivePt_ppPbPb_dPhi_dist.png");
   //c1dphi->SaveAs("plotPPPbPb/inclusivePt_ppPbPb_dPhi_dist.gif");
   //c1dphi->SaveAs("plotPPPbPb/inclusivePt_ppPbPb_dPhi_dist.C");
   
@@ -558,6 +560,7 @@ void updateHIN11010(int etPho = 60, int etJet = 30, bool scaleByR=true, bool dra
   gPad->RedrawAxis();
   
   c2->SaveAs("plotPPPbPb/inclusivePt_ppPbPb_xjg_npart.pdf");
+  c2->SaveAs("plotPPPbPb/inclusivePt_ppPbPb_xjg_npart.png");
   //c2->SaveAs("plotPPPbPb/inclusivePt_ppPbPb_xjg_npart.gif");
   //c2->SaveAs("plotPPPbPb/inclusivePt_ppPbPb_xjg_npart.C");
   
@@ -612,6 +615,7 @@ void updateHIN11010(int etPho = 60, int etJet = 30, bool scaleByR=true, bool dra
   gPad->RedrawAxis();
 
   c3->SaveAs("plotPPPbPb/inclusivePt_ppPbPb_r_npart.pdf");
+  c3->SaveAs("plotPPPbPb/inclusivePt_ppPbPb_r_npart.png");
   //c3->SaveAs("plotPPPbPb/inclusivePt_ppPbPb_r_npart.gif");
   //c3->SaveAs("plotPPPbPb/inclusivePt_ppPbPb_r_npart.C");
   
@@ -664,8 +668,8 @@ void updateHIN11010(int etPho = 60, int etJet = 30, bool scaleByR=true, bool dra
 
 
   TH1D* hSysTemp = new TH1D("hSystemp","",1,0,1);
-  hSysTemp->SetFillColor(kYellow);
-  hSysTemp->SetLineColor(kYellow);
+  hSysTemp->SetFillColor(newYellow);
+  hSysTemp->SetLineColor(newYellow);
 
   leg4->Draw();
 
@@ -675,6 +679,7 @@ void updateHIN11010(int etPho = 60, int etJet = 30, bool scaleByR=true, bool dra
 
   gPad->RedrawAxis();
   c4->SaveAs("plotPPPbPb/inclusivePt_ppPbPb_dphi_npart.pdf");
+  c4->SaveAs("plotPPPbPb/inclusivePt_ppPbPb_dphi_npart.png");
   //c4->SaveAs("plotPPPbPb/inclusivePt_ppPbPb_dphi_npart.gif");
   //c4->SaveAs("plotPPPbPb/inclusivePt_ppPbPb_dphi_npart.C");
 
