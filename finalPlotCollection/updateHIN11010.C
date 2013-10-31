@@ -294,9 +294,9 @@ void updateHIN11010(int etPho = 60, int etJet = 30, bool scaleByR=true, bool dra
       drawText("(c)",0.05,0.8,1);   
     if ( icent == 0)
       drawText("(d)",0.05,0.8,1);
-    
+
+    gPad->RedrawAxis();
   }
-  gPad->RedrawAxis();
 
   c1->SaveAs("plotPPPbPb/inclusivePt_ppPbPb_xjg_distribution.pdf");
   c1->SaveAs("plotPPPbPb/inclusivePt_ppPbPb_xjg_distribution.png");
@@ -508,10 +508,9 @@ void updateHIN11010(int etPho = 60, int etJet = 30, bool scaleByR=true, bool dra
   //  if ( !mcOnly )   drawSys(hMXpp2013_2,sysMxpp,kGreen,3001);
   if ( !mcOnly )   drawSys(mxhidata,sysMx,10);
   
-  if(drawMC) mxhimc->Draw("p");
   // mxppmc->Draw("p");
   //  if ( !mcOnly )   mxppdata->Draw("p");
-  if ( !mcOnly )  mxhidata->Draw("p same");
+  if ( !mcOnly )  mxhidata->Draw("p");
   if ( !mcOnly )  {
     hMXpp2013[5]->SetMarkerStyle(20);
     for ( int icent = 1 ; icent<=5 ; icent++) {
@@ -519,6 +518,7 @@ void updateHIN11010(int etPho = 60, int etJet = 30, bool scaleByR=true, bool dra
       hMXpp2013[icent]->Draw("same");
     }
   }
+  if(drawMC) mxhimc->Draw("p same");
   
   //// sys bar by energy scale
   /*
