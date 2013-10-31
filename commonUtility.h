@@ -199,7 +199,7 @@ void drawErrorBand(TH1* h, Double_t* err, Int_t theColor=kSpring+8)
 
 void drawText(const char *text, Float_t xp, Float_t yp, Int_t textColor=kBlack, Int_t textSize=18){
    TLatex *tex = new TLatex(xp,yp,text);
-   tex->SetTextFont(63);
+   tex->SetTextFont(43);
    //   if(bold)tex->SetTextFont(43);
    tex->SetTextSize(textSize);
    tex->SetTextColor(textColor);
@@ -210,7 +210,7 @@ void drawText(const char *text, Float_t xp, Float_t yp, Int_t textColor=kBlack, 
 
 void drawText2(const char *text, Float_t xp, Float_t yp, Int_t textSize=18){
    TLatex *tex = new TLatex(xp,yp,text);
-   tex->SetTextFont(63);
+   tex->SetTextFont(43);
    tex->SetTextSize(textSize);
    tex->SetTextColor(kBlack);
    tex->SetLineWidth(1);
