@@ -191,7 +191,7 @@ void updateHIN11010(int etPho = 60, int etJet = 30, bool scaleByR=true, bool dra
 
   
   
-  
+  // xjg distributions
   TCanvas *c1 = new TCanvas("c1","",1100,330);
   makeMultiPanelCanvas(c1,4,1,0.0,0.0,0.24,0.15,0.075);
   c1->cd(0);
@@ -262,7 +262,7 @@ void updateHIN11010(int etPho = 60, int etJet = 30, bool scaleByR=true, bool dra
     if ( icent == 3) {
       TLegend *leg0 = new TLegend(0.2916647,0.7045885,0.9862476,0.9069226,NULL,"brNDC");
       easyLeg(leg0);
-      if ( !mcOnly )       leg0->AddEntry(hxgj[kppdata13][icent+1],"pp Data (Smeared)","p");
+      if ( !mcOnly )       leg0->AddEntry(hxgj[kppdata13][icent+1],"Smeared pp reference","p");
       leg0->AddEntry(hxgj[khidata][icent],"PbPb Data","p");
       //    leg0->AddEntry(hxgj[khidata][icent],"","");
       if(drawMC) leg0->AddEntry(hxgj[khimc][icent],"PbPb PYTHIA + HYDJET","f");
@@ -299,7 +299,7 @@ void updateHIN11010(int etPho = 60, int etJet = 30, bool scaleByR=true, bool dra
   }
 
   c1->SaveAs("plotPPPbPb/inclusivePt_ppPbPb_xjg_distribution.pdf");
-  c1->SaveAs("plotPPPbPb/inclusivePt_ppPbPb_xjg_distribution.png");
+  //c1->SaveAs("plotPPPbPb/inclusivePt_ppPbPb_xjg_distribution.png");
   //c1->SaveAs("plotPPPbPb/inclusivePt_ppPbPb_xjg_distribution.gif");
   //c1->SaveAs("plotPPPbPb/inclusivePt_ppPbPb_xjg_distribution.C");
 
@@ -330,7 +330,7 @@ void updateHIN11010(int etPho = 60, int etJet = 30, bool scaleByR=true, bool dra
   // legc1all->AddEntry(hxgj[khimc][0],"0-10%","p");
   // legc1all->Draw();
   
-  
+  // dphi distributions
   TCanvas *c1ppDphi = new TCanvas("c1ppDphi","",500,500);
   TString fitFunc = "(TMath::Pi()/20.0)*exp(-(TMath::Pi()-x)/[0])/([0]*(1-exp(-TMath::Pi()/[0])))";
   float fitxmin=3.1415926*2./3;
@@ -427,7 +427,7 @@ void updateHIN11010(int etPho = 60, int etJet = 30, bool scaleByR=true, bool dra
     if ( icent == 3) {
       TLegend *leg0  = new TLegend(0.32,0.7,0.9,0.89,NULL,"brNDC");
       easyLeg(leg0);
-      if ( !mcOnly )   leg0->AddEntry(hdphi[kppdata13][icent+1],"pp Data (Smeared)","p");
+      if ( !mcOnly )   leg0->AddEntry(hdphi[kppdata13][icent+1],"Smeared pp reference","p");
       if ( !mcOnly )      leg0->AddEntry(hdphi[khidata][icent],"PbPb Data","p");
       if(drawMC) leg0->AddEntry(hdphi[khimc][icent],"PYTHIA + HYDJET","f");
       leg0->Draw();
@@ -482,7 +482,7 @@ void updateHIN11010(int etPho = 60, int etJet = 30, bool scaleByR=true, bool dra
 
   gPad->RedrawAxis();
   c1dphi->SaveAs("plotPPPbPb/inclusivePt_ppPbPb_dPhi_dist.pdf");
-  c1dphi->SaveAs("plotPPPbPb/inclusivePt_ppPbPb_dPhi_dist.png");
+  //c1dphi->SaveAs("plotPPPbPb/inclusivePt_ppPbPb_dPhi_dist.png");
   //c1dphi->SaveAs("plotPPPbPb/inclusivePt_ppPbPb_dPhi_dist.gif");
   //c1dphi->SaveAs("plotPPPbPb/inclusivePt_ppPbPb_dPhi_dist.C");
   
@@ -510,15 +510,15 @@ void updateHIN11010(int etPho = 60, int etJet = 30, bool scaleByR=true, bool dra
   
   // mxppmc->Draw("p");
   //  if ( !mcOnly )   mxppdata->Draw("p");
-  if ( !mcOnly )  mxhidata->Draw("p");
   if ( !mcOnly )  {
     hMXpp2013[5]->SetMarkerStyle(20);
     for ( int icent = 1 ; icent<=5 ; icent++) {
       drawSys(hMXpp2013[icent],ppSysMx,kGreen,3001);
-      hMXpp2013[icent]->Draw("same");
+      hMXpp2013[icent]->Draw("p same");
     }
   }
   if(drawMC) mxhimc->Draw("p same");
+  if ( !mcOnly )  mxhidata->Draw("p same");
   
   //// sys bar by energy scale
   /*
@@ -546,7 +546,7 @@ void updateHIN11010(int etPho = 60, int etJet = 30, bool scaleByR=true, bool dra
   if(drawMC) leg4->AddEntry(mxhimc,"PYTHIA + HYDJET","p");
   //  if ( !mcOnly )  leg4->AddEntry(mxppdata,"pp Data 231nb^{-1}","p");
   if ( !mcOnly )  leg4->AddEntry(hMXpp2013[5],"pp Data","p");
-  if ( !mcOnly )  leg4->AddEntry(hDphiPP2013[2],"pp Data (Smeared)","p");
+  if ( !mcOnly )  leg4->AddEntry(hDphiPP2013[2],"Smeared pp reference","p");
   if ( !mcOnly ) leg4->AddEntry(mxhidata,"PbPb Data","p");
   //  leg4->AddEntry(mxppmc,"PYTHIA","p");
 
@@ -560,7 +560,7 @@ void updateHIN11010(int etPho = 60, int etJet = 30, bool scaleByR=true, bool dra
   gPad->RedrawAxis();
   
   c2->SaveAs("plotPPPbPb/inclusivePt_ppPbPb_xjg_npart.pdf");
-  c2->SaveAs("plotPPPbPb/inclusivePt_ppPbPb_xjg_npart.png");
+  //c2->SaveAs("plotPPPbPb/inclusivePt_ppPbPb_xjg_npart.png");
   //c2->SaveAs("plotPPPbPb/inclusivePt_ppPbPb_xjg_npart.gif");
   //c2->SaveAs("plotPPPbPb/inclusivePt_ppPbPb_xjg_npart.C");
   
@@ -596,7 +596,6 @@ void updateHIN11010(int etPho = 60, int etJet = 30, bool scaleByR=true, bool dra
   if(drawMC) rxhimc->Draw("p");
   //  rxppmc->Draw("p");
   //  if ( !mcOnly )   rxppdata->Draw("p");
-  if ( !mcOnly )   rxhidata->Draw("p same");
   if ( !mcOnly )   {
     hRpp2013[5]->SetMarkerStyle(20);
     for ( int icent =1 ; icent<=5 ; icent++) { 
@@ -604,6 +603,7 @@ void updateHIN11010(int etPho = 60, int etJet = 30, bool scaleByR=true, bool dra
       hRpp2013[icent]->Draw("same");
     }
   }
+  if ( !mcOnly )   rxhidata->Draw("p same");
   //  drawText(Form("p^{#gamma}_{T} > %d GeV/c",etPho),0.6,0.75,0,15);
   //  drawText(Form("p^{Jet}_{T} > %d GeV/c",etJet),0.6,0.67,0,15);
   //  drawText("CMS",0.78,0.88,1);
@@ -615,7 +615,7 @@ void updateHIN11010(int etPho = 60, int etJet = 30, bool scaleByR=true, bool dra
   gPad->RedrawAxis();
 
   c3->SaveAs("plotPPPbPb/inclusivePt_ppPbPb_r_npart.pdf");
-  c3->SaveAs("plotPPPbPb/inclusivePt_ppPbPb_r_npart.png");
+  //c3->SaveAs("plotPPPbPb/inclusivePt_ppPbPb_r_npart.png");
   //c3->SaveAs("plotPPPbPb/inclusivePt_ppPbPb_r_npart.gif");
   //c3->SaveAs("plotPPPbPb/inclusivePt_ppPbPb_r_npart.C");
   
@@ -649,13 +649,13 @@ void updateHIN11010(int etPho = 60, int etJet = 30, bool scaleByR=true, bool dra
     drawSys(hDphiPP2013[icent], hDphiPPUnc, kGreen,3001);
   }
   
-  if ( !mcOnly )  dphihidata->Draw("p");
   TH1D* hDphiPP2013Temp = new TH1D("hDphiPP2013Temp","",1,380,400);
   hDphiPP2013Temp->SetBinContent(1,0.27);
   hDphiPP2013[5]->SetMarkerStyle(20);
   for ( int icent=1 ; icent<=5 ; icent++){ 
     hDphiPP2013[icent]->Draw("same");
   }
+  if ( !mcOnly )  dphihidata->Draw("p");
 
   // TLegend *legDphi =  new TLegend(0.32,0.18,0.93,0.7,NULL,"brNDC");
   // easyLeg(legDphi,"");
@@ -679,7 +679,7 @@ void updateHIN11010(int etPho = 60, int etJet = 30, bool scaleByR=true, bool dra
 
   gPad->RedrawAxis();
   c4->SaveAs("plotPPPbPb/inclusivePt_ppPbPb_dphi_npart.pdf");
-  c4->SaveAs("plotPPPbPb/inclusivePt_ppPbPb_dphi_npart.png");
+  //c4->SaveAs("plotPPPbPb/inclusivePt_ppPbPb_dphi_npart.png");
   //c4->SaveAs("plotPPPbPb/inclusivePt_ppPbPb_dphi_npart.gif");
   //c4->SaveAs("plotPPPbPb/inclusivePt_ppPbPb_dphi_npart.C");
 
