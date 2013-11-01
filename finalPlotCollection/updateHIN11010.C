@@ -502,7 +502,7 @@ void updateHIN11010(int etPho = 60, int etJet = 30, bool scaleByR=true, bool dra
   
     
   hTemp2->SetAxisRange(0.6,1.1,"Y");
-  hTemp2->Draw();
+  hTemp2->DrawCopy();
   //  TH1D* hMXpp2013_2 = new TH1D("hmxpp2013_2","",1,-10,370);
   //  hMXpp2013_2->SetBinContent(1,hMXpp2013->GetBinContent(1));
   //  if ( !mcOnly )   drawSys(hMXpp2013_2,sysMxpp,kGreen,3001);
@@ -514,11 +514,23 @@ void updateHIN11010(int etPho = 60, int etJet = 30, bool scaleByR=true, bool dra
     hMXpp2013[5]->SetMarkerStyle(20);
     for ( int icent = 1 ; icent<=5 ; icent++) {
       drawSys(hMXpp2013[icent],ppSysMx,kGreen,3001);
-      hMXpp2013[icent]->Draw("p same");
+      hMXpp2013[icent]->DrawCopy("p same");
     }
   }
   if(drawMC) mxhimc->Draw("p same");
   if ( !mcOnly )  mxhidata->Draw("p same");
+
+  hMXpp2013[5]->SetFillStyle(3001);
+  hMXpp2013[5]->SetFillColor(kGreen);
+  hMXpp2013[5]->SetLineColor(0);
+  hDphiPP2013[2]->SetFillStyle(3001);
+  hDphiPP2013[2]->SetFillColor(kGreen);
+  hDphiPP2013[2]->SetLineColor(0);
+  TH1D *dummyHist = new TH1D("dummyHist","",10,0,1);
+  dummyHist->SetFillStyle(1001);
+  dummyHist->SetMarkerColor(kRed);
+  dummyHist->SetFillColor(90);
+  dummyHist->SetLineColor(0);
   
   //// sys bar by energy scale
   /*
@@ -545,9 +557,9 @@ void updateHIN11010(int etPho = 60, int etJet = 30, bool scaleByR=true, bool dra
   easyLeg(leg4,"");
   if(drawMC) leg4->AddEntry(mxhimc,"PYTHIA + HYDJET","p");
   //  if ( !mcOnly )  leg4->AddEntry(mxppdata,"pp Data 231nb^{-1}","p");
-  if ( !mcOnly )  leg4->AddEntry(hMXpp2013[5],"pp Data","p");
-  if ( !mcOnly )  leg4->AddEntry(hDphiPP2013[2],"Smeared pp reference","p");
-  if ( !mcOnly ) leg4->AddEntry(mxhidata,"PbPb Data","p");
+  if ( !mcOnly )  leg4->AddEntry(hMXpp2013[5],"pp Data","fp");
+  if ( !mcOnly )  leg4->AddEntry(hDphiPP2013[2],"Smeared pp reference","fp");
+  if ( !mcOnly ) leg4->AddEntry(dummyHist,"PbPb Data","fp");
   //  leg4->AddEntry(mxppmc,"PYTHIA","p");
 
 
