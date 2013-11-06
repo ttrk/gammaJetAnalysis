@@ -202,8 +202,8 @@ void updateHIN11010(int etPho = 60, int etJet = 30, bool scaleByR=true, bool dra
     //hxgj[khimc][icent]->SetAxisRange(-.2,2.5,"Y");
     hxgj[khimc][icent]->SetAxisRange(0,2.5,"Y");
     hxgj[khimc][icent]->SetNdivisions(505);
-    hxgj[khimc][icent]->SetTitle(";x_{J#gamma} = p^{Jet}_{T}/p^{#gamma}_{T}; #frac{1}{N_{J#gamma}} #frac{dN_{J#gamma}}{dx_{J#gamma}}");
-    //    hxgj[khimc][icent]->SetTitle(";x_{J#gamma} = p_{T,jet}/p_{T,#gamma}; N^(-1) dN/dx_{J#gamma} x10");
+    //    hxgj[khimc][icent]->SetTitle(";x_{J#gamma} = p^{Jet}_{T}/p^{#gamma}_{T}; #frac{1}{N_{J#gamma}} #frac{dN_{J#gamma}}{dx_{J#gamma}}");
+    hxgj[khimc][icent]->SetTitle(";x_{J#gamma}; #frac{1}{N_{J#gamma}} #frac{dN_{J#gamma}}{dx_{J#gamma}}");
     handsomeTH1(hxgj[khimc][icent]);
     fixedFontHist(hxgj[khimc][icent],1,1.35);
     mcStyle2(hxgj[khimc][icent]);
@@ -260,10 +260,10 @@ void updateHIN11010(int etPho = 60, int etJet = 30, bool scaleByR=true, bool dra
     // }
     
     if ( icent == 3) {
-      TLegend *leg0 = new TLegend(0.2916647,0.7045885,0.9862476,0.9069226,NULL,"brNDC");
+      TLegend *leg0 = new TLegend(0.2916647,0.7045885,0.9862476,0.9869226,NULL,"brNDC");
       easyLeg(leg0);
-      if ( !mcOnly )       leg0->AddEntry(hxgj[kppdata13][icent+1],"Smeared pp reference","p");
       leg0->AddEntry(hxgj[khidata][icent],"PbPb Data","p");
+      if ( !mcOnly )       leg0->AddEntry(hxgj[kppdata13][icent+1],"Smeared pp reference","p");
       //    leg0->AddEntry(hxgj[khidata][icent],"","");
       if(drawMC) leg0->AddEntry(hxgj[khimc][icent],"PbPb PYTHIA + HYDJET","f");
       leg0->Draw();
@@ -271,11 +271,10 @@ void updateHIN11010(int etPho = 60, int etJet = 30, bool scaleByR=true, bool dra
     }
         
     if ( icent == 2) {
-      drawText(Form("p^{#gamma}_{T} > %d GeV/c     |#eta^{#gamma}| < 1.44",etPho),0.2,0.8,0,15);
-      drawText(Form("p^{Jet}_{T} > %d GeV/c    |#eta^{Jet}| < 1.6",etJet),0.2,0.7,0,15);
-      drawText("#Delta#phi_{J#gamma} > #frac{7}{8}#pi",0.6,0.6,0,15);
+      drawText(Form("p^{#gamma}_{T} > %d GeV/c     |#eta^{#gamma}| < 1.44",etPho),0.2,0.85,0,15);
+      drawText(Form("p^{Jet}_{T} > %d GeV/c    |#eta^{Jet}| < 1.6",etJet),0.2,0.77,0,15);
+      drawText("#Delta#phi_{J#gamma} > #frac{7}{8}#pi",0.2,0.69,0,15);
     }
-    
     if ( icent == 0 ) {
       //      drawText("CMS",0.8,0.9,1);
       //      drawText("pp       #int L dt = 231 nb^{-1}",0.4,0.68,1,15);
@@ -286,7 +285,7 @@ void updateHIN11010(int etPho = 60, int etJet = 30, bool scaleByR=true, bool dra
     else 
       drawText(Form("%d%% - %d%%",percentBin[icent],percentBin[icent+1]),0.67,0.5,0,15);
     
-    if ( icent == 3)
+    /*    if ( icent == 3)
       drawText("(a)",0.275,0.8,1);
     if ( icent == 2)
       drawText("(b)",0.05,0.8,1);  
@@ -294,7 +293,7 @@ void updateHIN11010(int etPho = 60, int etJet = 30, bool scaleByR=true, bool dra
       drawText("(c)",0.05,0.8,1);   
     if ( icent == 0)
       drawText("(d)",0.05,0.8,1);
-
+    */
     gPad->RedrawAxis();
   }
 
@@ -555,11 +554,11 @@ void updateHIN11010(int etPho = 60, int etJet = 30, bool scaleByR=true, bool dra
 
   TLegend *leg4 =  new TLegend(0.1630303,0.6054839,0.7590909,0.8931183,NULL,"brNDC");
   easyLeg(leg4,"");
-  if(drawMC) leg4->AddEntry(mxhimc,"PYTHIA + HYDJET","p");
   //  if ( !mcOnly )  leg4->AddEntry(mxppdata,"pp Data 231nb^{-1}","p");
+  if ( !mcOnly ) leg4->AddEntry(dummyHist,"PbPb Data","fp");
   if ( !mcOnly )  leg4->AddEntry(hMXpp2013[5],"pp Data","fp");
   if ( !mcOnly )  leg4->AddEntry(hDphiPP2013[2],"Smeared pp reference","fp");
-  if ( !mcOnly ) leg4->AddEntry(dummyHist,"PbPb Data","fp");
+  if(drawMC) leg4->AddEntry(mxhimc,"PYTHIA + HYDJET","p");
   //  leg4->AddEntry(mxppmc,"PYTHIA","p");
 
 
