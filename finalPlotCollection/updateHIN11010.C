@@ -104,7 +104,8 @@ void updateHIN11010(int etPho = 60, int etJet = 30, bool scaleByR=true, bool dra
   hdphipp[kppdata] = (TH1D*)fSum3->Get("dataSrc2_reco1_cent0SubtractedExtrapExtrapNorm");
   
   // 2013 pp data!!!!!!
-  TFile* pp13 = new TFile("ffFilesPP60GeVInclusive/photonTrackCorr_ppDATA_output_photonPtThr60_to_9999_jetPtThr30_20130919.root");
+  TFile* pp13 = new TFile("ffFilesPP60GeVInclusive/photonTrackCorr_ppDATA_output_photonPtThr60_to_9999_jetPtThr30_20131021.root");
+  // TFile* pp13 = new TFile("ffFilesPP60GeVInclusive/oldSmearing.root");
 
   hdphi[kppdata13][1] =  (TH1D*)pp13->Get("jetDphi_icent10010_final");
   hxgj[kppdata13][1] = (TH1D*)pp13->Get("xjg_icent10010_final");
@@ -123,7 +124,7 @@ void updateHIN11010(int etPho = 60, int etJet = 30, bool scaleByR=true, bool dra
     for ( int i = 1 ; i<=5 ; i++) {
       hdphi[kppdata13][icent]->SetBinContent(i,-1e4);
     }
-    hxgj[kppdata13][icent]->Rebin(10);
+    //    hxgj[kppdata13][icent]->Rebin(10);  // Now the bins are already rebined from photonTrackCorr_ppDATA_output_photonPtThr60_to_9999_jetPtThr30_20131021.root
     hxgj[kppdata13][icent]->Scale(1./hxgj[kppdata13][icent]->Integral("width"));
   }
   
@@ -164,23 +165,33 @@ void updateHIN11010(int etPho = 60, int etJet = 30, bool scaleByR=true, bool dra
   }
 
 
-  TFile* fPPsys = new TFile("ffFilesPP60GeVInclusive/relativeSys_merged.root");
+  TFile* fPPsys = new TFile("ffFilesPP60GeVInclusive/relativeSys_merged_pp60GeV.root");
+
+  TH1D* hdphiWidth  = (TH1D*)fPPsys->Get("dphiWidth_uncertainty_merged");
+  
+  TH1D* hDphiPPUnc = new TH1D("hdphippunc","",1,0,1);
+  hDphiPPUnc->SetBinContent(1, hdphiWidth->GetBinContent(1) );
+
   TH1D* ppSysX[4];
-  ppSysX[0] = (TH1D*)fPPsys->Get("dNdXjg_pp_ptBin3_uncertainty_merged");
+  ppSysX[0] = (TH1D*)fPPsys->Get("dNdXjg_uncertainty_merged");
   ppSysX[1] = (TH1D*)ppSysX[0]->Clone("ppSysx1");
   ppSysX[2] = (TH1D*)ppSysX[0]->Clone("ppSysx2");
   ppSysX[3] = (TH1D*)ppSysX[0]->Clone("ppSysx3");
-  float ppSysMx60 = 0.0218;
+
+  TH1D* meanXpp13Sys = (TH1D*)fPPsys->Get("meanXjg_uncertainty_merged");
+
+  float ppSysMx60 = meanXpp13Sys->GetBinContent(1);    // UPDATED on Oct 22nd
   TH1D* ppSysMx = new TH1D("ppSysMx","",1,0,1);
   ppSysMx->SetBinContent(1,ppSysMx60);
 
-  float ppSysR60 = 0.031;
+  TH1D* meanRpp13Sys = (TH1D*)fPPsys->Get("meanRjg_uncertainty_merged");
+  float ppSysR60 = meanRpp13Sys->GetBinContent(1); // UPDATED on Oct 22nd
   TH1D* ppSysR = new TH1D("ppSysR","",1,0,1);
   ppSysR->SetBinContent(1,ppSysR60);
 
   
   
-  
+  // xjg distributions
   TCanvas *c1 = new TCanvas("c1","",1100,330);
   makeMultiPanelCanvas(c1,4,1,0.0,0.0,0.24,0.15,0.075);
   c1->cd(0);
@@ -191,8 +202,8 @@ void updateHIN11010(int etPho = 60, int etJet = 30, bool scaleByR=true, bool dra
     //hxgj[khimc][icent]->SetAxisRange(-.2,2.5,"Y");
     hxgj[khimc][icent]->SetAxisRange(0,2.5,"Y");
     hxgj[khimc][icent]->SetNdivisions(505);
-    hxgj[khimc][icent]->SetTitle(";x_{J#gamma} = p^{Jet}_{T}/p^{#gamma}_{T}; #frac{1}{N_{J#gamma}} #frac{dN_{J#gamma}}{dx_{J#gamma}}");
-    //    hxgj[khimc][icent]->SetTitle(";x_{J#gamma} = p_{T,jet}/p_{T,#gamma}; N^(-1) dN/dx_{J#gamma} x10");
+    //    hxgj[khimc][icent]->SetTitle(";x_{J#gamma} = p^{Jet}_{T}/p^{#gamma}_{T}; #frac{1}{N_{J#gamma}} #frac{dN_{J#gamma}}{dx_{J#gamma}}");
+    hxgj[khimc][icent]->SetTitle(";x_{J#gamma}; #frac{1}{N_{J#gamma}} #frac{dN_{J#gamma}}{dx_{J#gamma}}");
     handsomeTH1(hxgj[khimc][icent]);
     fixedFontHist(hxgj[khimc][icent],1,1.35);
     mcStyle2(hxgj[khimc][icent]);
@@ -249,10 +260,10 @@ void updateHIN11010(int etPho = 60, int etJet = 30, bool scaleByR=true, bool dra
     // }
     
     if ( icent == 3) {
-      TLegend *leg0 = new TLegend(0.2916647,0.7045885,0.9862476,0.9069226,NULL,"brNDC");
+      TLegend *leg0 = new TLegend(0.2916647,0.7045885,0.9862476,0.9869226,NULL,"brNDC");
       easyLeg(leg0);
-      if ( !mcOnly )       leg0->AddEntry(hxgj[kppdata13][icent+1],"pp Data (Smeared)","p");
       leg0->AddEntry(hxgj[khidata][icent],"PbPb Data","p");
+      if ( !mcOnly )       leg0->AddEntry(hxgj[kppdata13][icent+1],"Smeared pp reference","p");
       //    leg0->AddEntry(hxgj[khidata][icent],"","");
       if(drawMC) leg0->AddEntry(hxgj[khimc][icent],"PbPb PYTHIA + HYDJET","f");
       leg0->Draw();
@@ -260,11 +271,10 @@ void updateHIN11010(int etPho = 60, int etJet = 30, bool scaleByR=true, bool dra
     }
         
     if ( icent == 2) {
-      drawText(Form("p^{#gamma}_{T} > %d GeV/c     |#eta^{#gamma}| < 1.44",etPho),0.2,0.8,0,15);
-      drawText(Form("p^{Jet}_{T} > %d GeV/c    |#eta^{Jet}| < 1.6",etJet),0.2,0.7,0,15);
-      drawText("#Delta#phi_{J#gamma} > #frac{7}{8}#pi",0.6,0.6,0,15);
+      drawText(Form("p^{#gamma}_{T} > %d GeV/c     |#eta^{#gamma}| < 1.44",etPho),0.2,0.85,0,15);
+      drawText(Form("p^{Jet}_{T} > %d GeV/c    |#eta^{Jet}| < 1.6",etJet),0.2,0.77,0,15);
+      drawText("#Delta#phi_{J#gamma} > #frac{7}{8}#pi",0.2,0.69,0,15);
     }
-    
     if ( icent == 0 ) {
       //      drawText("CMS",0.8,0.9,1);
       //      drawText("pp       #int L dt = 231 nb^{-1}",0.4,0.68,1,15);
@@ -275,7 +285,7 @@ void updateHIN11010(int etPho = 60, int etJet = 30, bool scaleByR=true, bool dra
     else 
       drawText(Form("%d%% - %d%%",percentBin[icent],percentBin[icent+1]),0.67,0.5,0,15);
     
-    if ( icent == 3)
+    /*    if ( icent == 3)
       drawText("(a)",0.275,0.8,1);
     if ( icent == 2)
       drawText("(b)",0.05,0.8,1);  
@@ -283,11 +293,12 @@ void updateHIN11010(int etPho = 60, int etJet = 30, bool scaleByR=true, bool dra
       drawText("(c)",0.05,0.8,1);   
     if ( icent == 0)
       drawText("(d)",0.05,0.8,1);
-    
+    */
+    gPad->RedrawAxis();
   }
-  gPad->RedrawAxis();
 
   c1->SaveAs("plotPPPbPb/inclusivePt_ppPbPb_xjg_distribution.pdf");
+  //c1->SaveAs("plotPPPbPb/inclusivePt_ppPbPb_xjg_distribution.png");
   //c1->SaveAs("plotPPPbPb/inclusivePt_ppPbPb_xjg_distribution.gif");
   //c1->SaveAs("plotPPPbPb/inclusivePt_ppPbPb_xjg_distribution.C");
 
@@ -318,7 +329,7 @@ void updateHIN11010(int etPho = 60, int etJet = 30, bool scaleByR=true, bool dra
   // legc1all->AddEntry(hxgj[khimc][0],"0-10%","p");
   // legc1all->Draw();
   
-  
+  // dphi distributions
   TCanvas *c1ppDphi = new TCanvas("c1ppDphi","",500,500);
   TString fitFunc = "(TMath::Pi()/20.0)*exp(-(TMath::Pi()-x)/[0])/([0]*(1-exp(-TMath::Pi()/[0])))";
   float fitxmin=3.1415926*2./3;
@@ -329,8 +340,6 @@ void updateHIN11010(int etPho = 60, int etJet = 30, bool scaleByR=true, bool dra
   hDphiPP2013[3] = new TH1D("hDphiPP2013_icent3","",1, 116.4-10, 116.4+10);
   hDphiPP2013[4] = new TH1D("hDphiPP2013_icent4","",1, 43.6-10,  43.6 +10);
   hDphiPP2013[5] = new TH1D("hDphiPP2013_icent5","",1, -8, 18);
-  TH1D* hDphiPPUnc = new TH1D("hdphippunc","",1,0,1);
-  hDphiPPUnc->SetBinContent(1,0.077);
   
   for ( int icent=1; icent<=5 ; icent++) {
     fdphiPP[icent] = new TF1(Form("fdphiPP_icent%d",icent),fitFunc.Data(),2.0*TMath::Pi()/3.0,TMath::Pi());
@@ -417,7 +426,7 @@ void updateHIN11010(int etPho = 60, int etJet = 30, bool scaleByR=true, bool dra
     if ( icent == 3) {
       TLegend *leg0  = new TLegend(0.32,0.7,0.9,0.89,NULL,"brNDC");
       easyLeg(leg0);
-      if ( !mcOnly )   leg0->AddEntry(hdphi[kppdata13][icent+1],"pp Data (Smeared)","p");
+      if ( !mcOnly )   leg0->AddEntry(hdphi[kppdata13][icent+1],"Smeared pp reference","p");
       if ( !mcOnly )      leg0->AddEntry(hdphi[khidata][icent],"PbPb Data","p");
       if(drawMC) leg0->AddEntry(hdphi[khimc][icent],"PYTHIA + HYDJET","f");
       leg0->Draw();
@@ -472,6 +481,7 @@ void updateHIN11010(int etPho = 60, int etJet = 30, bool scaleByR=true, bool dra
 
   gPad->RedrawAxis();
   c1dphi->SaveAs("plotPPPbPb/inclusivePt_ppPbPb_dPhi_dist.pdf");
+  //c1dphi->SaveAs("plotPPPbPb/inclusivePt_ppPbPb_dPhi_dist.png");
   //c1dphi->SaveAs("plotPPPbPb/inclusivePt_ppPbPb_dPhi_dist.gif");
   //c1dphi->SaveAs("plotPPPbPb/inclusivePt_ppPbPb_dPhi_dist.C");
   
@@ -491,23 +501,35 @@ void updateHIN11010(int etPho = 60, int etJet = 30, bool scaleByR=true, bool dra
   
     
   hTemp2->SetAxisRange(0.6,1.1,"Y");
-  hTemp2->Draw();
+  hTemp2->DrawCopy();
   //  TH1D* hMXpp2013_2 = new TH1D("hmxpp2013_2","",1,-10,370);
   //  hMXpp2013_2->SetBinContent(1,hMXpp2013->GetBinContent(1));
   //  if ( !mcOnly )   drawSys(hMXpp2013_2,sysMxpp,kGreen,3001);
   if ( !mcOnly )   drawSys(mxhidata,sysMx,10);
   
-  if(drawMC) mxhimc->Draw("p");
   // mxppmc->Draw("p");
   //  if ( !mcOnly )   mxppdata->Draw("p");
-  if ( !mcOnly )  mxhidata->Draw("p same");
   if ( !mcOnly )  {
     hMXpp2013[5]->SetMarkerStyle(20);
     for ( int icent = 1 ; icent<=5 ; icent++) {
       drawSys(hMXpp2013[icent],ppSysMx,kGreen,3001);
-      hMXpp2013[icent]->Draw("same");
+      hMXpp2013[icent]->DrawCopy("p same");
     }
   }
+  if(drawMC) mxhimc->Draw("p same");
+  if ( !mcOnly )  mxhidata->Draw("p same");
+
+  hMXpp2013[5]->SetFillStyle(3001);
+  hMXpp2013[5]->SetFillColor(kGreen);
+  hMXpp2013[5]->SetLineColor(0);
+  hDphiPP2013[2]->SetFillStyle(3001);
+  hDphiPP2013[2]->SetFillColor(kGreen);
+  hDphiPP2013[2]->SetLineColor(0);
+  TH1D *dummyHist = new TH1D("dummyHist","",10,0,1);
+  dummyHist->SetFillStyle(1001);
+  dummyHist->SetMarkerColor(kRed);
+  dummyHist->SetFillColor(90);
+  dummyHist->SetLineColor(0);
   
   //// sys bar by energy scale
   /*
@@ -532,11 +554,11 @@ void updateHIN11010(int etPho = 60, int etJet = 30, bool scaleByR=true, bool dra
 
   TLegend *leg4 =  new TLegend(0.1630303,0.6054839,0.7590909,0.8931183,NULL,"brNDC");
   easyLeg(leg4,"");
-  if(drawMC) leg4->AddEntry(mxhimc,"PYTHIA + HYDJET","p");
   //  if ( !mcOnly )  leg4->AddEntry(mxppdata,"pp Data 231nb^{-1}","p");
-  if ( !mcOnly )  leg4->AddEntry(hMXpp2013[5],"pp Data","p");
-  if ( !mcOnly )  leg4->AddEntry(hDphiPP2013[2],"pp Data (Smeared)","p");
-  if ( !mcOnly ) leg4->AddEntry(mxhidata,"PbPb Data","p");
+  if ( !mcOnly ) leg4->AddEntry(dummyHist,"PbPb Data","fp");
+  if ( !mcOnly )  leg4->AddEntry(hMXpp2013[5],"pp Data","fp");
+  if ( !mcOnly )  leg4->AddEntry(hDphiPP2013[2],"Smeared pp reference","fp");
+  if(drawMC) leg4->AddEntry(mxhimc,"PYTHIA + HYDJET","p");
   //  leg4->AddEntry(mxppmc,"PYTHIA","p");
 
 
@@ -549,6 +571,7 @@ void updateHIN11010(int etPho = 60, int etJet = 30, bool scaleByR=true, bool dra
   gPad->RedrawAxis();
   
   c2->SaveAs("plotPPPbPb/inclusivePt_ppPbPb_xjg_npart.pdf");
+  //c2->SaveAs("plotPPPbPb/inclusivePt_ppPbPb_xjg_npart.png");
   //c2->SaveAs("plotPPPbPb/inclusivePt_ppPbPb_xjg_npart.gif");
   //c2->SaveAs("plotPPPbPb/inclusivePt_ppPbPb_xjg_npart.C");
   
@@ -584,7 +607,6 @@ void updateHIN11010(int etPho = 60, int etJet = 30, bool scaleByR=true, bool dra
   if(drawMC) rxhimc->Draw("p");
   //  rxppmc->Draw("p");
   //  if ( !mcOnly )   rxppdata->Draw("p");
-  if ( !mcOnly )   rxhidata->Draw("p same");
   if ( !mcOnly )   {
     hRpp2013[5]->SetMarkerStyle(20);
     for ( int icent =1 ; icent<=5 ; icent++) { 
@@ -592,6 +614,7 @@ void updateHIN11010(int etPho = 60, int etJet = 30, bool scaleByR=true, bool dra
       hRpp2013[icent]->Draw("same");
     }
   }
+  if ( !mcOnly )   rxhidata->Draw("p same");
   //  drawText(Form("p^{#gamma}_{T} > %d GeV/c",etPho),0.6,0.75,0,15);
   //  drawText(Form("p^{Jet}_{T} > %d GeV/c",etJet),0.6,0.67,0,15);
   //  drawText("CMS",0.78,0.88,1);
@@ -603,6 +626,7 @@ void updateHIN11010(int etPho = 60, int etJet = 30, bool scaleByR=true, bool dra
   gPad->RedrawAxis();
 
   c3->SaveAs("plotPPPbPb/inclusivePt_ppPbPb_r_npart.pdf");
+  //c3->SaveAs("plotPPPbPb/inclusivePt_ppPbPb_r_npart.png");
   //c3->SaveAs("plotPPPbPb/inclusivePt_ppPbPb_r_npart.gif");
   //c3->SaveAs("plotPPPbPb/inclusivePt_ppPbPb_r_npart.C");
   
@@ -636,13 +660,13 @@ void updateHIN11010(int etPho = 60, int etJet = 30, bool scaleByR=true, bool dra
     drawSys(hDphiPP2013[icent], hDphiPPUnc, kGreen,3001);
   }
   
-  if ( !mcOnly )  dphihidata->Draw("p");
   TH1D* hDphiPP2013Temp = new TH1D("hDphiPP2013Temp","",1,380,400);
   hDphiPP2013Temp->SetBinContent(1,0.27);
   hDphiPP2013[5]->SetMarkerStyle(20);
   for ( int icent=1 ; icent<=5 ; icent++){ 
     hDphiPP2013[icent]->Draw("same");
   }
+  if ( !mcOnly )  dphihidata->Draw("p");
 
   // TLegend *legDphi =  new TLegend(0.32,0.18,0.93,0.7,NULL,"brNDC");
   // easyLeg(legDphi,"");
@@ -655,8 +679,8 @@ void updateHIN11010(int etPho = 60, int etJet = 30, bool scaleByR=true, bool dra
 
 
   TH1D* hSysTemp = new TH1D("hSystemp","",1,0,1);
-  hSysTemp->SetFillColor(kYellow);
-  hSysTemp->SetLineColor(kYellow);
+  hSysTemp->SetFillColor(newYellow);
+  hSysTemp->SetLineColor(newYellow);
 
   leg4->Draw();
 
@@ -666,6 +690,7 @@ void updateHIN11010(int etPho = 60, int etJet = 30, bool scaleByR=true, bool dra
 
   gPad->RedrawAxis();
   c4->SaveAs("plotPPPbPb/inclusivePt_ppPbPb_dphi_npart.pdf");
+  //c4->SaveAs("plotPPPbPb/inclusivePt_ppPbPb_dphi_npart.png");
   //c4->SaveAs("plotPPPbPb/inclusivePt_ppPbPb_dphi_npart.gif");
   //c4->SaveAs("plotPPPbPb/inclusivePt_ppPbPb_dphi_npart.C");
 

@@ -14,6 +14,8 @@
 #include <TH2F.h>
 #include <TGaxis.h>
 
+Int_t newYellow = 90;
+
 
 void divideWOerr( TH1* h1, TH1* h2) {  //by Yongsun Jan 26 2012                                                                              
   if ( h1->GetNbinsX() != h2->GetNbinsX() ) {
@@ -43,7 +45,7 @@ void AddBinError( TH1* h=0, int binNumber=0 , float val=0){
   h->SetBinError(binNumber,newVal);
 }
 
-void drawSys(TH1 *h,double *sys, int theColor= kYellow, int fillStyle = -1, int lineStyle = -1)
+void drawSys(TH1 *h,double *sys, int theColor= newYellow, int fillStyle = -1, int lineStyle = -1)
 {
    for (int i=1;i<=h->GetNbinsX();i++)
       {
@@ -60,7 +62,7 @@ void drawSys(TH1 *h,double *sys, int theColor= kYellow, int fillStyle = -1, int 
       }
 }
 
-void drawSys(TGraph *h, double *sys, double width=5, int theColor= kYellow, int fillStyle = -1, int lineStyle = -1)
+void drawSys(TGraph *h, double *sys, double width=5, int theColor= newYellow, int fillStyle = -1, int lineStyle = -1)
 {
   for (int i=0;i<h->GetN();i++)
     {
@@ -81,7 +83,7 @@ void drawSys(TGraph *h, double *sys, double width=5, int theColor= kYellow, int 
 
 
 
-void drawSys(TH1 *h,TH1 *sys, int theColor= kYellow, int fillStyle = -1, int lineStyle = -1)
+void drawSys(TH1 *h,TH1 *sys, int theColor= newYellow, int fillStyle = -1, int lineStyle = -1)
 {
    for (int i=1;i<=h->GetNbinsX();i++)
       {
@@ -216,7 +218,7 @@ void mcStyle2(TH1* h=0) {
   //h->SetLineColor(kBlue);
   //h->SetFillColor(kAzure-8);
   //h->SetFillStyle(3005);
-  h->SetFillColor(kYellow);
+  h->SetFillColor(newYellow);
   h->SetFillStyle(1001);
 }
 
