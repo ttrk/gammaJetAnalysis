@@ -54,6 +54,38 @@ double  wPPMC_AllQcdPho50to80        = 8098. / 87988.;
 double  wPPMC_AllQcdPho80to120       = 1680. / 96756.;
 double  wPPMC_AllQcdPho120to9999     = 438.  / 90972.;
 
+// pp MC smeared for closure test
+TString fnamePPMC_AllQcdPho30to50_smeared0030    = "yskimmedFiles/yskim_merged_allQCDPhoton30to50_genPhotonPtCut30_CMSSW538HIp2_smeared0030.root";
+TString fnamePPMC_AllQcdPho50to80_smeared0030    = "yskimmedFiles/yskim_merged_allQCDPhoton50to80_genPhotonPtCut30_CMSSW538HIp2_smeared0030.root";
+TString fnamePPMC_AllQcdPho80to120_smeared0030   = "yskimmedFiles/yskim_merged_allQCDPhoton80to120_genPhotonPtCut30_CMSSW538HIp2_smeared0030.root";
+TString fnamePPMC_AllQcdPho120to9999_smeared0030 = "yskimmedFiles/yskim_merged_allQCDPhoton120to9999_genPhotonPtCut30_CMSSW538HIp2_smeared0030.root";
+
+TString fnamePPMC_AllQcdPho30to50_smeared3099    = "yskimmedFiles/yskim_merged_allQCDPhoton30to50_genPhotonPtCut30_CMSSW538HIp2_smeared3099.root";
+TString fnamePPMC_AllQcdPho50to80_smeared3099    = "yskimmedFiles/yskim_merged_allQCDPhoton50to80_genPhotonPtCut30_CMSSW538HIp2_smeared3099.root";
+TString fnamePPMC_AllQcdPho80to120_smeared3099   = "yskimmedFiles/yskim_merged_allQCDPhoton80to120_genPhotonPtCut30_CMSSW538HIp2_smeared3099.root";
+TString fnamePPMC_AllQcdPho120to9999_smeared3099 = "yskimmedFiles/yskim_merged_allQCDPhoton120to9999_genPhotonPtCut30_CMSSW538HIp2_smeared3099.root";
+
+
+TString fnamePPMC_AllQcdPho30to50_smeared0010    = "yskimmedFiles/yskim_merged_allQCDPhoton30to50_genPhotonPtCut30_CMSSW538HIp2_smeared0010.root";
+TString fnamePPMC_AllQcdPho50to80_smeared0010    = "yskimmedFiles/yskim_merged_allQCDPhoton50to80_genPhotonPtCut30_CMSSW538HIp2_smeared0010.root";
+TString fnamePPMC_AllQcdPho80to120_smeared0010   = "yskimmedFiles/yskim_merged_allQCDPhoton80to120_genPhotonPtCut30_CMSSW538HIp2_smeared0010.root";
+TString fnamePPMC_AllQcdPho120to9999_smeared0010 = "yskimmedFiles/yskim_merged_allQCDPhoton120to9999_genPhotonPtCut30_CMSSW538HIp2_smeared0010.root";
+TString fnamePPMC_AllQcdPho30to50_smeared1030    = "yskimmedFiles/yskim_merged_allQCDPhoton30to50_genPhotonPtCut30_CMSSW538HIp2_smeared1030.root";
+TString fnamePPMC_AllQcdPho50to80_smeared1030    = "yskimmedFiles/yskim_merged_allQCDPhoton50to80_genPhotonPtCut30_CMSSW538HIp2_smeared1030.root";
+TString fnamePPMC_AllQcdPho80to120_smeared1030   = "yskimmedFiles/yskim_merged_allQCDPhoton80to120_genPhotonPtCut30_CMSSW538HIp2_smeared1030.root";
+TString fnamePPMC_AllQcdPho120to9999_smeared1030 = "yskimmedFiles/yskim_merged_allQCDPhoton120to9999_genPhotonPtCut30_CMSSW538HIp2_smeared1030.root";
+TString fnamePPMC_AllQcdPho30to50_smeared3050    = "yskimmedFiles/yskim_merged_allQCDPhoton30to50_genPhotonPtCut30_CMSSW538HIp2_smeared3050.root";
+TString fnamePPMC_AllQcdPho50to80_smeared3050    = "yskimmedFiles/yskim_merged_allQCDPhoton50to80_genPhotonPtCut30_CMSSW538HIp2_smeared3050.root";
+TString fnamePPMC_AllQcdPho80to120_smeared3050   = "yskimmedFiles/yskim_merged_allQCDPhoton80to120_genPhotonPtCut30_CMSSW538HIp2_smeared3050.root";
+TString fnamePPMC_AllQcdPho120to9999_smeared3050 = "yskimmedFiles/yskim_merged_allQCDPhoton120to9999_genPhotonPtCut30_CMSSW538HIp2_smeared3050.root";
+TString fnamePPMC_AllQcdPho30to50_smeared5099    = "yskimmedFiles/yskim_merged_allQCDPhoton30to50_genPhotonPtCut30_CMSSW538HIp2_smeared5099.root";
+TString fnamePPMC_AllQcdPho50to80_smeared5099    = "yskimmedFiles/yskim_merged_allQCDPhoton50to80_genPhotonPtCut30_CMSSW538HIp2_smeared5099.root";
+TString fnamePPMC_AllQcdPho80to120_smeared5099   = "yskimmedFiles/yskim_merged_allQCDPhoton80to120_genPhotonPtCut30_CMSSW538HIp2_smeared5099.root";
+TString fnamePPMC_AllQcdPho120to9999_smeared5099 = "yskimmedFiles/yskim_merged_allQCDPhoton120to9999_genPhotonPtCut30_CMSSW538HIp2_smeared5099.root";
+
+
+
+
 // pp MC smearing factors
 double c_pp = 0.056762;
 double s_pp = 0.808114;
@@ -134,10 +166,10 @@ double  wHIMC_AllQcdPho80to9999       = 6462. / 58781.;
 
 /// Jet energy is smeared and/or scaled in histogram step
 /////// Data with jet energy smeared by 10%
-//TString fnameHIDATA_10percentSmeared  = "yskimmedFiles/yskim_HiForestPhoton-v7-noDuplicate_smearedBy10Flat.root"  ;
-//TString fnamePADATA_10percentSmeared  = "yskimmedFiles/yskim_pA_photonSkimForest_v85_HLT_PAPhoton30_NoCaloIdVL_v1_highPtPhoton40_smearedBy10Flat.root";
-//TString fnamePPDATA_10percentSmeared  = "yskimmedFiles/yskim_pp_photonSKimForest_v85_smearedBy10Flat.root";
-/////// Data with jet energy scaled by +2%
+TString fnameHIDATA_10percentSmeared  = "yskimmedFiles/yskim_HiForestPhoton-v7-noDuplicate_smearedBy10Flat.root"  ;
+TString fnamePADATA_10percentSmeared  = "yskimmedFiles/yskim_pA_photonSkimForest_v85_HLT_PAPhoton30_NoCaloIdVL_v1_highPtPhoton40_smearedBy10Flat.root";
+TString fnamePPDATA_10percentSmeared  = "yskimmedFiles/yskim_pp_photonSKimForest_v85_jetNoSmearing_smearedBy10Flat.root"; // no smearing means no relative jet energy smearing
+/////// Data with jet energy scaled by +2%  
 //TString fnameHIDATA_Plus2percentScaled  = "yskimmedFiles/yskim_HiForestPhoton-v7-noDuplicate_jetScaleBy2percent.root";
 //TString fnamePADATA_Plus2percentScaled  = "yskimmedFiles/yskim_pA_photonSkimForest_v85_HLT_PAPhoton30_NoCaloIdVL_v1_highPtPhoton40_jetScaleBy2percent.root";
 //TString fnamePPDATA_Plus2percentScaled  = "yskimmedFiles/yskim_pp_photonSKimForest_v85_jetScaleBy2percent.root";
