@@ -3,21 +3,22 @@
 #include <TRandom3.h>
 #include <time.h>
 
-void drawPtDependencePAMC( bool saveFigures=true) {
-
-    const int nPtBin = 4;
-    double ptBin[nPtBin+1] = {40, 50,60,80,9999}; 
-    double ptBinPaDraw[nPtBin+1] = { 40.5 ,49.5, 58.5,  76.5,  123. } ;
+void drawPtDependencePAMC(TString dirName="genOrReco1", int prodDate=20131022) {
+  bool saveFigures=true;
+  
+  const int nPtBin = 4;
+  double ptBin[nPtBin+1] = {40, 50,60,80,9999}; 
+  double ptBinPaDraw[nPtBin+1] = { 40.5 ,49.5, 58.5,  76.5,  123. } ;
     // double AvePtBin[nPtBin+1] = { 45, 54.1479, 67.4204, 99.6956, 9999};
-    
-    const int nCentBinHI = 2;
-    const int centBinHI[nCentBinHI +1] = {-1, 10030, 13099}; 
+  
+  const int nCentBinHI = 2;
+  const int centBinHI[nCentBinHI +1] = {-1, 10030, 13099}; 
 
     TH1D* hxjg[7][10][6]; // [Collision][centrality][pt]
     TH1D* hJetPt[7][10][6]; // [Collision][centrality][pt]
     TH1D* hJetPtIaaBin[7][10][6]; // [Collision][centrality][pt]                                                                     
     TH1D* hDphi[7][10][6]; // [Collision][centrality][pt]
-    TH1D* hEta[7][10][6]; // [Collision][centrality][pt]
+    //TH1D* hEta[7][10][6]; // [Collision][centrality][pt]
     TH1D* meanXjg[7][10];      // [Collision][centrality]
     TH1D* meanJetPt[7][10];      // [Collisi on][centrality]
 
@@ -33,7 +34,7 @@ void drawPtDependencePAMC( bool saveFigures=true) {
                 hJetPt[icoll][icent][ipt] = NULL;
                 hJetPtIaaBin[icoll][icent][ipt] = NULL;
 		hDphi[icoll][icent][ipt] = NULL;
-                hEta[icoll][icent][ipt] = NULL;
+                //hEta[icoll][icent][ipt] = NULL;
             }
 
         }
@@ -43,16 +44,8 @@ void drawPtDependencePAMC( bool saveFigures=true) {
     for (int ipt=1 ; ipt<=nPtBin ; ipt++) {
         for (int icoll=0 ; icoll<6 ; icoll++) {
 	  TString sampleName = getSampleName( icoll ) ;
-	  //char* fname =  Form("ffFiles/20131001pPb/photonTrackCorr_%s_output_photonPtThr%d_to_%d_jetPtThr30_20131001.root",sampleName.Data(), (int)ptBin[ipt-1], (int)ptBin[ipt]);
-	  //	  char* fname =  Form("ffFiles/20131003pPb_eventSelectionUpdate/photonTrackCorr_%s_output_photonPtThr%d_to_%d_jetPtThr30_20131003.root",sampleName.Data(), (int)ptBin[ipt-1], (int)ptBin[ipt]);
-	  //	  char* fname =  Form("ffFiles/20131001pPb/photonTrackCorr_%s_output_photonPtThr%d_to_%d_jetPtThr30_20131001_photonEnergyScaledBy0.015.root",sampleName.Data(), (int)ptBin[ipt-1], (int)ptBin[ipt]);
-	  //  char* fname =  Form("ffFiles/20131001pPb/photonTrackCorr_%s_output_photonPtThr%d_to_%d_jetPtThr30_20131001_photonEnergyScaledBy-0.015.root",sampleName.Data(), (int)ptBin[ipt-1], (int)ptBin[ipt]);
-	  // char* fname =  Form("ffFiles/jetEnergySmearedBy10percent/photonTrackCorr_%s_output_photonPtThr%d_to_%d_jetPtThr30_20131003.root",sampleName.Data(), (int)ptBin[ipt-1], (int)ptBin[ipt]);
-	  //char* fname =  Form("ffFiles/noElectronCorrection/photonTrackCorr_%s_output_photonPtThr%d_to_%d_jetPtThr30_20131003.root",sampleName.Data(), (int)ptBin[ipt-1], (int)ptBin[ipt]);
-	  //	  char* fname =  Form("ffFiles/jetEnergyScaled/plus/photonTrackCorr_%s_output_photonPtThr%d_to_%d_jetPtThr30_20131003.root",sampleName.Data(), (int)ptBin[ipt-1], (int)ptBin[ipt]);
-	  //	  char* fname =  Form("ffFiles/jetEnergyScaled/minus/photonTrackCorr_%s_output_photonPtThr%d_to_%d_jetPtThr30_20131003.root",sampleName.Data(), (int)ptBin[ipt-1], (int)ptBin[ipt]);
-	  char* fname =  Form("ffFiles/systematics_photonIso/photonTrackCorr_%s_output_photonPtThr%d_to_%d_jetPtThr30_20131009_genOrReco0.root",sampleName.Data(), (int)ptBin[ipt-1], (int)ptBin[ipt]);	 
-	  
+	  char* fname =  Form("ffFiles/%s/photonTrackCorr_%s_output_photonPtThr%d_to_%d_jetPtThr30_%d.root",dirName.Data(), sampleName.Data(), (int)ptBin[ipt-1], (int)ptBin[ipt], prodDate);
+	
 	  histFile[icoll][ipt] = new TFile(fname) ;
 	  cout << " Reading file : " << fname << endl;
 
@@ -68,7 +61,7 @@ void drawPtDependencePAMC( bool saveFigures=true) {
                     cout << " Getting histogram : " << Form("jetPtForIaa_icent%d_final", icent) << endl;
 		    hDphi[icoll][icent][ipt]  = (TH1D*)histFile[icoll][ipt]->Get(Form("jetDphi_icent%d_final", icent)) ;
                     cout << " Getting histogram : " << Form("jetDphi_icent%d_final", icent) << endl;
-                    hEta[icoll][icent][ipt]  = (TH1D*)histFile[icoll][ipt]->Get(Form("etaJg_icent%d_final", icent)) ;
+                    //hEta[icoll][icent][ipt]  = (TH1D*)histFile[icoll][ipt]->Get(Form("etaJg_icent%d_final", icent)) ;
                     cout << " Getting histogram : " << Form("etaJg_icent%d_final", icent) << endl;
 
                 }
@@ -84,7 +77,7 @@ void drawPtDependencePAMC( bool saveFigures=true) {
 		    
 		    hDphi[icoll][icent][ipt]  = (TH1D*)histFile[icoll][ipt]->Get(Form("jetDphi_icent%d_final", icent)) ;
                     cout << " Getting histogram : " << Form("jetDphi_icent%d_final", icent) << endl;
-                    hEta[icoll][icent][ipt]  = (TH1D*)histFile[icoll][ipt]->Get(Form("etaJg_icent%d_final", icent)) ;
+                    //hEta[icoll][icent][ipt]  = (TH1D*)histFile[icoll][ipt]->Get(Form("etaJg_icent%d_final", icent)) ;
                     cout << " Getting histogram : " << Form("etaJg_icent%d_final", icent) << endl;
 
                 }
@@ -99,7 +92,7 @@ void drawPtDependencePAMC( bool saveFigures=true) {
                         cout << " Getting histogram : " << Form("jetPtForIaa_icent%d_final", centBinHI[icent] ) << endl;
                         hDphi[icoll][icent][ipt]  = (TH1D*)histFile[icoll][ipt]->Get(Form("jetDphi_icent%d_final", centBinHI[icent] ) ) ;
                         cout << " Getting histogram : " << Form("jetDphi_icent%d_final", icent)<< endl;
-                        hEta[icoll][icent][ipt]  = (TH1D*)histFile[icoll][ipt]->Get(Form("etaJg_icent%d_final", centBinHI[icent] ) ) ;
+                        //hEta[icoll][icent][ipt]  = (TH1D*)histFile[icoll][ipt]->Get(Form("etaJg_icent%d_final", centBinHI[icent] ) ) ;
                         cout << " Getting histogram : " << Form("etaJg_icent%d_final", icent)<< endl;
                     }
                 }
@@ -137,30 +130,19 @@ void drawPtDependencePAMC( bool saveFigures=true) {
 
         c1->cd(ipt);
 
-        // draw pp
         handsomeTH1(hDphi[kPAMC][1][ipt], 1);
         hDphi[kPAMC][1][ipt]->SetXTitle("#Delta#phi_{J#gamma}");
         hDphi[kPAMC][1][ipt]->SetYTitle("Normalized entries");
         hDphi[kPAMC][1][ipt]->SetMarkerStyle(24);
-        hDphi[kPAMC][1][ipt]->Scale(1./hDphi[kPAMC][1][ipt]->Integral("width"));       
-        hDphi[kPAMC][1][ipt]->SetAxisRange(0,3.141592,"X");
+              hDphi[kPAMC][1][ipt]->SetAxisRange(0,3.141592,"X");
         hDphi[kPAMC][1][ipt]->SetAxisRange(0.01,30,"Y");
         hDphi[kPAMC][1][ipt]->Draw();
 
 	handsomeTH1(hDphi[kPAMC][1][ipt], kRed);
 	hDphi[kPAMC][1][ipt]->Scale(1./hDphi[kPAMC][1][ipt]->Integral("width"));
 	hDphi[kPAMC][1][ipt]->Draw("same");
-        // // draw pbpb 
-        // for ( int icent = 1; icent <= nCentBinHI ; icent++ ) {
-        //     handsomeTH1(hDphi[kHIMC][icent][ipt],kRed);
-        //     if ( icent == 2 ) hDphi[kHIMC][icent][ipt]->SetMarkerStyle(24);
-        //     hDphi[kHIMC][icent][ipt]->Scale(1./hDphi[kHIMC][icent][ipt]->Integral("width"));
-        //     hDphi[kHIMC][icent][ipt]->Draw("same");
-
-        // }
 
         gPad->SetLogy();
-        //    onSun(30,0,200,0);
 
 	double dx1=0.15;
 	if ( ipt == nPtBin )
@@ -170,19 +152,7 @@ void drawPtDependencePAMC( bool saveFigures=true) {
 
     }
     c1->cd(1);
-    // TLegend *ly = new TLegend(0.4913112,0.6561548,0.9997611,0.9431145,NULL,"brNDC");
-    // easyLeg(ly,"2.76TeV");
-    // ly->AddEntry(hDphi[kPPMC][7][1],"pp ","p");
-    // ly->AddEntry(hDphi[kHIMC][2][1],"PbPb 0-30%","p");
 
-    // TLegend *l1 = new TLegend(0.1995968,0.7097458,0.7076613,0.9237288,NULL,"brNDC");
-    // easyLeg(l1,"2.76TeV");
-    // l1->AddEntry(hDphi[kPPMC][7][1],"pp ","p");
-    // l1->AddEntry(hDphi[kHIMC][2][1],"PbPb 30-100%","p");
-    // l1->AddEntry(hDphi[kHIMC][1][1],"PbPb 0-30%","p");
-    // l1->Draw();
-
-    //if (saveFigures) c1->SaveAs("figures/pT_dependence_dphi_pA_figure1.pdf");
     if (saveFigures) c1->SaveAs("figures/pT_dependence_dphi_pA_figure1.gif");
     if (saveFigures) c1->SaveAs("figures/pT_dependence_dphi_pA_figure1.pdf");
     
@@ -202,7 +172,6 @@ void drawPtDependencePAMC( bool saveFigures=true) {
 
         c2->cd(ipt);
 
-        // draw pp
         hTempPt->SetXTitle("p_{T}^{Jet} (GeV)");
         hTempPt->SetYTitle("#frac{dN}{dp_{T}} #frac{1}{N}");
         hTempPt->SetAxisRange(10,150,"X");
@@ -211,14 +180,16 @@ void drawPtDependencePAMC( bool saveFigures=true) {
         handsomeTH1(hTempPt,0);
         hTempPt->DrawCopy();
 	
-	hJetPt[kPAMC][1][ipt]->Scale(1./rjg[kPAMC][1]->GetBinContent(ipt)); // rjg normalization                      
-	hJetPt[kPAMC][1][ipt]->Rebin(10);
-	hJetPt[kPAMC][1][ipt]->Scale(1./10);
-
+       
         handsomeTH1(hJetPt[kPAMC][1][ipt], 1);
         hJetPt[kPAMC][1][ipt]->SetMarkerStyle(24);
 	hJetPt[kPAMC][1][ipt]->Draw("same");
 
+	handsomeTH1(hJetPt[kPAMC][1][ipt],kRed);
+	//	hJetPt[kPAMC][1][ipt]->Scale(1./rjg[kPAMC][1]->GetBinContent(ipt));
+
+	hJetPt[kPAMC][1][ipt]->Draw("same");
+	
        
         double dx1=0.15;
         if ( ipt == nPtBin ) 
@@ -236,9 +207,6 @@ void drawPtDependencePAMC( bool saveFigures=true) {
 
     TLegend *l2 = new TLegend(0.2116935,0.7012712,0.6149194,0.904661,NULL,"brNDC");
     easyLeg(l2,"5.02TeV");
-    // l2->AddEntry(hDphi[kPPMC][7][1],"pp ","p");
-    // l2->AddEntry(hDphi[kHIMC][1][1],"PbPb 30-100%","p");
-    // l2->AddEntry(hDphi[kHIMC][2][1],"PbPb 0-30%","p");
 
     l2->AddEntry(hDphi[kPAMC][1][1],"pPb pythia+HIJING","p");
     l2->AddEntry(hDphi[kPAMC][1][1],"pPb Data","p");
@@ -252,6 +220,8 @@ void drawPtDependencePAMC( bool saveFigures=true) {
     meanJetPt[kPAMC][1]->SetAxisRange(40,115,"Y");
     meanJetPt[kPAMC][1]->Draw();
 
+    handsomeTH1(meanJetPt[kPAMC][1],kRed);
+    meanJetPt[kPAMC][1]->Draw("same");
     
     l1 ->Draw();
     if (saveFigures)   c21->SaveAs("figures/pT_dependence_jetPt_pA_figure2.pdf");
@@ -263,30 +233,21 @@ void drawPtDependencePAMC( bool saveFigures=true) {
 
         c3->cd(ipt);
 
-        // draw pp                                                                                                                                      
         handsomeTH1(hxjg[kPAMC][1][ipt], 1);
         hxjg[kPAMC][1][ipt]->SetXTitle("x_{J#gamma}");
         hxjg[kPAMC][1][ipt]->SetYTitle("#frac{dN}{dp_{T}} #frac{1}{N}");
-        hxjg[kPAMC][1][ipt]->SetAxisRange(0,2,"X");
         hxjg[kPAMC][1][ipt]->SetMarkerStyle(24);
 
-	hxjg[kPAMC][1][ipt]->Rebin(10);
-	hxjg[kPAMC][1][ipt]->Scale(1./10);
-	hxjg[kPAMC][1][ipt]->Scale(1./rjg[kPAMC][1]->GetBinContent(ipt)); // rjg normalization                                         
+
 	
-
-        hxjg[kPAMC][1][ipt]->SetAxisRange(0,3,"Y");
+        hxjg[kPAMC][1][ipt]->SetAxisRange(0,2,"X");
         hxjg[kPAMC][1][ipt]->Draw();
+	
+	handsomeTH1(hxjg[kPAMC][1][ipt],kRed);
+	//	hxjg[kPAMC][1][ipt]->Scale(1./rjg[kPAMC][1]->GetBinContent(ipt)); // rjg normalization
 
-        // draw pbpb                                                                                                                                    
-        // for ( int icent = 1; icent <= nCentBinHI ; icent++ ) {
-        //     handsomeTH1(hxjg[kHIMC][icent][ipt],kRed);
-	//     hxjg[kHIMC][icent][ipt]->Scale(1./rjg[kHIMC][icent]->GetBinContent(ipt)); // rjg normalization                                         
-        //     if ( icent == 2 ) hxjg[kHIMC][icent][ipt]->SetMarkerStyle(24);
-	//     //        if ( icent == 1 )       hxjg[kHIMC][icent][ipt]->Draw("same");                                                                    
-        //     if ( icent == 1 ) hxjg[kHIMC][icent][ipt]->Draw("same");
 
-        // }
+	hxjg[kPAMC][1][ipt]->Draw("same");
 	
         double dx1=0.15;
         if ( ipt == nPtBin ) 
@@ -311,6 +272,9 @@ void drawPtDependencePAMC( bool saveFigures=true) {
     meanXjg[kPAMC][1]->SetAxisRange(0.6,1.2,"Y");
     meanXjg[kPAMC][1]->Draw();
 
+    handsomeTH1(meanXjg[kPAMC][1],kRed);
+    meanXjg[kPAMC][1]->Draw("same");
+    
     l1->Draw();
     if (saveFigures)   c31->SaveAs("figures/pT_dependence_xjg_pA_figure2.pdf");
     if (saveFigures)   c31->SaveAs("figures/pT_dependence_xjg_pA_figure2.gif");
@@ -323,6 +287,9 @@ void drawPtDependencePAMC( bool saveFigures=true) {
     //  rjg[kPAMC][1]->SetAxisRange(-2,2,"X");
     rjg[kPAMC][1]->SetAxisRange(0.0,1.1,"Y");
     rjg[kPAMC][1]->Draw();
+
+    handsomeTH1(rjg[kPAMC][1],kRed);
+    rjg[kPAMC][1]->Draw("same");
 
     
     l1->Draw();
@@ -353,7 +320,11 @@ void drawPtDependencePAMC( bool saveFigures=true) {
       hxjg[kPAMC][1][ipt]->SetName(Form("dNdXjg_ppb_ptBin%d",ipt));
       hxjg[kPAMC][1][ipt]->Write();
 
+      hDphi[kPAMC][1][ipt]->SetName(Form("dNdphi_ppb_ptBin%d",ipt));
+      hDphi[kPAMC][1][ipt]->Write();
+
     }
+
+    fResults->Close();
     
 }
-
