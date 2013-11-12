@@ -52,7 +52,7 @@ void gammaJetHistProducer_photonEnergySys(sampleType collision = kPADATA, float 
   TString stringSampleType = getSampleName(collision); "";
   
   TDatime* date = new TDatime();
-  TString  outName=  Form("photonTrackCorr_%s_output_photonPtThr%d_to_%d_jetPtThr%d_%d_photonEnergyScaledBy%.3f.root",stringSampleType.Data(),(int)photonPtThr, (int)photonPtThrUp, (int)jetPtThr,  date->GetDate(), (float)scaleFactor);
+  TString  outName=  Form("photonEnergyScale%.3f/photonTrackCorr_%s_output_photonPtThr%d_to_%d_jetPtThr%d_%d.root", (float)scaleFactor, stringSampleType.Data(),(int)photonPtThr, (int)photonPtThrUp, (int)jetPtThr,  date->GetDate() );
   delete date;
   
   int lowerCent(0),  upperCent(0); 
@@ -267,7 +267,7 @@ void gammaJetHistProducer_photonEnergySys(sampleType collision = kPADATA, float 
 		  collision, varJetDphi, jetCut, jetWeight,
 		  phoCandCut, phoDecayCut,  hJetDphi, outName);
   
-  TH1D* hJetPt = new TH1D(Form("jetPt_icent%d",icent),";Jet p_{T} (GeV) ;dN/dp_{T} (GeV^{-1})",280, 20,300);
+  TH1D* hJetPt = new TH1D(Form("jetPt_icent%d",icent),";Jet p_{T} (GeV) ;dN/dp_{T} (GeV^{-1})",28, 20,300);
   corrFunctionTrk* cJetPt = new corrFunctionTrk();
   TString varJetPt         = Form("pt");
   
@@ -283,7 +283,7 @@ void gammaJetHistProducer_photonEnergySys(sampleType collision = kPADATA, float 
                   collision, varJetPt, jetCutDphi, jetWeight,
                   phoCandCut, phoDecayCut,  hJetPtForIaa, outName);
   
-  TH1D* hJetXjg = new TH1D(Form("xjg_icent%d",icent),";p_{T}^{Jet}/p_{T}^{#gamma}  ; ",400,0,5);
+  TH1D* hJetXjg = new TH1D(Form("xjg_icent%d",icent),";p_{T}^{Jet}/p_{T}^{#gamma}  ; ",16,0,2);
   corrFunctionTrk* cJetXjg = new corrFunctionTrk();
   TString varJetXjg         = Form("pt/(photonEt*(1+%f))",(float)scaleFactor );
   
