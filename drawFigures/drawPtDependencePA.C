@@ -3,21 +3,21 @@
 #include <TRandom3.h>
 #include <time.h>
 
-void drawPtDependencePA( bool saveFigures=true) {
-
-    const int nPtBin = 4;
-    double ptBin[nPtBin+1] = {40, 50,60,80,9999}; 
-    double ptBinPaDraw[nPtBin+1] = { 40.5 ,49.5, 58.5,  76.5,  123. } ;
+void drawPtDependencePA(TString dirName="nominal", int prodDate=20131021, int jetPtCut=30) {
+  bool saveFigures=true;
+  
+  const int nPtBin = 4;
+  double ptBin[nPtBin+1] = {40, 50,60,80,9999}; 
+  double ptBinPaDraw[nPtBin+1] = { 40.5 ,49.5, 58.5,  76.5,  123. } ;
     // double AvePtBin[nPtBin+1] = { 45, 54.1479, 67.4204, 99.6956, 9999};
-    
-    const int nCentBinHI = 2;
-    const int centBinHI[nCentBinHI +1] = {-1, 10030, 13099}; 
+  
+  const int nCentBinHI = 2;
+  const int centBinHI[nCentBinHI +1] = {-1, 10030, 13099}; 
 
     TH1D* hxjg[7][10][6]; // [Collision][centrality][pt]
     TH1D* hJetPt[7][10][6]; // [Collision][centrality][pt]
     TH1D* hJetPtIaaBin[7][10][6]; // [Collision][centrality][pt]                                                                     
     TH1D* hDphi[7][10][6]; // [Collision][centrality][pt]
-    //TH1D* hEta[7][10][6]; // [Collision][centrality][pt]
     TH1D* meanXjg[7][10];      // [Collision][centrality]
     TH1D* meanJetPt[7][10];      // [Collisi on][centrality]
 
@@ -33,8 +33,7 @@ void drawPtDependencePA( bool saveFigures=true) {
                 hJetPt[icoll][icent][ipt] = NULL;
                 hJetPtIaaBin[icoll][icent][ipt] = NULL;
 		hDphi[icoll][icent][ipt] = NULL;
-                //hEta[icoll][icent][ipt] = NULL;
-            }
+	    }
 
         }
     }
@@ -43,7 +42,8 @@ void drawPtDependencePA( bool saveFigures=true) {
     for (int ipt=1 ; ipt<=nPtBin ; ipt++) {
         for (int icoll=0 ; icoll<6 ; icoll++) {
 	  TString sampleName = getSampleName( icoll ) ;
-	   char* fname =  Form("ffFiles/ak5Cone/photonTrackCorr_%s_output_photonPtThr%d_to_%d_jetPtThr30_20131015.root",sampleName.Data(), (int)ptBin[ipt-1], (int)ptBin[ipt]);
+	  char* fname =  Form("ffFiles/%s/photonTrackCorr_%s_output_photonPtThr%d_to_%d_jetPtThr%d_%d.root",dirName.Data(), sampleName.Data(), (int)ptBin[ipt-1], (int)ptBin[ipt], (int)jetPtCut, prodDate);
+	
 	  histFile[icoll][ipt] = new TFile(fname) ;
 	  cout << " Reading file : " << fname << endl;
 
@@ -179,18 +179,14 @@ void drawPtDependencePA( bool saveFigures=true) {
         handsomeTH1(hTempPt,0);
         hTempPt->DrawCopy();
 	
-	hJetPt[kPAMC][1][ipt]->Scale(1./rjg[kPAMC][1]->GetBinContent(ipt)); // rjg normalization                      
-	hJetPt[kPAMC][1][ipt]->Rebin(10);
-	hJetPt[kPAMC][1][ipt]->Scale(1./10);
-
+	//	hJetPt[kPAMC][1][ipt]->Scale(1./rjg[kPAMC][1]->GetBinContent(ipt)); // rjg normalization                      
+       
         handsomeTH1(hJetPt[kPAMC][1][ipt], 1);
         hJetPt[kPAMC][1][ipt]->SetMarkerStyle(24);
 	hJetPt[kPAMC][1][ipt]->Draw("same");
 
 	handsomeTH1(hJetPt[kPADATA][1][ipt],kRed);
-	hJetPt[kPADATA][1][ipt]->Scale(1./rjg[kPADATA][1]->GetBinContent(ipt));
-	hJetPt[kPADATA][1][ipt]->Rebin(10);
-	hJetPt[kPADATA][1][ipt]->Scale(1./10);
+	//	hJetPt[kPADATA][1][ipt]->Scale(1./rjg[kPADATA][1]->GetBinContent(ipt));
 
 	hJetPt[kPADATA][1][ipt]->Draw("same");
 	
@@ -242,19 +238,15 @@ void drawPtDependencePA( bool saveFigures=true) {
         hxjg[kPAMC][1][ipt]->SetYTitle("#frac{dN}{dp_{T}} #frac{1}{N}");
         hxjg[kPAMC][1][ipt]->SetMarkerStyle(24);
 
-	hxjg[kPAMC][1][ipt]->Scale(1./rjg[kPAMC][1]->GetBinContent(ipt)); // rjg normalization                                         
+	//	hxjg[kPAMC][1][ipt]->Scale(1./rjg[kPAMC][1]->GetBinContent(ipt)); // rjg normalization                                         
 
-	hxjg[kPAMC][1][ipt]->Rebin(10);
-	hxjg[kPAMC][1][ipt]->Scale(1./10);
 	
         hxjg[kPAMC][1][ipt]->SetAxisRange(0,2,"X");
         hxjg[kPAMC][1][ipt]->Draw();
 	
 	handsomeTH1(hxjg[kPADATA][1][ipt],kRed);
-	hxjg[kPADATA][1][ipt]->Scale(1./rjg[kPADATA][1]->GetBinContent(ipt)); // rjg normalization
+	//	hxjg[kPADATA][1][ipt]->Scale(1./rjg[kPADATA][1]->GetBinContent(ipt)); // rjg normalization
 
-	hxjg[kPADATA][1][ipt]->Rebin(10);
-	hxjg[kPADATA][1][ipt]->Scale(1./10);
 
 	hxjg[kPADATA][1][ipt]->Draw("same");
 	
@@ -329,14 +321,11 @@ void drawPtDependencePA( bool saveFigures=true) {
       hxjg[kPADATA][1][ipt]->SetName(Form("dNdXjg_ppb_ptBin%d",ipt));
       hxjg[kPADATA][1][ipt]->Write();
 
+      hDphi[kPADATA][1][ipt]->SetName(Form("dNdphi_ppb_ptBin%d",ipt));
+      hDphi[kPADATA][1][ipt]->Write();
+
     }
 
     fResults->Close();
     
-}
-
-int main()
-{
-  drawPtDependencePA(false);
-  return 0;
 }

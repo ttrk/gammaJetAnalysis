@@ -3,7 +3,7 @@
 #include <TRandom3.h>
 #include <time.h>
 
-void drawPtDependence( bool saveFigures=true) {
+void drawPtDependence(TString dirName="nominal", int prodDate=20131021, int jetPtCut=30) {
   TH1::SetDefaultSumw2();
 
   const int nPtBin = 4;
@@ -44,7 +44,8 @@ void drawPtDependence( bool saveFigures=true) {
   for (int ipt=1 ; ipt<=nPtBin ; ipt++) {
     for (int icoll=0 ; icoll<6 ; icoll++) {
       TString sampleName = getSampleName( icoll ) ;
-      char* fname =  Form("ffFiles/photonTrackCorr_%s_output_photonPtThr%d_to_%d_jetPtThr30_20131010.root",sampleName.Data(), (int)ptBin[ipt-1], (int)ptBin[ipt]);
+      char* fname =  Form("ffFiles/%s/photonTrackCorr_%s_output_photonPtThr%d_to_%d_jetPtThr%d_%d.root",dirName.Data(), sampleName.Data(), (int)ptBin[ipt-1], (int)ptBin[ipt], (int)jetPtCut, prodDate);
+
       histFile[icoll][ipt] = new TFile(fname) ;
       cout << " Reading file : " << fname << endl;
 
@@ -148,8 +149,8 @@ void drawPtDependence( bool saveFigures=true) {
   l1->AddEntry(hDphi[kHIDATA][1][1],"PbPb 0-30%","p");
   l1->Draw();
 
-  if (saveFigures) c1->SaveAs("figures/pT_dependence_dphi_pp_pbpb_figure1.pdf");
-  if (saveFigures) c1->SaveAs("figures/pT_dependence_dphi_pp_pbpb_figure1.gif");
+  // c1->SaveAs("figures/pT_dependence_dphi_pp_pbpb_figure1.pdf");
+  // c1->SaveAs("figures/pT_dependence_dphi_pp_pbpb_figure1.gif");
 
 
 
@@ -172,21 +173,19 @@ void drawPtDependence( bool saveFigures=true) {
     handsomeTH1(hTempPt,0);
     hTempPt->DrawCopy();
 	
-    hJetPt[kPPDATA][7][ipt]->Scale(1./rjg[kPPDATA][7]->GetBinContent(ipt)); // rjg normalization                      
+    //    hJetPt[kPPDATA][7][ipt]->Scale(1./rjg[kPPDATA][7]->GetBinContent(ipt)); // rjg normalization                      
 		
 
     handsomeTH1(hJetPt[kPPDATA][7][ipt], 1);
     hJetPt[kPPDATA][7][ipt]->SetMarkerStyle(24);
-    hJetPt[kPPDATA][7][ipt]->Rebin(10);
-    hJetPt[kPPDATA][7][ipt]->Scale(1./10);
     hJetPt[kPPDATA][7][ipt]->Draw("same");
 
     // draw pbpb 
     for ( int icent = 1; icent <= nCentBinHI ; icent++ ) {
       handsomeTH1(hJetPt[kHIDATA][icent][ipt],kRed);
-      hJetPt[kHIDATA][icent][ipt]->Scale(1./rjg[kHIDATA][icent]->GetBinContent(ipt));  // rjg normalization
-      hJetPt[kHIDATA][icent][ipt]->Rebin(10);
-      hJetPt[kHIDATA][icent][ipt]->Scale(1/10.);
+      //      hJetPt[kHIDATA][icent][ipt]->Scale(1./rjg[kHIDATA][icent]->GetBinContent(ipt));  // rjg normalization
+      //      hJetPt[kHIDATA][icent][ipt]->Rebin(10);
+      //     hJetPt[kHIDATA][icent][ipt]->Scale(1/10.);
       if ( icent == 2 ) hJetPt[kHIDATA][icent][ipt]->SetMarkerStyle(24);
       if ( icent == 2 ) hJetPt[kHIDATA][icent][ipt]->Draw("same");
       if ( icent == 1 ) hJetPt[kHIDATA][icent][ipt]->Draw("same");
@@ -203,8 +202,8 @@ void drawPtDependence( bool saveFigures=true) {
   c2->cd(1);
   l1->Draw();  
 
-  if (saveFigures)   c2->SaveAs("figures/pT_dependence_jetPt_pp_pbpb_figure1.pdf");
-  if (saveFigures)   c2->SaveAs("figures/pT_dependence_jetPt_pp_pbpb_figure1.gif");
+  c2->SaveAs("figures/pT_dependence_jetPt_pp_pbpb_figure1.pdf");
+  c2->SaveAs("figures/pT_dependence_jetPt_pp_pbpb_figure1.gif");
 
   TLegend *l2 = new TLegend(0.2116935,0.7012712,0.6149194,0.904661,NULL,"brNDC");
   easyLeg(l2,"2.76TeV");
@@ -227,8 +226,8 @@ void drawPtDependence( bool saveFigures=true) {
     meanJetPt[kHIDATA][icent]->Draw("same");
   }
   l1 ->Draw();
-  if (saveFigures)   c21->SaveAs("figures/pT_dependence_jetPt_pp_pbpb_figure2.pdf");
-  if (saveFigures)   c21->SaveAs("figures/pT_dependence_jetPt_pp_pbpb_figure2.gif");
+  c21->SaveAs("figures/pT_dependence_jetPt_pp_pbpb_figure2.pdf");
+  c21->SaveAs("figures/pT_dependence_jetPt_pp_pbpb_figure2.gif");
 
   TCanvas* c3 = new TCanvas("c3","",1200,350);
   makeMultiPanelCanvas(c3,nPtBin,1,0.0,0.0,0.2,0.15,0.02);
@@ -242,10 +241,10 @@ void drawPtDependence( bool saveFigures=true) {
     hxjg[kPPDATA][7][ipt]->SetYTitle("#frac{dN}{dp_{T}} #frac{1}{N}");
     hxjg[kPPDATA][7][ipt]->SetMarkerStyle(24);
 
-    hxjg[kPPDATA][7][ipt]->Scale(1./rjg[kPPDATA][7]->GetBinContent(ipt)); // rjg normalization 
+    //    hxjg[kPPDATA][7][ipt]->Scale(1./rjg[kPPDATA][7]->GetBinContent(ipt)); // rjg normalization 
 
-    hxjg[kPPDATA][7][ipt]->Rebin(10);
-    hxjg[kPPDATA][7][ipt]->Scale(1./10);
+    //    hxjg[kPPDATA][7][ipt]->Rebin(10);
+    //    hxjg[kPPDATA][7][ipt]->Scale(1./10);
     hxjg[kPPDATA][7][ipt]->SetAxisRange(0,2.5,"X");
     hxjg[kPPDATA][7][ipt]->SetAxisRange(0,3,"Y");
     hxjg[kPPDATA][7][ipt]->Draw();
@@ -253,9 +252,9 @@ void drawPtDependence( bool saveFigures=true) {
     // draw pbpb
     for ( int icent = 1; icent <= nCentBinHI ; icent++ ) {
       handsomeTH1(hxjg[kHIDATA][icent][ipt],kRed);
-      hxjg[kHIDATA][icent][ipt]->Scale(1./rjg[kHIDATA][icent]->GetBinContent(ipt)); // rjg normalization    
-      hxjg[kHIDATA][icent][ipt]->Rebin(10);
-      hxjg[kHIDATA][icent][ipt]->Scale(1./10);
+      //      hxjg[kHIDATA][icent][ipt]->Scale(1./rjg[kHIDATA][icent]->GetBinContent(ipt)); // rjg normalization    
+      //      hxjg[kHIDATA][icent][ipt]->Rebin(10);
+      //   hxjg[kHIDATA][icent][ipt]->Scale(1./10);
       if ( icent == 2 ) hxjg[kHIDATA][icent][ipt]->SetMarkerStyle(24);
       if ( icent == 2 ) hxjg[kHIDATA][icent][ipt]->Draw("same");
       if ( icent == 1 ) hxjg[kHIDATA][icent][ipt]->Draw("same");
@@ -273,8 +272,8 @@ void drawPtDependence( bool saveFigures=true) {
   c3->cd(1);
   l1->Draw();  
 
-  if (saveFigures)   c3->SaveAs("figures/pT_dependence_xjg_pp_pbpb_figure1.pdf");
-  if (saveFigures)   c3->SaveAs("figures/pT_dependence_xjg_pp_pbpb_figure1.gif");
+  c3->SaveAs("figures/pT_dependence_xjg_pp_pbpb_figure1.pdf");
+  c3->SaveAs("figures/pT_dependence_xjg_pp_pbpb_figure1.gif");
 
   TCanvas* c31 = new TCanvas("c31","",500,500);
   handsomeTH1(meanXjg[kPPDATA][7], 1);
@@ -291,8 +290,8 @@ void drawPtDependence( bool saveFigures=true) {
     meanXjg[kHIDATA][icent]->Draw("same");
   }
   l1->Draw();
-  if (saveFigures)   c31->SaveAs("figures/pT_dependence_xjg_pp_pbpb_figure1.pdf");
-  if (saveFigures)   c31->SaveAs("figures/pT_dependence_xjg_pp_pbpb_figure1.gif");
+     c31->SaveAs("figures/pT_dependence_xjg_pp_pbpb_figure1.pdf");
+     c31->SaveAs("figures/pT_dependence_xjg_pp_pbpb_figure1.gif");
     
 
   TCanvas* c_rjg = new TCanvas("c_rjg","",500,500);
@@ -310,8 +309,8 @@ void drawPtDependence( bool saveFigures=true) {
     rjg[kHIDATA][icent]->Draw("same");
   }
   l1->Draw();
-  if (saveFigures)   c_rjg->SaveAs("figures/pT_dependence_rjg_pp_pbpb_figure1.pdf");
-  if (saveFigures)   c_rjg->SaveAs("figures/pT_dependence_rjg_pp_pbpb_figure1.gif");
+     c_rjg->SaveAs("figures/pT_dependence_rjg_pp_pbpb_figure1.pdf");
+     c_rjg->SaveAs("figures/pT_dependence_rjg_pp_pbpb_figure1.gif");
 
 
     
@@ -335,13 +334,16 @@ void drawPtDependence( bool saveFigures=true) {
     hJetPt[kPPDATA][7][ipt]->Write();
     hJetPtIaaBin[kPPDATA][7][ipt]->SetName(Form("dNdJetPt_IaaBin_pp_ptBin%d",ipt));
     hJetPtIaaBin[kPPDATA][7][ipt]->Write();
-      
+    
     hxjg[kPPDATA][7][ipt]->SetName(Form("dNdXjg_pp_ptBin%d",ipt));
     hxjg[kPPDATA][7][ipt]->Write();
-      
-      
-  }
     
+    hDphi[kPPDATA][7][ipt]->SetName(Form("dNdphi_pp_ptBin%d",ipt));
+    hDphi[kPPDATA][7][ipt]->Write();	
+    
+    
+  }
+  
 
   // PbPb 
     
@@ -349,14 +351,18 @@ void drawPtDependence( bool saveFigures=true) {
     for ( int ipt = 1 ; ipt<=nPtBin  ; ipt++) {
       hJetPt[kHIDATA][icent][ipt]->SetName(Form("dNdJetPt_pbpb_centralityBin%d_ptBin%d",icent,ipt));
       hJetPt[kHIDATA][icent][ipt]->Write();	
+
+      hDphi[kHIDATA][icent][ipt]->SetName(Form("dNdphi_pbpb_centralityBin%d_ptBin%d",icent,ipt));
+      hDphi[kHIDATA][icent][ipt]->Write();	
+
       hJetPtIaaBin[kHIDATA][icent][ipt]->SetName(Form("dNdJetPt_IaaBin_pbpb_centralityBin%d_ptBin%d",icent,ipt));
       hJetPtIaaBin[kHIDATA][icent][ipt]->Write();	
-  
+      
       hxjg[kHIDATA][icent][ipt]->SetName(Form("dNdXjg_pbpb_centralityBin%d_ptBin%d",icent,ipt));
       hxjg[kHIDATA][icent][ipt]->Write();
-	
+
     }
-      
+    
     meanJetPt[kHIDATA][icent]->SetName(Form("meanJetPt_pbpb_centralityBin%d",icent));
     meanJetPt[kHIDATA][icent]->Write();
     meanXjg[kHIDATA][icent]->SetName(Form("meanXjg_pbpb_centralityBin%d",icent));
