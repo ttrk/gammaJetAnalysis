@@ -106,7 +106,7 @@ void gammaJetHistProducer_jetEnergyScaledPlus2percent(sampleType collision = kPA
   
   
   TString fname = "";
-  if ( collision == kHIDATA)      fname = fnameHIDATA;//_Plus2percentScaled;
+  if ( collision == kHIDATA)      fname = fnameHIDATA_Plus2percentScaled;
   else if ( collision == kPADATA) fname = fnamePADATA_Plus2percentScaled;
   else if ( collision == kPPDATA) {
     if ( icent == 7 ) fname = fnamePPDATA_Plus2percentScaled;
