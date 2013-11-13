@@ -75,7 +75,7 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
   c->InitTree();
 
 
-  // vertex and centrality reweighting
+  // vertex and centrality vtxCentWeighting
   TFile* fWeight = new TFile("vertexReweightingHistogram_pthatweighted.root");
 
   TH1D* hWeight_vtx_data_pp = (TH1D*)fWeight->Get("vertexHistoData_pp");
@@ -256,7 +256,7 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
   TTree *tgj;
   tgj = new TTree("tgj","gamma jet tree");
   tgj->SetMaxTreeSize(MAXTREESIZE);
-  tgj->Branch("evt",&evt.run,"run/I:evt:cBin:pBin:trig/O:offlSel:noiseFilt:anaEvtSel:vz/F:reweight/F:hf4Pos:hf4Neg:hf4Sum");
+  tgj->Branch("evt",&evt.run,"run/I:evt:cBin:pBin:trig/O:offlSel:noiseFilt:anaEvtSel:vz/F:vtxCentWeight/F:hf4Pos:hf4Neg:hf4Sum:ptHat:ptHatWeight");
   tgj->Branch("lpho",&gj.photonEt,"photonEt/F:photonRawEt:photonEta:photonPhi:hovere:r9:sigmaIetaIeta:sumIso:genIso:genPhotonEt:genMomId/I:lJetPt/F:lJetEta:lJetPhi:lJetDphi:lJetSubid/I");
   tgj->Branch("isolation",&isol.cc1,"cc1:cc2:cc3:cc4:cc5:cr1:cr2:cr3:cr4:cr5:ct1PtCut20:ct2PtCut20:ct3PtCut20:ct4PtCut20:ct5PtCut20:ecalIso:hcalIso:trackIso");  // ecalIso,hcalIso,trackIso are the pp style isolation
 
@@ -325,7 +325,7 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
 
  
     // Reweight for vertex and centrality of MC 
-    evt.reweight = 1;
+    evt.vtxCentWeight = 1;
     double wVtx=1;
     double wCent=1;
     if (colli ==kHIMC) {
@@ -341,14 +341,34 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
       int vBin =  hWeight_vtx_data_ppb->FindBin(evt.vz);
       wVtx =   hWeight_vtx_data_ppb->GetBinContent(vBin) / hWeight_vtx_mc_ppb->GetBinContent(vBin) ;
     }
-    evt.reweight = wVtx * wCent;
+    evt.vtxCentWeight = wVtx * wCent;
     //    cout << " vz = " << evt.vz << "     centrality = " << evt.cBin << endl;
     //   cout <<" reweight = " << evt.reweight << endl;
     
     /// correct the photon energy and make order
       
+    evt.ptHat = -1;
+    evt.ptHatWeight = 1;
+    if (colli ==kHIMC) {
+      evt.ptHat = c->photon.ptHat; 
+      
+      if ( evt.ptHat < 50  )       evt.ptHatWeight = 0.915112/135775.;
+      else if ( evt.ptHat < 80  )       evt.ptHatWeight = 0.0674849/162388.;
+      else  if ( evt.ptHat < 120  )       evt.ptHatWeight = 0.0153194/169318.;
+      else if ( evt.ptHat < 170  )       evt.ptHatWeight = 0.00163618/167547.;
+      else   evt.ptHatWeight = 0.000447474/212180.;
+      
+      /*      30 - 50GeV : 0.915112/135775.
+	      50 - 80GeV : 0.0674849/162388.
+	      80 - 120GeV : 0.0153194/169318.
+	      120 - 170GeV : 0.00163618/167547.
+	      170GeV : 0.000447474/212180.
+      */
+    }
+    
+    
     for (int j=0;j< c->photon.nPhotons;j++) {
-
+      
     if (  ( c->photon.pt[j] > preCutPhotonEt ) && ( fabs( c->photon.eta[j] ) < cutphotonEta ) ) {
       newPt[j] = c->getCorrEt(j);
     }
