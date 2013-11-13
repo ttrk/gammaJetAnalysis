@@ -76,7 +76,7 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
 
 
   // vertex and centrality vtxCentWeighting
-  TFile* fWeight = new TFile("vertexReweightingHistogram_pthatweighted.root");
+  TFile* fWeight = new TFile("../vertexReweightingHistogram_pthatweighted.root");
 
   TH1D* hWeight_vtx_data_pp = (TH1D*)fWeight->Get("vertexHistoData_pp");
   TH1D* hWeight_vtx_mc_pp = (TH1D*)fWeight->Get("vertexHistoMC_pp");
