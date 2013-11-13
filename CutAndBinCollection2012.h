@@ -384,8 +384,8 @@ class EvtSel {
  EvtSel() :
   run(0),   evt(0),    cBin(0),  pBin(0), 
     trig(0),  offlSel(0),
-    noiseFilt(0),  anaEvtSel(0),  vz(0),  reweight(0),
-    hf4Pos(-1), hf4Neg(-1), hf4Sum(-1) 
+    noiseFilt(0),  anaEvtSel(0),  vz(0),  vtxCentWeight(0),
+   hf4Pos(-1), hf4Neg(-1), hf4Sum(-1) , ptHat(-1), ptHatWeight(1)
     {}
   
   int run;
@@ -397,17 +397,19 @@ class EvtSel {
   bool noiseFilt;
   bool anaEvtSel;
   float vz;
-  float reweight;
+  float vtxCentWeight;
   float hf4Pos;
   float hf4Neg;
   float hf4Sum;
+  float ptHat;
+  float ptHatWeight;
 
-  
   void clear() {
     run = -99999;   evt = -99999;    cBin = -99999;  pBin = -99999;
     trig = -99999;  offlSel = -99999;
-    noiseFilt = -99999;  anaEvtSel = -99999;  vz = -99999;  reweight = -99999;
-    hf4Pos = -1;  hf4Neg = -1 ; hf4Sum = -1 ;
+    noiseFilt = -99999;  anaEvtSel = -99999;  vz = -99999;  vtxCentWeight = -99999;
+    hf4Pos = -1;  hf4Neg = -1 ; hf4Sum = -1 ; 
+    ptHat = -1 ; ptHatWeight = 1;
   }
   
   
