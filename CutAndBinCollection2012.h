@@ -30,14 +30,14 @@ double a1, a2, a3, a4, a5, a6;
 #define PI 3.141592653589
 
 
-// Updated on Oct 20th.   Jet energy residual correction is done by default. 
+// Updated on Oct 20th.   Jet energy residual correction is done by default.
 ///////////// pp Data
 
-TString fnamePPDATA                  =   "yskimmedFiles/yskim_pp_photonSKimForest_v85_jetNoSmearing.root"; 
+TString fnamePPDATA                  =   "yskimmedFiles/yskim_pp_photonSKimForest_v85_jetNoSmearing.root";
 //no Residual correction
 TString fnamePPDATA_noJetResCorr    = "yskimmedFiles/yskim_pp_photonSKimForest_v85_jetNoSmearing_noJetResCorr.root";
 /// jet energy smeared  // Now these are smeared and thn corr by default
-TString fnamePPDATA0010                  =   "yskimmedFiles/yskim_pp_photonSKimForest_v85_jetSmearingCent0010.root"; 
+TString fnamePPDATA0010                  =   "yskimmedFiles/yskim_pp_photonSKimForest_v85_jetSmearingCent0010.root";
 TString fnamePPDATA1030                  =   "yskimmedFiles/yskim_pp_photonSKimForest_v85_jetSmearingCent1030.root";
 TString fnamePPDATA3050                  =   "yskimmedFiles/yskim_pp_photonSKimForest_v85_jetSmearingCent3050.root";
 TString fnamePPDATA5099                 =   "yskimmedFiles/yskim_pp_photonSKimForest_v85_jetSmearingCent5099.root";
@@ -90,17 +90,23 @@ TString fnamePPMC_AllQcdPho120to9999_smeared5099 = "yskimmedFiles/yskim_merged_a
 double c_pp = 0.056762;
 double s_pp = 0.808114;
 double n_pp = 0.000244992;
-// 0-10%,  10-30%,  30-50%,  50-100%,   0-30%,  30-100% 
-double c_pbpb[] = {0.0560882, 0.0256674, 0.00644361, 0.0170442, 0.0419, 0.0101  };
-double s_pbpb[] = {1.47838, 1.40659, 1.31446, 1.22837, 1.441,  1.294, };
-double n_pbpb[] = {0.115188, -0.0341018, -0.0721935, 0.0511498, 0.0807,  0.0676};
+// 0-10%,  10-30%,  30-50%,  50-100%,   0-30%,  30-100%
+// old ones
+/* double c_pbpb[] = {0.0560882, 0.0256674, 0.00644361, 0.0170442, 0.0419, 0.0101  }; */
+/* double s_pbpb[] = {1.47838, 1.40659, 1.31446, 1.22837, 1.441,  1.294, }; */
+/* double n_pbpb[] = {0.115188, -0.0341018, -0.0721935, 0.0511498, 0.0807,  0.0676}; */
+
+// new ones, from official MC
+// currently 0-30% and 30-100% are weighted averages of other 4 bins - should be corrected
+double c_pbpb[] = {0.0363269, 0.0147739, 0.0264179, 0.0608379, 0.021958233333333334, 0.05100361428571429 };
+double s_pbpb[] = {1.3291, 1.33037, 1.27536, 0.911933, 1.3299466666666668, 1.0157692857142857 };
+double n_pbpb[] = {6.49405, 5.00827, 2.70035, 5.70016, 5.5035300000000005, 4.843071428571429};
 
 // pp MC phi smearing factors
-
 double cphi_pp = 0.024497;
 double sphi_pp = -0.170472;
 double nphi_pp = -0.000188492;
-// 0-10%,  10-30%,  30-50%,  50-100%,   0-30%,  30-100% 
+// 0-10%,  10-30%,  30-50%,  50-100%,   0-30%,  30-100%
 double cphi_pbpb[] = {0.0216325, 0.0168838,  -0.0160583,   -0.0271079,   0.0215035,   -0.0223996};
 double sphi_pbpb[] = {0.342842,  0.328665,   -0.301696,    -0.227269,    0.32505,     -0.26666};
 double nphi_pbpb[] = {0.0002195, 3.79342e-05, 3.46104e-06, -1.51886e-06, 9.56424e-05 , 2.77627e-06};
@@ -124,10 +130,10 @@ double wPPMC_emDijet80to120        = 17265./121988.;
 double wPPMC_emDijet120to9999      = 4284./130444.;
 
 
-///////////// pA Data  // File name checked on Oct 20th 
+///////////// pA Data  // File name checked on Oct 20th
 TString fnamePADATA                  = "yskimmedFiles/yskim_pA_photonSkimForest_v85_HLT_PAPhoton30_NoCaloIdVL_v1_highPtPhoton40.root";
 TString fnamePADATA_noJetResCorr     = "yskimmedFiles/yskim_pA_photonSkimForest_v85_HLT_PAPhoton30_NoCaloIdVL_v1_highPtPhoton40_noJetResCorr.root";
-//            pA MC   // File name checked on Oct 20th 
+//            pA MC   // File name checked on Oct 20th
 TString fnamePAMC_AllQcdPho30to50    = "yskimmedFiles/yskim_PA2013_pyquen_allQCDPhoton30to50_forestv85.root";
 TString fnamePAMC_AllQcdPho50to80    = "yskimmedFiles/yskim_PA2013_pyquen_allQCDPhoton50to80_forestv85.root";
 TString fnamePAMC_AllQcdPho80to120   = "yskimmedFiles/yskim_PA2013_pyquen_allQCDPhoton80to120_forestv85.root";
@@ -138,9 +144,9 @@ TString fnamePAMC_AllQcdPho50to80_noJetResCorr    = "yskimmedFiles/yskim_PA2013_
 TString fnamePAMC_AllQcdPho80to120_noJetResCorr   = "yskimmedFiles/yskim_PA2013_pyquen_allQCDPhoton80to120_forestv85_noJetResCorr.root";
 TString fnamePAMC_AllQcdPho120to9999_noJetResCorr = "yskimmedFiles/yskim_PA2013_pyquen_allQCDPhoton120to9999_forestv85_noJetResCorr.root";
 
-// Not important  
+// Not important
 TString fnamePADATA_Cone05                  = "yskimmedFiles/yskim_pA_photonSkimForest_v85_HLT_PAPhoton30_NoCaloIdVL_v1_highPtPhoton40_akpu5.root";
-//            pA MC 
+//            pA MC
 TString fnamePAMC_AllQcdPho30to50_Cone05    = "yskimmedFiles/yskim_PA2013_pyquen_allQCDPhoton30to50_forestv85_akpu5.root";
 TString fnamePAMC_AllQcdPho50to80_Cone05    = "yskimmedFiles/yskim_PA2013_pyquen_allQCDPhoton50to80_forestv85_akpu5.root";
 TString fnamePAMC_AllQcdPho80to120_Cone05   = "yskimmedFiles/yskim_PA2013_pyquen_allQCDPhoton80to120_forestv85_akpu5.root";
@@ -153,10 +159,10 @@ double  wPAMC_AllQcdPho120to9999     = 4481. / 151511.;
 
 
 
-///////////// PbPb Data // File name checked on Oct 20th 
+///////////// PbPb Data // File name checked on Oct 20th
 TString fnameHIDATA                  = "yskimmedFiles/yskim_HiForestPhoton-v7-noDuplicate.root";
 TString fnameHIDATA_noJetResCorr= "yskimmedFiles/yskim_HiForestPhoton-v7-noDuplicate_noJetResCorr.root";
-// PbPb MC  // File name checked on Oct 20th 
+// PbPb MC  // File name checked on Oct 20th
 TString fnameHIMC_AllQcdPho30to50    =  "yskimmedFiles/yskim_qcdAllPhoton30to50_genPhotonPtCut40_allCent.root";
 TString fnameHIMC_AllQcdPho50to80    =  "yskimmedFiles/yskim_qcdAllPhoton50to80_genPhotonPtCut40_allCent.root";
 TString fnameHIMC_AllQcdPho80to9999  =  "yskimmedFiles/yskim_qcdAllPhoton80to9999_genPhotonPtCut40_allCent.root";
@@ -169,7 +175,7 @@ double  wHIMC_AllQcdPho80to9999       = 6462. / 58781.;
 TString fnameHIDATA_10percentSmeared  = "yskimmedFiles/yskim_HiForestPhoton-v7-noDuplicate_smearedBy10Flat.root"  ;
 TString fnamePADATA_10percentSmeared  = "yskimmedFiles/yskim_pA_photonSkimForest_v85_HLT_PAPhoton30_NoCaloIdVL_v1_highPtPhoton40_smearedBy10Flat.root";
 TString fnamePPDATA_10percentSmeared  = "yskimmedFiles/yskim_pp_photonSKimForest_v85_jetNoSmearing_smearedBy10Flat.root"; // no smearing means no relative jet energy smearing
-/////// Data with jet energy scaled by +2%  
+/////// Data with jet energy scaled by +2%
 //TString fnameHIDATA_Plus2percentScaled  = "yskimmedFiles/yskim_HiForestPhoton-v7-noDuplicate_jetScaleBy2percent.root";
 //TString fnamePADATA_Plus2percentScaled  = "yskimmedFiles/yskim_pA_photonSkimForest_v85_HLT_PAPhoton30_NoCaloIdVL_v1_highPtPhoton40_jetScaleBy2percent.root";
 //TString fnamePPDATA_Plus2percentScaled  = "yskimmedFiles/yskim_pp_photonSKimForest_v85_jetScaleBy2percent.root";
@@ -190,8 +196,8 @@ TString fnamePPDATA_noElectronRejection  = "yskimmedFiles/yskim_pp_photonSKimFor
 const float awayRange= PI * 7./8.;
 
 
-// DON'T FORGET TO APPLY HOE CUT SEPARATELY    
-// Convinient Output Classes                                                                                                                 
+// DON'T FORGET TO APPLY HOE CUT SEPARATELY
+// Convinient Output Classes
 
 // sample typle
 enum sampleType { kHIDATA, kHIMC, kPPDATA, kPPMC, kPADATA, kPAMC};
@@ -249,7 +255,7 @@ class Isolation{
   float cr1,cr2,cr3,cr4,cr5;
   float ct1PtCut20,ct2PtCut20,ct3PtCut20,ct4PtCut20,ct5PtCut20;
   float ecalIso,hcalIso,trackIso;
-  
+
   void Set(HiForest * c, int j) {    cc1=c->photon.cc1[j];
     cc2=c->photon.cc2[j];
     cc3=c->photon.cc3[j];
@@ -338,7 +344,7 @@ class DiJet {
     lJetRecoEoH(-99), slJetRecoEoH(-99),
     lJetGenEoH(-99), slJetGenEoH(-99),
     lJetFlav(-99),    slJetFlav(-99)
-    
+
 
     {}
     float pthat;
@@ -355,7 +361,7 @@ class DiJet {
     float lJetRecoEoH, slJetRecoEoH;
     float lJetGenEoH, slJetGenEoH;
     float lJetFlav,    slJetFlav;
-      
+
 
 
     void clear() {
@@ -367,13 +373,13 @@ class DiJet {
     lJetPtGM = -99; slJetPtGM = -99;
     lJetEtaGM = -99; slJetEtaGM = -99;
     lJetPhiGM = -99; slJetPhiGM = -99;
-    lJetChgSum = -99; slJetChgSum = -99; 
+    lJetChgSum = -99; slJetChgSum = -99;
     lJetPhoSum = -99; slJetPhoSum = -99;
     lJetNtrSum = -99; slJetNtrSum = -99;
     lJetRecoEoH = -99; slJetRecoEoH = -99;
     lJetGenEoH = -99; slJetGenEoH = -99;
-    lJetFlav      = -99; slJetFlav = -99;  
-    
+    lJetFlav      = -99; slJetFlav = -99;
+
     }
 };
 
@@ -382,12 +388,12 @@ class DiJet {
 class EvtSel {
  public:
  EvtSel() :
-  run(0),   evt(0),    cBin(0),  pBin(0), 
+  run(0),   evt(0),    cBin(0),  pBin(0),
     trig(0),  offlSel(0),
     noiseFilt(0),  anaEvtSel(0),  vz(0),  vtxCentWeight(0),
    hf4Pos(-1), hf4Neg(-1), hf4Sum(-1) , ptHat(-1), ptHatWeight(1)
     {}
-  
+
   int run;
   int evt;
   int cBin;
@@ -408,11 +414,11 @@ class EvtSel {
     run = -99999;   evt = -99999;    cBin = -99999;  pBin = -99999;
     trig = -99999;  offlSel = -99999;
     noiseFilt = -99999;  anaEvtSel = -99999;  vz = -99999;  vtxCentWeight = -99999;
-    hf4Pos = -1;  hf4Neg = -1 ; hf4Sum = -1 ; 
+    hf4Pos = -1;  hf4Neg = -1 ; hf4Sum = -1 ;
     ptHat = -1 ; ptHatWeight = 1;
   }
-  
-  
+
+
 };
 
 
@@ -453,7 +459,7 @@ TString swissCrx      = "(1 - (eRight+eLeft+eTop+eBottom)/eMax)";
 TCut hiSpikeCutMC     = Form("(  %s < 0.90 && sigmaIetaIeta>0.002 && sigmaIphiIphi>0.002)",swissCrx.Data());
 TCut ppSpikeCutMC     = Form("(  %s < 0.95 && sigmaIetaIeta>0.002 && sigmaIphiIphi>0.002)",swissCrx.Data());
 
-//TCut hiSpikeCutNoPhi  = Form("( ( %s < 0.90 && sigmaIetaIeta>0.002) ",swissCrx.Data());      
+//TCut hiSpikeCutNoPhi  = Form("( ( %s < 0.90 && sigmaIetaIeta>0.002) ",swissCrx.Data());
 
 //TCut hiSpikeCutNoPhi  = Form("( ( %s < 0.90 && sigmaIetaIeta>0.002) ",swissCrx.Data());
 
@@ -491,7 +497,7 @@ double cutjetEtaSkim = 3.0;
 
 double cuttrkPt =  10;
 double cuttrkEta  = 2.0;
-double drCutTJ = 0.3 ;  // cut for tracks in jets    
+double drCutTJ = 0.3 ;  // cut for tracks in jets
 
 
 int ycolor[9] =  {0,1,2,4,8,20,1,1,1};  // the for centrality bins...
@@ -505,7 +511,7 @@ const int theEvtPlNumber = 21;
 int nCentBinSkim = 40;
 
 int nCentBinSkimPA = 16;
-int getHfBin( float hf4Sum=-1 ) { 
+int getHfBin( float hf4Sum=-1 ) {
   if ( hf4Sum < -1 )   return -1;
   else if ( hf4Sum < 5 )   return 0;
   else if ( hf4Sum < 10)   return 1;
@@ -537,8 +543,8 @@ const int nCentBinPa = 1;
 double centBinPa[nCentBinPa+1] = {0,100};
 //double centBinPa[nCentBinPa+1] = {0,20,25,30,40,100};
 
-const int nPtBinPa = 4; 
-double ptBinPa[nPtBinPa+1]    = {40,50,60,80,9999}; 
+const int nPtBinPa = 4;
+double ptBinPa[nPtBinPa+1]    = {40,50,60,80,9999};
 double ptBinPaDraw[nPtBinPa+1]    = {45,55,70,100,200};
 
 
@@ -582,18 +588,18 @@ double getNoEmc (TString theFname="", TCut theCut="") {
 
 
 void setupMTU(multiTreeUtil* photon1=0 , sampleType collision = kHIDATA){  // obsolete subroutine
-  if ( collision == kHIDATA) 
+  if ( collision == kHIDATA)
     photon1->addFile(fnameHIDATA, "tgj","",1);
   else if ( collision == kPPDATA)
     photon1->addFile(fnamePPDATA, "tgj","",1);
-  
+
   photon1->AddFriend("yTrk=yTrack");
   photon1->AddFriend("yJet");
   photon1->AddFriend("mJet");
-  
+
   //  photon1->AddFriend("mTrk1");
   //  photon1->AddFriend("mTrk2");
-  
+
   if (collision == kHIMC)  {
     photon1->AddFriend("gp");
     photon1->AddFriend("mGp1");
@@ -602,7 +608,7 @@ void setupMTU(multiTreeUtil* photon1=0 , sampleType collision = kHIDATA){  // ob
 }
 
 void setupMTU_Pho(multiTreeUtil* photon1=0 , bool isMC=false) {
-  
+
   photon1->AddFriend("yTrk=yTrack");
   photon1->AddFriend("mTrk");
   photon1->AddFriend("yPhoton=yongsunPhotonTree");
@@ -626,32 +632,32 @@ class CutAndBinCollection
    CutAndBinCollection() {
    }
    ~CutAndBinCollection() {
-      
+
    }
-   //   float getHoECut( float percentBin=1, float et=30 ); 
+   //   float getHoECut( float percentBin=1, float et=30 );
    TString getTmplName()  { return tmplName_;};
    TString getTmplVar()   { return tmplVar_;};
    TString getTmplVarMC() { return tmplVarMC_;};
    TString getTmplVarBkg() { return tmplVarBkg_;};
-  
+
    TString getTmplLeg()   { return tmplLeg_;};
    TString getTmplXTitle(){ return tmplXTitle_;};
-  
+
    int  getNTmplBin() {     return nTmplBin_;};
    float getTmplMin() {     return tmplMin_;};
    float getTmplMax() {     return tmplMax_;};
    float getConeSize(){     return coneSize_;};
    float getFitMin()  {     return fitMin_;};
    float getFitMax()  {     return fitMax_;};
-   
+
    bool isHI()      {       return hiOrPp_;};
 
-   
+
    int getNPtBin() { return ptBin_.size()-1;};
    int getNJetPtBin() { return jetPtBin_.size()-1;};
    int getNPtBinAssoc() { return ptBinAssoc_.size()-1;};
    int getNCentBin() { return centBin_.size()-1;};
-   
+
    vector<double> getPtBin() { return ptBin_;};
    vector<double> getCentBin() { return centBin_;};
    vector<double> getPtBinAssoc() { return ptBinAssoc_;};
@@ -659,12 +665,12 @@ class CutAndBinCollection
    TString getPurityFileName() { return purityFname_;};
    void setCuts(int cutOpt);
  private:
-   
+
    TString tmplName_;
    TString tmplVar_;
    TString tmplVarMC_;
    TString tmplVarBkg_;
-   
+
    TString tmplLeg_;
    TString tmplXTitle_;
    TCut IBCutWOEleVeto_;
@@ -677,19 +683,19 @@ class CutAndBinCollection
    float fitMax_;
    bool hiOrPp_;
    float coneSize_;
-   
+
 
    vector<double> ptBin_;
    vector<double> ptBinAssoc_; // tracks
    vector<double> centBin_;
    vector<double> jetPtBin_;   // jet pt
-   
+
    TString purityFname_;
    float jetPTCut_;
-   
+
 };
 
-void CutAndBinCollection::setCuts( int cutOpt ) { 
+void CutAndBinCollection::setCuts( int cutOpt ) {
   purityFname_ = Form("photonPurityCollection2012_cutOption%d.root",cutOpt);
   centBin_.clear();
   ptBin_.clear();
@@ -706,10 +712,10 @@ void CutAndBinCollection::setCuts( int cutOpt ) {
     centBin_.push_back(12);
     centBin_.push_back(20);
     centBin_.push_back(40);
-    
+
     ptBin_.push_back(60);
     ptBin_.push_back(1000);
-    
+
     jetPtBin_.push_back(20);
     jetPtBin_.push_back(30);
     jetPtBin_.push_back(40);
@@ -719,7 +725,7 @@ void CutAndBinCollection::setCuts( int cutOpt ) {
 
     ptBinAssoc_.push_back(0.5);
     ptBinAssoc_.push_back(1000);
-    
+
   }
 
   else if ( cutOpt == 500000) {
@@ -736,10 +742,10 @@ void CutAndBinCollection::setCuts( int cutOpt ) {
 
     jetPtBin_.push_back(20);
     jetPtBin_.push_back(10000);
-   
+
     ptBinAssoc_.push_back(0.5);
     ptBinAssoc_.push_back(1000);
-    
+
   }
   else if ( cutOpt == 500020) {
     coneSize_ = 0.3;
@@ -756,7 +762,7 @@ void CutAndBinCollection::setCuts( int cutOpt ) {
 
     jetPtBin_.push_back(20);
     jetPtBin_.push_back(10000);
-   
+
     ptBinAssoc_.push_back(0.5);
     ptBinAssoc_.push_back(1000);
 
@@ -850,10 +856,10 @@ void CutAndBinCollection::setCuts( int cutOpt ) {
 
 
 
-  else 
+  else
     cout << "  we dont have such template option " << endl;
-  
-  
+
+
 
 }
 
@@ -861,7 +867,7 @@ void CutAndBinCollection::setCuts( int cutOpt ) {
 
 
 /*
-float CutAndBinCollection::getHoECut(   float percentBin=false; float et ) {  // 100% centrality used   
+float CutAndBinCollection::getHoECut(   float percentBin=false; float et ) {  // 100% centrality used
 float thehoe = 0.1;
 if ( percentBin <= 20 ) {   // should change univHoEnCut  accordingly
 if         ( et <=30 )                thehoe = 0.15;
@@ -901,7 +907,7 @@ void addCentralityFriend(TTree *tSig, TTree *tData,TCut selectionCut)
       {
 	 tSig->GetEntry(i);
 	 int bin = hDataCent->FindBin(cBin);
-	 //cout <<cBin<<" "<<hDataCent->GetBinContent(bin)<<endl;                                                                                                                                                    
+	 //cout <<cBin<<" "<<hDataCent->GetBinContent(bin)<<endl;
 	 nt->Fill(hDataCent->GetBinContent(bin));
       }
    counter++;
@@ -913,53 +919,53 @@ void addCentralityFriend(TTree *tSig, TTree *tData,TCut selectionCut)
 
 void getNColl( float* ncoll) {
 
-ncoll[0] = 1747.86 ; 
-ncoll[1] = 1567.53 ; 
-ncoll[2] = 1388.39 ; 
-ncoll[3] = 1231.77 ; 
-ncoll[4] = 1098.2 ; 
-ncoll[5] = 980.439 ; 
-ncoll[6] = 861.609 ; 
-ncoll[7] = 766.042 ; 
-ncoll[8] = 676.515 ; 
-ncoll[9] = 593.473 ; 
-ncoll[10] = 521.912 ; 
-ncoll[11] = 456.542 ; 
-ncoll[12] = 398.546 ; 
-ncoll[13] = 346.647 ; 
-ncoll[14] = 299.305 ; 
-ncoll[15] = 258.344 ; 
-ncoll[16] = 221.216 ; 
-ncoll[17] = 188.677 ; 
-ncoll[18] = 158.986 ; 
-ncoll[19] = 134.7 ; 
-ncoll[20] = 112.547 ; 
-ncoll[21] = 93.4537 ; 
-ncoll[22] = 77.9314 ; 
-ncoll[23] = 63.5031 ; 
-ncoll[24] = 52.0469 ; 
-ncoll[25] = 42.3542 ; 
-ncoll[26] = 33.9204 ; 
-ncoll[27] = 27.3163 ; 
-ncoll[28] = 21.8028 ; 
-ncoll[29] = 17.2037 ; 
-ncoll[30] = 13.5881 ; 
-ncoll[31] = 10.6538 ; 
-ncoll[32] = 8.35553 ; 
-ncoll[33] = 6.40891 ; 
-ncoll[34] = 5.13343 ; 
-ncoll[35] = 3.73215 ; 
-ncoll[36] = 3.06627 ; 
-ncoll[37] = 2.41926 ; 
-ncoll[38] = 2.11898 ; 
- ncoll[39] = 1.76953 ; 
- 
+ncoll[0] = 1747.86 ;
+ncoll[1] = 1567.53 ;
+ncoll[2] = 1388.39 ;
+ncoll[3] = 1231.77 ;
+ncoll[4] = 1098.2 ;
+ncoll[5] = 980.439 ;
+ncoll[6] = 861.609 ;
+ncoll[7] = 766.042 ;
+ncoll[8] = 676.515 ;
+ncoll[9] = 593.473 ;
+ncoll[10] = 521.912 ;
+ncoll[11] = 456.542 ;
+ncoll[12] = 398.546 ;
+ncoll[13] = 346.647 ;
+ncoll[14] = 299.305 ;
+ncoll[15] = 258.344 ;
+ncoll[16] = 221.216 ;
+ncoll[17] = 188.677 ;
+ncoll[18] = 158.986 ;
+ncoll[19] = 134.7 ;
+ncoll[20] = 112.547 ;
+ncoll[21] = 93.4537 ;
+ncoll[22] = 77.9314 ;
+ncoll[23] = 63.5031 ;
+ncoll[24] = 52.0469 ;
+ncoll[25] = 42.3542 ;
+ncoll[26] = 33.9204 ;
+ncoll[27] = 27.3163 ;
+ncoll[28] = 21.8028 ;
+ncoll[29] = 17.2037 ;
+ncoll[30] = 13.5881 ;
+ncoll[31] = 10.6538 ;
+ncoll[32] = 8.35553 ;
+ncoll[33] = 6.40891 ;
+ncoll[34] = 5.13343 ;
+ncoll[35] = 3.73215 ;
+ncoll[36] = 3.06627 ;
+ncoll[37] = 2.41926 ;
+ncoll[38] = 2.11898 ;
+ ncoll[39] = 1.76953 ;
+
 }
 
 
 
 fitResult doFit(TH1D* hSig=0, TH1D* hBkg=0, TH1D* hData1=0, float varLow=0.001, float varHigh=0.028, bool drawLeg=true) {
-   
+
    TH1D* hDatatmp = (TH1D*)hData1->Clone(Form("%s_datatmp",hData1->GetName()));
    int nBins = hDatatmp->GetNbinsX();
    histFunction2 *myFits = new histFunction2(hSig,hBkg);
@@ -977,7 +983,7 @@ fitResult doFit(TH1D* hSig=0, TH1D* hBkg=0, TH1D* hData1=0, float varLow=0.001, 
    res.nSig    = nev * ratio;
    res.nSigErr = nev * ratioErr;
    res.chisq = (double)f->GetChisquare()/ f->GetNDF();
-   
+
    TH1F *hSigPdf = (TH1F*)hSig->Clone(Form("%s_tmp",hSig->GetName()));
    hSigPdf->Scale(res.nSig/hSigPdf->Integral(1,nBins+1));
 
@@ -1015,10 +1021,10 @@ fitResult doFit(TH1D* hSig=0, TH1D* hBkg=0, TH1D* hData1=0, float varLow=0.001, 
       t3->Draw();
       //    drawCMS2011(0.53,0.9,150,16);
    }
-   
 
-   //   delete hSigPdf;                                                                                                                                                                                             
-   //   delete hBckPdf;                                                                                                                                                                                             
+
+   //   delete hSigPdf;
+   //   delete hBckPdf;
 
    //  TFile* hout = new TFile("histo.root","recreate");
    //  hSigPdf->Write();
@@ -1026,7 +1032,7 @@ fitResult doFit(TH1D* hSig=0, TH1D* hBkg=0, TH1D* hData1=0, float varLow=0.001, 
    //  hData1->Write();
    //  hout->Close();
 
-   
+
    return res;
 
 }

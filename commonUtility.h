@@ -26,6 +26,33 @@ struct kinem {
   Double_t phi;
 };
 
+void drawSys(TH1 *h,TH1 *sys, Int_t theColor= 90, Int_t fillStyle = -1, Int_t lineStyle = -1, Double_t binWidth=-1)
+{
+  for (Int_t i=1;i<=h->GetNbinsX();i++)
+  {
+    Double_t val = h->GetBinContent(i);
+    float xx =  h->GetBinCenter(i);
+    int iErr = sys->FindBin(xx);
+	
+    Double_t err =  TMath::Abs( val * sys->GetBinContent(iErr));
+    if (err == 0  ) continue;
+
+    if (binWidth <0) {
+      binWidth = h->GetBinLowEdge(1) - h->GetBinLowEdge(2);
+    }
+	
+    //Double_t point = (h->GetBinLowEdge(i) + h->GetBinLowEdge(i+1))/2.;
+    TBox *b = new TBox(xx-binWidth/3,val-err,xx+binWidth/3,val+err);         
+	
+    b->SetLineColor(theColor);
+    b->SetFillColor(theColor);
+    if ( fillStyle > -1 ) b->SetFillStyle(fillStyle);
+    if ( lineStyle > -1 ) b->SetLineStyle(lineStyle);
+
+    b->Draw();
+  }
+}
+
 void claverCanvasSaving(TCanvas* c, TString s,TString format="gif") {
   TDatime* date = new TDatime();
   c->SaveAs(Form("%s_%d.%s",s.Data(),date->GetDate(), format.Data()));
