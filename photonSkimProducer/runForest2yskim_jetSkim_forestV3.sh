@@ -5,7 +5,7 @@
 #                                   sampleType colli=kPADATA,
 #                                   bool doMix = false,
 #                                   bool doJetResCorrection = 1,  // jet energy correction is done by default from Oct 19th (YS)
-#                                   float addJetEnergyRes = 0,
+#				    int smearingCentBin = -1, //0=0-10%, 1=10-30%, 2=30-50%, 3=50-100%, 4=0-30%, 5=30-100%  : Jet pT and phi smearing!
 #                                   float addFlatJetEnergyRes = 0,
 #                                   bool useGenJetColl = 0
 #                                   )
