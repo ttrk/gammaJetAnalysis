@@ -32,10 +32,11 @@ void cross_section_weight()
   
   TFile *f1[10];
   TTree* t1[10];
+  TTree* genp[10];
   double n1[10];
   double n2[10][10];
 
-    cout << endl << " Entries : " << endl;
+  cout << endl << " Entries : " << endl;
   for ( int i=1 ; i <=5; i++) {
     if ( i==1 )  f1[i] = new TFile("/mnt/hadoop/cms/store/user/luck/PbPb_pythiaHYDJET_forest_AllQCDPhotons/PbPb_pythiaHYDJET_forest_AllQCDPhotons30.root");
     else if ( i==2 )  f1[i] = new TFile("/mnt/hadoop/cms/store/user/luck/PbPb_pythiaHYDJET_forest_AllQCDPhotons/PbPb_pythiaHYDJET_forest_AllQCDPhotons50.root");
@@ -46,6 +47,7 @@ void cross_section_weight()
 
     t1[i] = (TTree*)f1[i]->Get("multiPhotonAnalyzer/photon");
     n1[i] = t1[i]->GetEntries();
+    genp[i] = (TTree*)f1[i]->Get("genpana/photon");
     for ( int j=1 ; j<=5; j++) { 
       
       int pt1(0), pt2(0);
@@ -80,16 +82,8 @@ void cross_section_weight()
   TTree* t[10];
   TH1D* h[10];
   for ( int i=1 ; i <=5; i++) {	
-    if ( i==1 )  f[i] = new TFile("yskimmedFiles/pbpb_2013fall/yskim_PbPb_pythiaHYDJET_forest_AllQCDPhotons30.root");
-    else if ( i==2 )  f[i] = new TFile("yskimmedFiles/pbpb_2013fall/yskim_PbPb_pythiaHYDJET_forest_AllQCDPhotons50.root");
-    else if ( i==3 )  f[i] = new TFile("yskimmedFiles/pbpb_2013fall/yskim_PbPb_pythiaHYDJET_forest_AllQCDPhotons80.root");
-    else if ( i==4 )  f[i] = new TFile("yskimmedFiles/pbpb_2013fall/yskim_PbPb_pythiaHYDJET_forest_AllQCDPhotons120.root");
-    else if ( i==5 )  f[i] = new TFile("yskimmedFiles/pbpb_2013fall/yskim_PbPb_pythiaHYDJET_forest_AllQCDPhotons170.root");
-    
-    t[i] = (TTree*)f[i]->Get("tgj");
-    //    n[i] = t[i]->GetEntries();
     h[i] = new TH1D(Form("h_%d",i),"",300,0,300);
-    t[i]->Draw(Form("photonEt>>%s",h[i]->GetName()));
+    genp[i]->Draw(Form("et>>%s",h[i]->GetName()),"abs(eta)<1.44 && abs(momId)<=22 && status==1 && id==22");
     h[i]->Scale(1./n1[i]);
     handsomeTH1(h[i],i);
   }
