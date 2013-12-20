@@ -51,7 +51,7 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
   TRandom3 rand(seconds%10000);
   TString datafname  = "";
   float cutphotonEta = 1.44;
-  float preCutPhotonEt = 40;
+  float preCutPhotonEt = 30;
 
   const int nMaxPho = 100;
 
