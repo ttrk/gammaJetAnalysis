@@ -285,6 +285,29 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
     if (jentry% 2000 == 0)  {
       cout <<jentry<<" / "<<nentries<<" "<<setprecision(2)<<(double)jentry/nentries*100<<endl;
     }
+    
+    // Select events with a generated photon in mid-rapidity
+    bool genPhotonFlag=false;
+    if ( isMC )  
+      genPhotonFlag = true;
+    else {
+      for ( int g=0 ; g< c->genp.nPar ; g++) {
+	if ( c->genp.id[g] != 22 )
+	  continue;
+	if ( fabs( c->genp.momId[g] ) > 22 )
+	  continue;
+	if ( fabs( c->genp.status[g] ) != 1 )
+	  continue;
+	if ( fabs( c->genp.eta[g] ) > 1.44 ) 
+	  continue;
+	if ( c->genp.et[g] < 35 )
+	  continue;
+	genPhotonFlag = true;
+      }
+    }
+    if ( !genPhotonFlag) 
+      continue;
+    
     c->GetEntry(jentry);
     evt.clear();
     evt.run   = c->evt.run;
