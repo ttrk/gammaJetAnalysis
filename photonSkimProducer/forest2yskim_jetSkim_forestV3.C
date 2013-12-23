@@ -376,14 +376,14 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
     evt.ptHat = c->photon.ptHat; 
 
     if (colli ==kHIMC) {
-      if ( evt.ptHat < 50  )       evt.ptHatWeight = 0.916838/16237.; 
-      else if ( evt.ptHat < 80  )       evt.ptHatWeight = 0.0665991/85438. ;
-      else   evt.ptHatWeight =  0.0165629/140432.; 
+      if ( evt.ptHat < 50  )       evt.ptHatWeight = 0.655032/16237. ;
+      else if ( evt.ptHat < 80  )       evt.ptHatWeight = 0.267898/85438. ;
+      else   evt.ptHatWeight =  0.0770698/140432. ;
     }
     else if ( colli == kPPMC) { // pp has only 4 pthat samples 
-      if ( evt.ptHat < 50  )       evt.ptHatWeight = 0.891333/9008. ; 
-      else if ( evt.ptHat < 80  )       evt.ptHatWeight = 0.0846356/40109. ; 
-      else   evt.ptHatWeight = 0.0240309/66934.; 
+      if ( evt.ptHat < 50  )       evt.ptHatWeight = 0.631803/9008. ;
+      else if ( evt.ptHat < 80  )       evt.ptHatWeight = 0.272383/40109. ;
+      else   evt.ptHatWeight = 0.0958137/66934. ;
     }
     
     for (int j=0;j< c->photon.nPhotons;j++) {

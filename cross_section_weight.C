@@ -27,7 +27,7 @@
 
 //int returnHFBin(double hf);
 
-void cross_section_weight() 
+void cross_section_weight( bool isPP=1) 
 {
   
   // Variables that will hold the tree information
@@ -60,9 +60,18 @@ void cross_section_weight()
 
   cout << endl << " Entries : " << endl;
   for ( int i=1 ; i <=3; i++) {
-    if ( i==1 )  f1[i] = new TFile("/home/jazzitup/forestFiles/pbpb/pbpb/PbPb_pythiaHYDJET_forest_AllQCDPhotons30.root");
-    else if ( i==2 )  f1[i] = new TFile("/home/jazzitup/forestFiles/pbpb/pbpb/PbPb_pythiaHYDJET_forest_AllQCDPhotons50.root");
-    else if ( i==3 )  f1[i] = new TFile("/home/jazzitup/forestFiles/pbpb/pbpb/PbPb_pythiaHYDJET_forest_AllQCDPhotons80.root");
+    
+    if ( isPP ) { 
+      if (i==1)  f1[i] = new TFile("/home/goyeonju/recent2013/jetAnalysis/files/forest/pp2760_pythia_allQCDPhoton30_CMSSW538HIp2.root");
+      else if (i==2) f1[i]=new TFile("/home/goyeonju/recent2013/jetAnalysis/files/forest/pp2760_pythia_allQCDPhoton50_CMSSW538HIp2.root");
+      else if ( i==3 )  f1[i] = new TFile("/home/goyeonju/recent2013/jetAnalysis/files/forest/pp2760_pythia_allQCDPhoton80_CMSSW538HIp2.root");
+    }
+    else {
+      if ( i==1 )  f1[i] = new TFile("/home/jazzitup/forestFiles/pbpb/pbpb/PbPb_pythiaHYDJET_forest_AllQCDPhotons30.root");
+      else if ( i==2 )  f1[i] = new TFile("/home/jazzitup/forestFiles/pbpb/pbpb/PbPb_pythiaHYDJET_forest_AllQCDPhotons50.root");
+      else if ( i==3 )  f1[i] = new TFile("/home/jazzitup/forestFiles/pbpb/pbpb/PbPb_pythiaHYDJET_forest_AllQCDPhotons80.root");
+    }
+
 
     hPtHat[i] = new TH1D(Form("ptHat_%d",i),";pt Hat;",400,0,400);
     hPhoPt[i] = new TH1D(Form("h_%d",i),";photon pT;",400,0,400);
@@ -70,7 +79,7 @@ void cross_section_weight()
 
     t1[i] = (TTree*)f1[i]->Get("multiPhotonAnalyzer/photon");
     t1[i]->SetBranchAddress("ptHat", &ptHat, &b_ptHat);
-    n1[i] = t1[i]->GetEntries();
+    //    n1[i] = t1[i]->GetEntries();
     genp[i] = (TTree*)f1[i]->Get("genpana/photon");
     genp[i]->SetBranchAddress("nPar", &nPar, &b_nPar);
     genp[i]->SetBranchAddress("et", et, &b_et);
@@ -79,10 +88,12 @@ void cross_section_weight()
     genp[i]->SetBranchAddress("id", id, &b_id);
     genp[i]->SetBranchAddress("momId", momId, &b_momId);
     genp[i]->SetBranchAddress("status", status, &b_status);
-
+    
+    n1[i]=0;
     for ( int j=1 ; j<=3; j++) { 
       n2[i][j] = 0;
     }
+    // Loop! 
     for (Long64_t jentry=0; jentry< genp[i]->GetEntries() ; jentry++) {
       genp[i]->GetEntry(jentry);
       t1[i]->GetEntry(jentry);
@@ -91,7 +102,7 @@ void cross_section_weight()
       float maxEt = 0;
       for ( int jpar = 0 ; jpar< nPar ; jpar++) {
 	if (  (et[jpar]>maxEt) && (fabs(eta[jpar])<1.44) && (fabs(momId[jpar])<=22) && (status[jpar]==1) && ( id[jpar]==22))
-	  maxEt = et[jpar] ;///"abs(eta)<3 && abs(momId)<=22 && status==1 && id==22"
+	  maxEt = et[jpar] ;   // "abs(eta)<3 && abs(momId)<=22 && status==1 && id==22"
       }
       if ( maxEt <35 ) 
 	continue;
@@ -105,7 +116,10 @@ void cross_section_weight()
 	n2[i][2]++;
       else
 	n2[i][3]++;
-    }
+      
+      n1[i]++;
+      
+   }
     
     for ( int j=1 ; j<=3; j++) {
       int pt1(0), pt2(0);
@@ -123,16 +137,15 @@ void cross_section_weight()
     int pt1(0), pt2(0);
     if ( j==1 ) pt1 = 30 ;     if ( j==2) pt1 =50 ;     if ( j==3) pt1 =80    ;
     if ( j==1 ) pt2 = 50 ;     if ( j==2) pt2 =80 ;     if ( j==3) pt2 =10000 ;
-    
     cout << Form("Sum :  pt hat : %d - %d : %d",  pt1, pt2, (int)(n3[j]) ) << endl;
   }
+  cout << "Before rearrangement : "<< endl;
+  for ( int j=1 ; j<=3; j++) {
+    float pt1;
+    if ( j==1 ) pt1 = 30 ;     if ( j==2) pt1 =50 ;     if ( j==3) pt1 =80    ;
+    cout << "  " << pt1 << "GeV : "<< n1[j] << endl;
+  }
   
-  cout << " 30GeV : " << n1[1] <<endl;
-  cout << " 50GeV : " << n1[2] <<endl;
-  cout << " 80GeV : " << n1[3] <<endl;
-  
-  
-
   for ( int i=1 ; i <=3; i++) {	
     hPtHat[i]->Scale(1./n1[i]);
     handsomeTH1(hPtHat[i],i);
