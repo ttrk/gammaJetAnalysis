@@ -71,9 +71,9 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
     cout << " Error!  No such collision type" << endl;
     return;
   }
-
+  
   c->InitTree();
-
+  
 
   // vertex and centrality vtxCentWeighting
   TFile* fWeight = new TFile("../vertexReweightingHistogram_pthatweighted.root");
@@ -88,16 +88,16 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
   TH1D* hWeight_vtx_mc_pbpb = (TH1D*)fWeight->Get("vertexHistoMC_pbpb");
   TH1D* hWeight_cent_data_pbpb = (TH1D*)fWeight->Get("centBinHistoData_pbpb");
   TH1D* hWeight_cent_mc_pbpb = (TH1D*)fWeight->Get("centBinHistoMC_pbpb");
-
-
-
-
+  
+  
+  
+  
   // L2L3 correction
   TFile* fL2L3pp = new TFile("../corrL2L3/Casym_pp_double_hcalbins_algo_ak3PF_pt100_140_jet80_alphahigh_20_phicut250.root");
   TH1D * c_etapp=(TH1D*)fL2L3pp->Get("C_asym");
   TF1* fptpp = new TF1("fptpp","1-[0]/pow(x,[1])",20,300);
   fptpp->SetParameters(0.06971,0.8167);
-
+  
   TFile* fL2L3pA = new TFile("../corrL2L3/Casym_pPb_double_hcalbins_algo_akPu3PF_pt100_140_jet80_alphahigh_20_phicut250.root");
   TH1D * c_etapA=(TH1D*)fL2L3pA->Get("C_asym");
   TF1* fptpA = new TF1("fptpA","1-[0]/pow(x,[1])",20,300);
@@ -115,19 +115,20 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
   fsmear_pA->SetParameters(1.052,0.5261);
 
 
-  TCanvas* c11 = new TCanvas("c11","",1200,400);
-  c11->Divide(3,1);
-  c11->cd(1);
-  c_etapp->Draw();
-  c11->cd(2);
-  c_etaAp->Draw();
-  c11->cd(3);
-  c_etapA->Draw();
-  //c11->SaveAs("f1.gif");
+  /* 
+     TCanvas* c11 = new TCanvas("c11","",1200,400);   // valiation of smearing factors
+     c11->Divide(3,1);
+     c11->cd(1);
+     c_etapp->Draw();
+     c11->cd(2);
+     c_etaAp->Draw();
+     c11->cd(3);
+     c_etapA->Draw();
+     c11->SaveAs("f1.gif");
+  */
 
 
-
-  // now open new root file
+  // Create a new root file
   TFile* newfile_data = new TFile(outname.data(),"recreate");
 
   TTree* newtreePhoton;
@@ -151,6 +152,15 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
   }
   treeFullJet->SetName("fullJet");
   treeFullJet->SetMaxTreeSize(MAXTREESIZE);
+
+  TTree* treeGenp;
+  if (   (colli==kHIMC ) || (colli==kPPMC) || (colli==kPAMC) ) {
+    treeGenp =  c->genpTree->CloneTree(0);
+  }
+  treeGenp->SetName("genparTree");
+  treeGenp->SetMaxTreeSize(MAXTREESIZE);
+
+
 
   // jet tree!
   int nJet;
@@ -227,7 +237,7 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
     cout <<"  Tree initialization for MinBias mixing" << endl;
     for( int icent = 0 ; icent< nCentBins ; icent++) {
       for( int ivz = 1 ; ivz<=nVtxBin ; ivz++) {
-
+	
 	tjmb[icent][ivz] = new TChain(Form("trkAndJets_first_cBin2icent%d_ivz%d",icent,ivz));
 	tjmb[icent][ivz]->Add(MinbiasFname.data());
 	tjmb[icent][ivz]->SetBranchAddress("evt", &evtImb,&b_evt);
@@ -286,9 +296,11 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
       cout <<jentry<<" / "<<nentries<<" "<<setprecision(2)<<(double)jentry/nentries*100<<endl;
     }
     
+    c->GetEntry(jentry);
+
     // Select events with a generated photon in mid-rapidity
     bool genPhotonFlag=false;
-    if ( isMC )  
+    if ( !isMC )   // fixed the most stupid error
       genPhotonFlag = true;
     else {
       for ( int g=0 ; g< c->genp.nPar ; g++) {
@@ -298,7 +310,7 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
 	  continue;
 	if ( fabs( c->genp.status[g] ) != 1 )
 	  continue;
-	if ( fabs( c->genp.eta[g] ) > 1.44 ) 
+	if ( fabs( c->genp.eta[g] ) > cutphotonEta ) 
 	  continue;
 	if ( c->genp.et[g] < 35 )
 	  continue;
@@ -307,8 +319,7 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
     }
     if ( !genPhotonFlag) 
       continue;
-    
-    c->GetEntry(jentry);
+  
     evt.clear();
     evt.run   = c->evt.run;
     evt.evt = c->evt.evt;
@@ -333,19 +344,19 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
     evt.anaEvtSel = c->selectEvent() && evt.trig;
     evt.vz = c->evt.vz;
 
-
-    if ( ( (colli==kHIDATA)||(colli==kHIMC)||(colli==kPADATA)||(colli==kPAMC) ) && ( c->selectEvent() == 0 ))
-      continue;
-    if ( ( (colli==kPADATA)||(colli==kPPDATA) ) && ( c->skim.pVertexFilterCutGplus ==0 ) ) // No Pile up events
-      continue;
-
-    eSel++;      // OK.  This event is a collisional and no-noise event.
-
     int cBin = evt.cBin;
     int vzBin = hvz->FindBin(evt.vz)  ;
     hvz->Fill(evt.vz) ;
+
+
+    if ( ( (colli==kHIDATA)||(colli==kHIMC)||(colli==kPADATA)||(colli==kPAMC) || (colli==kPPMC) ) && ( c->selectEvent() == 0 ))
+      continue;
+    if ( ( (colli==kPADATA)||(colli==kPPDATA) ) && ( c->skim.pVertexFilterCutGplus ==0 ) ) // No Pile up events
+      continue;
     if ( (vzBin<1) || ( vzBin > nVtxBin) )
       continue;
+
+    eSel++;      // OK.  This event is a collisional and no-noise event.
 
  
     // Reweight for vertex and centrality of MC 
@@ -421,8 +432,8 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
 	leadingIndex = j;
       }
     }
-    if ( (gj.photonEt < cutphotonPt) )
-      continue;
+    //    if ( (gj.photonEt < cutphotonPt) )    <== This cut ruins the ptHat weighting factor
+    //  continue;
 
 
     /// Save leading photons
@@ -444,7 +455,6 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
     }
     if ( (colli==kPADATA) && ( evt.run > 211256 ) )  {
       gj.photonEta = - gj.photonEta;
-      //      cout << " reflect eta" << endl;
     }
 
 
@@ -455,14 +465,14 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
     int jetEntries = 0;
     if (useGenJetColl )    jetEntries = theJet->ngen;
     else                   jetEntries = theJet->nref;
-
+    
     int nSmear = 1;
     if(smearingCentBin != -1)
       nSmear = 100;
 
     for (int ij=0; ij< jetEntries ; ij++) {
+      if ( gj.photonEt < 0 )    continue ;    // If there is no photon in this event
       for(int iSmear =0; iSmear < nSmear; iSmear++){
-	
 	if (  useGenJetColl )   {
 	  jetPt[nJet] = theJet->genpt[ij];
 	  jetEta[nJet] = theJet->geneta[ij];
@@ -641,7 +651,7 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
       loopCounter =0;  // Re-initiate loopCounter
       // Jet mixing
       for (int it = 0 ; it < nJetImb ; it++) {
-
+	if ( gj.photonEt < 0 )  continue;
 	// Smear phi
 	Double_t newPhi = jetPhiImb[it];
 	if( smearingCentBin != -1 )
@@ -728,6 +738,7 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
     tmixJet->Fill();
     newtreePhoton->Fill();
     //    treeFullJet->Fill();
+    treeGenp->Fill();
   }
 
 
