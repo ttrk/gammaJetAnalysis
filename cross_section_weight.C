@@ -62,9 +62,9 @@ void cross_section_weight( bool isPP=1)
   for ( int i=1 ; i <=3; i++) {
     
     if ( isPP ) { 
-      if (i==1)  f1[i] = new TFile("/home/goyeonju/recent2013/jetAnalysis/files/forest/pp2760_pythia_allQCDPhoton30_CMSSW538HIp2.root");
-      else if (i==2) f1[i]=new TFile("/home/goyeonju/recent2013/jetAnalysis/files/forest/pp2760_pythia_allQCDPhoton50_CMSSW538HIp2.root");
-      else if ( i==3 )  f1[i] = new TFile("/home/goyeonju/recent2013/jetAnalysis/files/forest/pp2760_pythia_allQCDPhoton80_CMSSW538HIp2.root");
+      if (i==1)  f1[i] = new TFile("/home/goyeonju/recent2013/jetAnalysis/files/forest/pp/pp2760_pythia_allQCDPhoton30_CMSSW538HIp2.root");
+      else if (i==2) f1[i]=new TFile("/home/goyeonju/recent2013/jetAnalysis/files/forest/pp/pp2760_pythia_allQCDPhoton50_CMSSW538HIp2.root");
+      else if ( i==3 )  f1[i] = new TFile("/home/goyeonju/recent2013/jetAnalysis/files/forest/pp/pp2760_pythia_allQCDPhoton80_CMSSW538HIp2.root");
     }
     else {
       if ( i==1 )  f1[i] = new TFile("/home/jazzitup/forestFiles/pbpb/pbpb/PbPb_pythiaHYDJET_forest_AllQCDPhotons30.root");
@@ -183,14 +183,15 @@ void cross_section_weight( bool isPP=1)
   w[2] = hPhoPt[1]->Integral(80,400) / hPhoPt[2]->Integral(80,400) ; 
   w[3] = w[2] *  hPhoPt[2]-> Integral(140,400) / hPhoPt[3]->Integral(140,400) ; 
   
-  cout << " Relative Cross-section : " << endl;
-  cout << " 30GeV : " << w[1] <<endl;
-  cout << " 50GeV : " << w[2] <<endl;
-  cout << " 80GeV : " << w[3] <<endl;
+  cout << " Differential Cross-section : " << endl;
+  cout << " 30GeV-50 : " << n2[1][1] <<endl;
+  cout << " 50GeV-80 : " << n2[1][2] <<endl;
+  cout << " 80GeV-   : " << n2[1][3] <<endl;
   cout << " ===============================" << endl;
-  cout << " 30 - 50GeV : " << w[1]-w[2] << "/" << n3[1] << "." << endl;
-  cout << " 50 - 80GeV : " << w[2]-w[3] << "/" << n3[2] << "." << endl;
-  cout << " 80GeV : " << w[3] << "/" << n3[3] << "." << endl;
+  cout << " ========== Weights : ==========" << endl;
+  cout << " 30 - 50GeV : " << n2[1][1] << "/" << n3[1] << "." << endl;
+  cout << " 50 - 80GeV : " << n2[1][2] << "/" << n3[2] << "." << endl;
+  cout << " 80GeV : " << n2[1][3] << "/" << n3[3] << "." << endl;
   //  cout << " 120 - 170GeV : " << w[4]-w[5] << "/" << n3[4] << "." << endl;
   //  cout << " 170GeV : " << w[5] << "/" << n3[5] << "." << endl;
 

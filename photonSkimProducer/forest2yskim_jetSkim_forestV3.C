@@ -278,6 +278,7 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
   TH1F* hEvtPlnBin = new TH1F("hEvtPlnBin", "", nPlnBin, -PI/2., PI/2.);
   // jet algos
   Jets* theJet;
+  Jets* genJetTree;
   if (   (colli==kPPDATA) || (colli==kPPMC) ) {
     theJet = &(c->ak3PF) ;
     cout << "pp collision.  Using ak3PF Jet Algo" << endl<<endl;
@@ -286,6 +287,9 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
     theJet = &(c->akPu3PF) ;
     cout << "pa, aa collision. Using akPu3PF Jet Algo" << endl<<endl;
   }
+  genJetTree = &(c->akPu3PF);
+
+  
 
   // Loop starts.
   int nentries = c->GetEntries();
@@ -355,10 +359,10 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
       continue;
     if ( (vzBin<1) || ( vzBin > nVtxBin) )
       continue;
-
+    
     eSel++;      // OK.  This event is a collisional and no-noise event.
-
- 
+    
+    
     // Reweight for vertex and centrality of MC 
     evt.vtxCentWeight = 1;
     double wVtx=1;
@@ -387,14 +391,14 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
     evt.ptHat = c->photon.ptHat; 
 
     if (colli ==kHIMC) {
-      if ( evt.ptHat < 50  )       evt.ptHatWeight = 0.655032/16237. ;
-      else if ( evt.ptHat < 80  )       evt.ptHatWeight = 0.267898/85438. ;
-      else   evt.ptHatWeight =  0.0770698/140432. ;
+      if ( evt.ptHat < 50  )       evt.ptHatWeight = 9008/16237. ; 
+      else if ( evt.ptHat < 80  )       evt.ptHatWeight = 3750/85438. ; 
+      else   evt.ptHatWeight =  1191/140432. ; 
     }
     else if ( colli == kPPMC) { // pp has only 4 pthat samples 
-      if ( evt.ptHat < 50  )       evt.ptHatWeight = 0.631803/9008. ;
-      else if ( evt.ptHat < 80  )       evt.ptHatWeight = 0.272383/40109. ;
-      else   evt.ptHatWeight = 0.0958137/66934. ;
+      if ( evt.ptHat < 50  )       evt.ptHatWeight = 9008/9008. ; 
+      else if ( evt.ptHat < 80  )       evt.ptHatWeight = 3750/40109. ; 
+      else   evt.ptHatWeight = 1191/66934. ; 
     }
     
     for (int j=0;j< c->photon.nPhotons;j++) {
@@ -405,7 +409,7 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
       else
 	newPt[j] = c->photon.pt[j] - 10000;
 
-      if ( (c->isSpike(j)) || (c->photon.hadronicOverEm[j]>0.2) ||  (c->photon.isEle[j]) )
+      if ( (c->isSpike(j)) || (c->photon.hadronicOverEm[j]>0.2) ) //||  (c->photon.isEle[j]) )
 	newPt[j] = newPt[j] - 20000;
       if (c->photon.seedTime[j] ==0 )   // clustering bug
 	newPt[j] = newPt[j] - 30000;
@@ -423,7 +427,11 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
       if ( c->photon.pt[j]  < preCutPhotonEt ) continue;
       if ( fabs(c->photon.eta[j]) > cutphotonEta ) continue;
       if (c->isSpike(j)) continue;
-      if (!(c->isLoosePhoton(j))) continue;
+      //   if (!(c->isLoosePhoton(j))) continue;
+      if (c->photon.hadronicOverEm[j]>0.1) continue;
+      if ((c->photon.rawEnergy[j]/c->photon.energy[j])<0.5) continue;
+
+
 
       // sort using corrected photon pt
       float theCorrPt= corrPt[j];
@@ -574,7 +582,6 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
 	  jetRefPartonFlv[nJet] = -9999;
 	}
 	else {
-	  jetSubid[nJet] = theJet->subid[ij];
 	  jetRefPt[nJet] = theJet->refpt[ij];
 	  jetRefEta[nJet] = theJet->refeta[ij];
 	  jetRefPhi[nJet] = theJet->refphi[ij];
@@ -584,16 +591,30 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
 	    jetRefDphi[nJet] = -1;
 	  jetRefPartonPt[nJet] = theJet->refparton_pt[ij];
 	  jetRefPartonFlv[nJet] = theJet->refparton_flavor[ij];
+
+	  jetSubid[nJet] = -9999; 
+	  if (jetRefPt[nJet] >0)  {   // Find the collisional subid of this gen jet!!
+	    for ( int igen=0; igen < genJetTree->ngen ; igen++) { 
+	      if ( jetRefPt[nJet] == genJetTree->genpt[igen] )
+		jetSubid[nJet] = genJetTree->gensubid[igen] ;
+	    }
+	    
+	    if ( jetSubid[nJet] == -9999 ) // No genJet matched! 
+	      cout << " WARNING!  This reco jet was not matched to anyone in the gen jet collection!!! " << endl;
+	    
+	  }
 	}
-
-	nJet++ ;
+	
       }
+      
+      nJet++ ;
     }
-
+  
+    
     //////// Leading jet kinematics in dphi>7pi/8
     float maxJpt = 0;
     int jetLeadingIndex = -1;
-
+    
     for (int ij=0; ij< nJet ; ij++) {
       if ( jetDphi[ij] < awayRange )  // const float awayRange= PI * 7./8.;
 	continue;
@@ -737,7 +758,7 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
     newtreeJet->Fill();
     tmixJet->Fill();
     newtreePhoton->Fill();
-    //    treeFullJet->Fill();
+    treeFullJet->Fill();
     treeGenp->Fill();
   }
 
