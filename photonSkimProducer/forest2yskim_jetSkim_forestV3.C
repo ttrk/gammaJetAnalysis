@@ -156,9 +156,9 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
   TTree* treeGenp;
   if (   (colli==kHIMC ) || (colli==kPPMC) || (colli==kPAMC) ) {
     treeGenp =  c->genpTree->CloneTree(0);
+    treeGenp->SetName("genparTree");
+    treeGenp->SetMaxTreeSize(MAXTREESIZE);
   }
-  treeGenp->SetName("genparTree");
-  treeGenp->SetMaxTreeSize(MAXTREESIZE);
 
 
 
@@ -381,10 +381,6 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
       wVtx =   hWeight_vtx_data_ppb->GetBinContent(vBin) / hWeight_vtx_mc_ppb->GetBinContent(vBin) ;
     }
     evt.vtxCentWeight = wVtx * wCent;
-    //    cout << " vz = " << evt.vz << "     centrality = " << evt.cBin << endl;
-    //   cout <<" reweight = " << evt.reweight << endl;
-    
-    /// correct the photon energy and make order
       
     evt.ptHat = -1;
     evt.ptHatWeight = 1;
@@ -759,7 +755,8 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
     tmixJet->Fill();
     newtreePhoton->Fill();
     treeFullJet->Fill();
-    treeGenp->Fill();
+    if (   (colli==kHIMC ) || (colli==kPPMC) || (colli==kPAMC) )
+      treeGenp->Fill();
   }
 
 
