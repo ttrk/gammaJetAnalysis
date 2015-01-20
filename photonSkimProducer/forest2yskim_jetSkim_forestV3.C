@@ -14,7 +14,7 @@
 #include <iomanip>
 #include <string>
 #include <TMath.h>
-#include "../../HiForestAnalysis/hiForest.h"
+#include "../../HiForestAnalysis/yj_hiForest.h"
 #include "../CutAndBinCollection2012.h"
 #include <time.h>
 #include <TRandom3.h>
@@ -32,8 +32,10 @@ vector<jetKinem> nullVec;
 
 
 
-void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonSkimForest_v85_skimPhotonPt50_eta1.5.root",
+void yj_forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonSkimForest_v85_skimPhotonPt50_eta1.5.root",
 				   std::string MinbiasFname = "skim_trackJet_minbiasTrackJet_mc.root",
+			 	   float maxpthat=50.,
+			 	   float xSection=102400.0,
 				   float cutphotonPt  = 35,  // default value dropped to 35GeV  for later photon energy smearing/scaling
 				   std::string outname = "testPhotonSkim.root",
 				   sampleType colli=kPADATA,
@@ -142,24 +144,29 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
   newtreePhoton->Branch("corrPt", corrPt,"corrPt[nPhotons]/F");
 
   TTree* treeFullJet;
-  if (   (colli==kPPDATA) || (colli==kPPMC) ) {
-    treeFullJet = c->ak3jetTree->CloneTree(0);
-    cout << "pp collision.  Using ak3PF Jet Algo" << endl<<endl;
+  if (   (colli==kPPDATA) || (colli==kPPMC) || (colli==kPADATA) || (colli==kPAMC)) {
+  //if (   (colli==kPPDATA) || (colli==kPPMC) ) {
+    //treeFullJet = c->ak3jetTree->CloneTree(0);
+    treeFullJet = c->ak3PFJetTree->CloneTree(0);
+    cout << "pp or pPb collision.  Using ak3PF Jet Algo" << endl<<endl;
   }
   else {
-    treeFullJet = c->akPu3jetTree->CloneTree(0);
-    cout << "pPb or PbPb collision. Using akPu3PF Jet Algo" << endl<<endl;
+    //treeFullJet = c->akPu3jetTree->CloneTree(0);
+    treeFullJet = c->akPu3PFJetTree->CloneTree(0);
+    cout << "PbPb collision. Using akPu3PF Jet Algo" << endl<<endl;
   }
   treeFullJet->SetName("fullJet");
   treeFullJet->SetMaxTreeSize(MAXTREESIZE);
-
+#if 1
   TTree* treeGenp;
   if (   (colli==kHIMC ) || (colli==kPPMC) || (colli==kPAMC) ) {
-    treeGenp =  c->genpTree->CloneTree(0);
+    treeGenp =  c->genParticleTree->CloneTree(0);
     treeGenp->SetName("genparTree");
+    //treeGenp =  c->genpTree->CloneTree(0);
+    //treeGenp->SetName("genparTree");
     treeGenp->SetMaxTreeSize(MAXTREESIZE);
   }
-
+#endif
 
 
   // jet tree!
@@ -279,15 +286,16 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
   // jet algos
   Jets* theJet;
   Jets* genJetTree;
-  if (   (colli==kPPDATA) || (colli==kPPMC) ) {
+  if (   (colli==kPPDATA) || (colli==kPPMC)  || (colli==kPADATA) || (colli==kPAMC) ) {
     theJet = &(c->ak3PF) ;
-    cout << "pp collision.  Using ak3PF Jet Algo" << endl<<endl;
+    cout << "pp or pPb collision.  Using ak3PF Jet Algo" << endl<<endl;
   }
   else {
     theJet = &(c->akPu3PF) ;
-    cout << "pa, aa collision. Using akPu3PF Jet Algo" << endl<<endl;
+    cout << "PbPb collision. Using akPu3PF Jet Algo" << endl<<endl;
   }
-  genJetTree = &(c->akPu3PF);
+  //genJetTree = &(c->akPu3PF);
+  genJetTree = &(c->ak3PF);
 
   
 
@@ -301,12 +309,12 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
     }
     
     c->GetEntry(jentry);
-
     // Select events with a generated photon in mid-rapidity
     bool genPhotonFlag=false;
     if ( !isMC )   // fixed the most stupid error
       genPhotonFlag = true;
     else {
+#if 0 // there is no genp tree, but is higentree
       for ( int g=0 ; g< c->genp.nPar ; g++) {
 	if ( c->genp.id[g] != 22 )
 	  continue;
@@ -317,6 +325,18 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
 	if ( fabs( c->genp.eta[g] ) > cutphotonEta ) 
 	  continue;
 	if ( c->genp.et[g] < 35 )
+	  continue;
+#endif
+     for ( int g=0 ; g< c->genparticle.mult ; g++) {
+	if ( c->genparticle.pdg[g] != 22 )
+	  continue;
+//	if ( fabs( c->genparticle.momId[g] ) > 22 )
+//	  continue;
+//	if ( fabs( c->genparticle.status[g] ) != 1 )
+//	  continue;
+	if ( fabs( c->genparticle.eta[g] ) > cutphotonEta ) 
+	  continue;
+	if ( c->genparticle.pt[g] < cutphotonPt )
 	  continue;
 	genPhotonFlag = true;
       }
@@ -352,8 +372,13 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
     int vzBin = hvz->FindBin(evt.vz)  ;
     hvz->Fill(evt.vz) ;
 
-
-    if ( ( (colli==kHIDATA)||(colli==kHIMC)||(colli==kPADATA)||(colli==kPAMC) || (colli==kPPMC) ) && ( c->selectEvent() == 0 ))
+	// this was the problem!!! all c->selectEvent() are 0 
+    //if ( ( (colli==kHIDATA)||(colli==kHIMC)||(colli==kPADATA)||(colli==kPAMC) || (colli==kPPMC) ) && ( c->selectEvent() == 0 ))
+    if ( ( (colli==kHIDATA)||(colli==kHIMC) ) && ( c->skim.pcollisionEventSelection == 0 ))
+	continue;
+    if ( ( (colli==kPADATA)||(colli==kPAMC) ) && ( c->skim.pPAcollisionEventSelectionPA == 0 ))
+  	continue;
+    if ( ( (colli==kPPMC) ) && ( c->skim.pcollisionEventSelection == 0 ))
       continue;
     if ( ( (colli==kPADATA)||(colli==kPPDATA) ) && ( c->skim.pVertexFilterCutGplus ==0 ) ) // No Pile up events
       continue;
@@ -386,6 +411,8 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
     evt.ptHatWeight = 1;
     evt.ptHat = c->photon.ptHat; 
 
+    if( colli == kPAMC && evt.ptHat > maxpthat ) // pA samples don't use ptHatCutter.C.
+	continue;
     if (colli ==kHIMC) {
       if ( evt.ptHat < 50  )       evt.ptHatWeight = 9008/16237. ; 
       else if ( evt.ptHat < 80  )       evt.ptHatWeight = 3750/85438. ; 
@@ -396,8 +423,13 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
       else if ( evt.ptHat < 80  )       evt.ptHatWeight = 3750/40109. ; 
       else   evt.ptHatWeight = 1191/66934. ; 
     }
-    
-    for (int j=0;j< c->photon.nPhotons;j++) {
+    else if ( colli == kPAMC) { // pA samples don't use ptHatCutter.
+	evt.ptHatWeight = xSection/nentries;
+    }
+ 
+ 
+
+   for (int j=0;j< c->photon.nPhotons;j++) {
       
       if (  ( c->photon.pt[j] > preCutPhotonEt ) && ( fabs( c->photon.eta[j] ) < cutphotonEta ) ) {
 	newPt[j] = c->getCorrEt(j);
