@@ -130,34 +130,46 @@ double wPPMC_emDijet80to120        = 17265./121988.;
 double wPPMC_emDijet120to9999      = 4284./130444.;
 
 
-///////////// pA Data  // File name checked on Oct 20th
-TString fnamePADATA                  = "yskimmedFiles/yskim_pA_photonSkimForest_v85_HLT_PAPhoton30_NoCaloIdVL_v1_highPtPhoton40.root";
-TString fnamePADATA_noJetResCorr     = "yskimmedFiles/yskim_pA_photonSkimForest_v85_HLT_PAPhoton30_NoCaloIdVL_v1_highPtPhoton40_noJetResCorr.root";
-//            pA MC   // File name checked on Oct 20th
-TString fnamePAMC_AllQcdPho30to50    = "yskimmedFiles/yskim_PA2013_pyquen_allQCDPhoton30to50_forestv85.root";
-TString fnamePAMC_AllQcdPho50to80    = "yskimmedFiles/yskim_PA2013_pyquen_allQCDPhoton50to80_forestv85.root";
-TString fnamePAMC_AllQcdPho80to120   = "yskimmedFiles/yskim_PA2013_pyquen_allQCDPhoton80to120_forestv85.root";
-TString fnamePAMC_AllQcdPho120to9999 = "yskimmedFiles/yskim_PA2013_pyquen_allQCDPhoton120to9999_forestv85.root";
-//
-TString fnamePAMC_AllQcdPho30to50_noJetResCorr    = "yskimmedFiles/yskim_PA2013_pyquen_allQCDPhoton30to50_forestv85_noJetResCorr.root";
-TString fnamePAMC_AllQcdPho50to80_noJetResCorr    = "yskimmedFiles/yskim_PA2013_pyquen_allQCDPhoton50to80_forestv85_noJetResCorr.root";
-TString fnamePAMC_AllQcdPho80to120_noJetResCorr   = "yskimmedFiles/yskim_PA2013_pyquen_allQCDPhoton80to120_forestv85_noJetResCorr.root";
-TString fnamePAMC_AllQcdPho120to9999_noJetResCorr = "yskimmedFiles/yskim_PA2013_pyquen_allQCDPhoton120to9999_forestv85_noJetResCorr.root";
+/* ///////////// pA Data  // File name checked on Oct 20th */
+/* TString fnamePADATA                  = "yskimmedFiles/yskim_pA_photonSkimForest_v85_HLT_PAPhoton30_NoCaloIdVL_v1_highPtPhoton40.root"; */
+/* TString fnamePADATA_noJetResCorr     = "yskimmedFiles/yskim_pA_photonSkimForest_v85_HLT_PAPhoton30_NoCaloIdVL_v1_highPtPhoton40_noJetResCorr.root"; */
+/* //            pA MC   // File name checked on Oct 20th */
+/* TString fnamePAMC_AllQcdPho30to50    = "yskimmedFiles/yskim_PA2013_pyquen_allQCDPhoton30to50_forestv85.root"; */
+/* TString fnamePAMC_AllQcdPho50to80    = "yskimmedFiles/yskim_PA2013_pyquen_allQCDPhoton50to80_forestv85.root"; */
+/* TString fnamePAMC_AllQcdPho80to120   = "yskimmedFiles/yskim_PA2013_pyquen_allQCDPhoton80to120_forestv85.root"; */
+/* TString fnamePAMC_AllQcdPho120to9999 = "yskimmedFiles/yskim_PA2013_pyquen_allQCDPhoton120to9999_forestv85.root"; */
+/* // */
+/* TString fnamePAMC_AllQcdPho30to50_noJetResCorr    = "yskimmedFiles/yskim_PA2013_pyquen_allQCDPhoton30to50_forestv85_noJetResCorr.root"; */
+/* TString fnamePAMC_AllQcdPho50to80_noJetResCorr    = "yskimmedFiles/yskim_PA2013_pyquen_allQCDPhoton50to80_forestv85_noJetResCorr.root"; */
+/* TString fnamePAMC_AllQcdPho80to120_noJetResCorr   = "yskimmedFiles/yskim_PA2013_pyquen_allQCDPhoton80to120_forestv85_noJetResCorr.root"; */
+/* TString fnamePAMC_AllQcdPho120to9999_noJetResCorr = "yskimmedFiles/yskim_PA2013_pyquen_allQCDPhoton120to9999_forestv85_noJetResCorr.root"; */
 
-// Not important
-TString fnamePADATA_Cone05                  = "yskimmedFiles/yskim_pA_photonSkimForest_v85_HLT_PAPhoton30_NoCaloIdVL_v1_highPtPhoton40_akpu5.root";
-//            pA MC
-TString fnamePAMC_AllQcdPho30to50_Cone05    = "yskimmedFiles/yskim_PA2013_pyquen_allQCDPhoton30to50_forestv85_akpu5.root";
-TString fnamePAMC_AllQcdPho50to80_Cone05    = "yskimmedFiles/yskim_PA2013_pyquen_allQCDPhoton50to80_forestv85_akpu5.root";
-TString fnamePAMC_AllQcdPho80to120_Cone05   = "yskimmedFiles/yskim_PA2013_pyquen_allQCDPhoton80to120_forestv85_akpu5.root";
-TString fnamePAMC_AllQcdPho120to9999_Cone05 = "yskimmedFiles/yskim_PA2013_pyquen_allQCDPhoton120to9999_forestv85_akpu5.root";
+/* // Not important */
+/* TString fnamePADATA_Cone05                  = "yskimmedFiles/yskim_pA_photonSkimForest_v85_HLT_PAPhoton30_NoCaloIdVL_v1_highPtPhoton40_akpu5.root"; */
+/* //            pA MC */
+/* TString fnamePAMC_AllQcdPho30to50_Cone05    = "yskimmedFiles/yskim_PA2013_pyquen_allQCDPhoton30to50_forestv85_akpu5.root"; */
+/* TString fnamePAMC_AllQcdPho50to80_Cone05    = "yskimmedFiles/yskim_PA2013_pyquen_allQCDPhoton50to80_forestv85_akpu5.root"; */
+/* TString fnamePAMC_AllQcdPho80to120_Cone05   = "yskimmedFiles/yskim_PA2013_pyquen_allQCDPhoton80to120_forestv85_akpu5.root"; */
+/* TString fnamePAMC_AllQcdPho120to9999_Cone05 = "yskimmedFiles/yskim_PA2013_pyquen_allQCDPhoton120to9999_forestv85_akpu5.root"; */
 
-double  wPAMC_AllQcdPho30to50        = 56669./ 50385.;
-double  wPAMC_AllQcdPho50to80        = 41906./ 114136.;
-double  wPAMC_AllQcdPho80to120       = 12044./ 103562.;
-double  wPAMC_AllQcdPho120to9999     = 4481. / 151511.;
+/* double  wPAMC_AllQcdPho30to50        = 56669./ 50385.; */
+/* double  wPAMC_AllQcdPho50to80        = 41906./ 114136.; */
+/* double  wPAMC_AllQcdPho80to120       = 12044./ 103562.; */
+/* double  wPAMC_AllQcdPho120to9999     = 4481. / 151511.; */
 
+////////////////////////// pA datasets 2015-01-21
+TString fnamePADATA = "yskimmedFiles/yskim_pA_DATA_photonForest.root";
+TString fnamePAMC_AllQcdPho30to50    = "yskimmedFiles/yskim_pA_AllQCDPhoton3050.root";
+TString fnamePAMC_AllQcdPho50to80    = "yskimmedFiles/yskim_pA_AllQCDPhoton5080.root";
+TString fnamePAMC_AllQcdPho80to120   = "yskimmedFiles/yskim_pA_AllQCDPhoton80120.root";
+TString fnamePAMC_AllQcdPho120to170  = "yskimmedFiles/yskim_pA_AllQCDPhoton120170.root";
+TString fnamePAMC_AllQcdPho170to9999 = "yskimmedFiles/yskim_pA_AllQCDPhoton1709999.root";
 
+double  wPAMC_AllQcdPho30to50        = 102400.0 / 102400.0 ;
+double  wPAMC_AllQcdPho50to80        = 39656.0 / 102400.0 ;
+double  wPAMC_AllQcdPho80to120       = 10157.0 / 102400.0 ;
+double  wPAMC_AllQcdPho120to170      = 2517.0 / 102400.0 ;
+double  wPAMC_AllQcdPho170to9999     = 649.0 / 102400.0 ;
 
 ///////////// PbPb Data // File name checked on Oct 20th
 TString fnameHIDATA                  = "yskimmedFiles/yskim_HiForestPhoton-v7-noDuplicate.root";
