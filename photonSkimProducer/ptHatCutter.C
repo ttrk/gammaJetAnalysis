@@ -42,7 +42,7 @@ void ptHatCutter( int ptHatCut1 = 30, int ptHatCut2=50, int genPhotonPtCut =30) 
    
   t->SetOutputFile(outname.Data());
   // LOOP!!
-  t->InitTree();
+//  t->InitTree();// yj, HiForest Contructor contains InitTree() already.
 
   int nentries = t->GetEntries();
   //  nentries = 100000;
@@ -56,7 +56,7 @@ void ptHatCutter( int ptHatCut1 = 30, int ptHatCut2=50, int genPhotonPtCut =30) 
 
     if ( !((t->photon.ptHat > ptHatCut1) && (t->photon.ptHat < ptHatCut2)) )
       continue;
-    
+#if 0    
     bool isHighPtGen = false;
     for (int jpho=0;jpho< t->genp.nPar ;jpho++) {
       if (  ( t->genp.et[jpho] > genPhotonPtCut ) && ( fabs(t->genp.eta[jpho]) < 3 ) && ( abs(t->genp.momId[jpho])<=22 ) && ( t->genp.id[jpho] == 22 ) && ( t->genp.status[jpho]==1 ) ) {
@@ -66,6 +66,7 @@ void ptHatCutter( int ptHatCut1 = 30, int ptHatCut2=50, int genPhotonPtCut =30) 
     }
    
     if (isHighPtGen)
+#endif
       t->FillOutput();
   }
   delete t;
