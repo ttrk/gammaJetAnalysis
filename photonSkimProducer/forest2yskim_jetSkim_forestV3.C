@@ -34,8 +34,6 @@ vector<jetKinem> nullVec;
 
 void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonSkimForest_v85_skimPhotonPt50_eta1.5.root",
 				   std::string MinbiasFname = "skim_trackJet_minbiasTrackJet_mc.root",
-			 	   float maxpthat=50.,
-			 	   float xSection=102400.0,
 				   float cutphotonPt  = 35,  // default value dropped to 35GeV  for later photon energy smearing/scaling
 				   std::string outname = "testPhotonSkim.root",
 				   sampleType colli=kPADATA,
@@ -294,9 +292,7 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
     theJet = &(c->akPu3PF) ;
     cout << "PbPb or pPb collision. Using akPu3PF Jet Algo" << endl<<endl;
   }
-  //genJetTree = &(c->akPu3PF);
-  genJetTree = &(c->ak3PF);
-
+  genJetTree = &(c->akPu3PF);
 
 
   // Loop starts.
@@ -411,8 +407,8 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
     evt.ptHatWeight = 1;
     evt.ptHat = c->photon.ptHat;
 
-    if( colli == kPAMC && evt.ptHat > maxpthat ) // pA samples don't use ptHatCutter.C.
-	continue;
+   // if( colli == kPAMC && evt.ptHat > maxpthat ) // pA samples don't use ptHatCutter.C.
+   //	continue;
     if (colli ==kHIMC) {
       if ( evt.ptHat < 50  )       evt.ptHatWeight = 9008/16237. ;
       else if ( evt.ptHat < 80  )       evt.ptHatWeight = 3750/85438. ;
@@ -423,8 +419,12 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
       else if ( evt.ptHat < 80  )       evt.ptHatWeight = 3750/40109. ;
       else   evt.ptHatWeight = 1191/66934. ;
     }
-    else if ( colli == kPAMC) { // pA samples don't use ptHatCutter.
-	evt.ptHatWeight = xSection/nentries;
+    else if ( colli == kPAMC) { 
+	if ( evt.ptHat > 30 && evt.ptHat < 50  )       evt.ptHatWeight = 62744/62744. ;
+        else if ( evt.ptHat > 50 && evt.ptHat < 80  )       evt.ptHatWeight = 29499/107309. ;
+        else if ( evt.ptHat > 80 && evt.ptHat < 120  )       evt.ptHatWeight = 7640/106817. ;
+        else if ( evt.ptHat > 120 && evt.ptHat < 170  )       evt.ptHatWeight = 1868/104443. ;
+        else   evt.ptHatWeight = 649/139647. ;
     }
 
 
@@ -506,9 +506,9 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
     if(smearingCentBin != -1)
       nSmear = 100;
 
+      for(int iSmear =0; iSmear < nSmear; iSmear++){ // iSmear loop have to be here, before Jet loop. mis-ordered for loops ruins jetrefpt values.
     for (int ij=0; ij< jetEntries ; ij++) {
       if ( gj.photonEt < 0 )    continue ;    // If there is no photon in this event
-      for(int iSmear =0; iSmear < nSmear; iSmear++){
 	if (  useGenJetColl )   {
 	  jetPt[nJet] = theJet->genpt[ij];
 	  jetEta[nJet] = theJet->geneta[ij];
@@ -553,16 +553,6 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
 	float l2l3Corr =1 ;
 
 	if  (doJetResCorrection)   {
-	  if ((colli==kHIDATA)||(colli==kHIMC))  { // do the residual correction
-	    if ( evt.cBin  < 12 )   // central
-	      resCorrection  =  1.04503 -1.6122  /(sqrt(jetPt[nJet])) + 9.27212 / (jetPt[nJet]);  //1.04503    -1.6122    9.27212
-	    else                  // peripheral
-	      resCorrection  =  1.00596 -0.653191/(sqrt(jetPt[nJet])) + 4.35373 / (jetPt[nJet]);  //1.00596     -0.653191  4.35373
-	  }
-	  else if ((colli==kPPDATA)||(colli==kPPMC)){  // do the residual correction
-	    resCorrection  = 0.993609  +0.158418/(sqrt(jetPt[nJet])) + 0.335479 / (jetPt[nJet]);//	  0.993609   0.158418   0.335479
-	  }
-
 	  // L2L3 correction!
 	  if ( colli == kPPDATA)   {
 	    l2l3Corr = c_etapp->GetBinContent(c_etapp->FindBin(jetEta[nJet])) * fptpp->Eval( jetPt[nJet]);
@@ -575,7 +565,19 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
 	  }
 	  else if ( colli == kPAMC)
 	    l2l3Corr = 1 + (fsmear_pA->Eval( jetPt[nJet] )) * fgaus->GetRandom()  ;
-	}
+
+	  // do the residual correction
+	  if ((colli==kHIDATA)||(colli==kHIMC))  { 
+	    if ( evt.cBin  < 12 )   // central
+	      resCorrection  =  1.04503 -1.6122  /(sqrt(jetPt[nJet])) + 9.27212 / (jetPt[nJet]);  //1.04503    -1.6122    9.27212
+	    else                  // peripheral
+	      resCorrection  =  1.00596 -0.653191/(sqrt(jetPt[nJet])) + 4.35373 / (jetPt[nJet]);  //1.00596     -0.653191  4.35373
+	  }
+	  else if ((colli==kPPDATA)||(colli==kPPMC)){  // do the residual correction
+	    resCorrection  = 0.993609  +0.158418/(sqrt(jetPt[nJet])) + 0.335479 / (jetPt[nJet]);//	  0.993609   0.158418   0.335479
+	  }
+
+	} // doJetResCorrection
 
 	// reflect eta!
 	if ( (colli==kPADATA) && ( evt.run > 211256 ) )  {
@@ -633,10 +635,9 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
 	  }
 	}
 
-      }
-
       nJet++ ;
-    }
+      }// ij for loop
+    }// iSmear for loop
 
 
     //////// Leading jet kinematics in dphi>7pi/8
@@ -731,16 +732,6 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
 	float l2l3Corr =1 ;
 
 	if  (doJetResCorrection)   {
-	  // Correction from MC closure
-	  if ((colli==kHIDATA)||(colli==kHIMC))  { // do the residual correction
-	    if ( evt.cBin  < 12 )   // central
-	      resCorrection  =  1.04503 -1.6122  /(sqrt(jetPtImb[it])) + 9.27212 / (jetPtImb[it]);  //1.04503    -1.6122    9.27212
-	    else                  // peripheral
-	      resCorrection  =  1.00596 -0.653191/(sqrt(jetPtImb[it])) + 4.35373 / (jetPtImb[it]);  //1.00596     -0.653191  4.35373
-	  }
-	  else if ((colli==kPPDATA)||(colli==kPPMC)){  // do the residual correction
-	    resCorrection  = 0.993609  +0.158418/(sqrt(jetPtImb[it])) + 0.335479 / (jetPtImb[it]);//          0.993609   0.158418   0.335479
-	  }
 	  // L2L3
 	  if ( colli == kPPDATA)   {
 	    l2l3Corr = c_etapp->GetBinContent(c_etapp->FindBin(jetEtaImb[it])) * fptpp->Eval( jetPtImb[it]);
@@ -753,6 +744,18 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
 	  }
 	  else if ( colli == kPAMC)
 	    l2l3Corr = 1 + (fsmear_pA->Eval( jetPtImb[it] )) * fgaus->GetRandom()  ;
+	
+	  // Correction from MC closure
+	  if ((colli==kHIDATA)||(colli==kHIMC))  { // do the residual correction
+	    if ( evt.cBin  < 12 )   // central
+	      resCorrection  =  1.04503 -1.6122  /(sqrt(jetPtImb[it])) + 9.27212 / (jetPtImb[it]);  //1.04503    -1.6122    9.27212
+	    else                  // peripheral
+	      resCorrection  =  1.00596 -0.653191/(sqrt(jetPtImb[it])) + 4.35373 / (jetPtImb[it]);  //1.00596     -0.653191  4.35373
+	  }
+	  else if ((colli==kPPDATA)||(colli==kPPMC)){  // do the residual correction
+	    resCorrection  = 0.993609  +0.158418/(sqrt(jetPtImb[it])) + 0.335479 / (jetPtImb[it]);//          0.993609   0.158418   0.335479
+	  }
+	
 	}
 
 
