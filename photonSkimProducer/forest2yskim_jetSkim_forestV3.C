@@ -577,7 +577,8 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
 	    resCorrection  = 0.993609  +0.158418/(sqrt(jetPt[nJet])) + 0.335479 / (jetPt[nJet]);//	  0.993609   0.158418   0.335479
 	  }
 	  else if ((colli==kPADATA)||(colli==kPAMC)){
-	    resCorrection = 0.745753 + 6.91646/(sqrt(jetPt[nJet])) - 33.0167 / (jetPt[nJet]); //C : 0.745753, S : 6.91646, N : -33.0167
+	    resCorrection = 0.981365 + 0.342746/(sqrt(jetPt[nJet])) - 2.63018 / (jetPt[nJet]); //C : 0.981365, S : 0.342746, N : -2.63018 //function derived as a function of gen pt 
+	    //resCorrection = 0.745753 + 6.91646/(sqrt(jetPt[nJet])) - 33.0167 / (jetPt[nJet]); //C : 0.745753, S : 6.91646, N : -33.0167 //function derived as a function of reco pt 
 	  }
 	
 	} // doJetResCorrection
@@ -759,7 +760,8 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
 	    resCorrection  = 0.993609  +0.158418/(sqrt(jetPtImb[it])) + 0.335479 / (jetPtImb[it]);//          0.993609   0.158418   0.335479
 	  }
 	  else if ((colli==kPADATA)||(colli==kPAMC)){
-	    resCorrection = 0.745753 + 6.91646/(sqrt(jetPtImb[it])) - 33.0167 / (jetPtImb[it]); //C : 0.745753, S : 6.91646, N : -33.0167
+	    resCorrection = 0.981365 + 0.342746/(sqrt(jetPtImb[it])) - 2.63018 / (jetPtImb[it]); //C : 0.981365, S : 0.342746, N : -2.63018 //function derived as a function of gen pt
+	    //resCorrection = 0.745753 + 6.91646/(sqrt(jetPtImb[it])) - 33.0167 / (jetPtImb[it]); //C : 0.745753, S : 6.91646, N : -33.0167//function derived as a function of reco pt
 	  }
 	
 	}
