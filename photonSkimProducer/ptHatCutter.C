@@ -42,7 +42,7 @@ void ptHatCutter( int ptHatCut1 = 30, int ptHatCut2=50, int genPhotonPtCut =30) 
    
   t->SetOutputFile(outname.Data());
   // LOOP!!
-//  t->InitTree();// yj, HiForest Contructor contains InitTree() already.
+  t->InitTree();
 
   int nentries = t->GetEntries();
   //  nentries = 100000;
