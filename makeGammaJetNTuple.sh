@@ -38,37 +38,28 @@ g++ makeGammaJetNTuple.C $(root-config --cflags --libs) -Werror -Wall -g -o make
 # hadd -f "gammaJets_pp_MC_EmEnrichedDijet.root" gammaJets_pp_MC_EmEnrichedDijet*.root
 # echo "done pp MC"
 
-./makeGammaJetNTuple.exe "/mnt/hadoop/cms/store/user/goyeonju/MC_Production/PYTHIA/pp_2760GeV/forest/pp2760_pyquen_emDijet30to50_forestv85_20130915.root" 3 "test_out.root" 1
+#./makeGammaJetNTuple.exe "/mnt/hadoop/cms/store/user/goyeonju/MC_Production/PYTHIA/pp_2760GeV/forest/pp2760_pyquen_emDijet30to50_forestv85_20130915.root" 3 "test_out.root" 1
 
-# # pA
-# MCWEIGHT=(1 0.0890448 0.0228245 0.00493548)
-# PTHATS=(30 50 80 120 9999)
-# for COUNTER in 0 1 2 3
-# do
-#     INFILE="/mnt/hadoop/cms/store/user/goyeonju/pA/PA2013_pyquen_allQCDPhoton${PTHATS[COUNTER]}to${PTHATS[COUNTER+1]}_forestv85.root"
-#     OUTFILE="gammaJets_pA_MC_allQCDPhoton${PTHATS[COUNTER]}.root"
-#     ./makeGammaJetNTuple.exe "$INFILE" 5 "$OUTFILE" ${MCWEIGHT[COUNTER]}
-# done
-# hadd -f "gammaJets_pA_MC_allQCDPhoton.root" gammaJets_pA_MC_allQCDPhoton*.root
-# echo "done pA MC"
+# pA
+MCWEIGHT=(1 0.2748977252606957 0.0715241955868448 0.017885353733615463 0.0046474324546893235 )
+PTHATS=(30 50 80 120 170 9999)
+for COUNTER in 0 1 2 3 4
+do
+    INFILE="/export/d00/scratch/luck/yskimmedFiles/merged_allQCDPhoton${PTHATS[COUNTER]}to${PTHATS[COUNTER+1]}_genPtCut40_CMSSW5320.root"
+    OUTFILE="gammaJets_pA_MC_allQCDPhoton${PTHATS[COUNTER]}.root"
+    ./makeGammaJetNTuple.exe "$INFILE" 5 "$OUTFILE" ${MCWEIGHT[COUNTER]}
+done
+hadd -f "gammaJets_pA_MC_allQCDPhoton.root" gammaJets_pA_MC_allQCDPhoton*.root
+echo "done pA MC"
 
 # # Data
 # # pp
 # ./makeGammaJetNTuple.exe "SAMPLES/ppPhotonDATA.root" 2 "gammaJets_pp_Data.root"
 # echo "Done pp data"
 
-# # pA (promptSkim data)
-# ./makeGammaJetNTuple.exe "SAMPLES/pAPhotonPromptSKIMDATA.root" 4 "gammaJets_pA_Data.root"
-# echo "Done pA data"
-
-# # pA promptRECO data
-# mkdir -p pA_promptRECO
-# for file in /mnt/hadoop/cms/store/user/luck/pA_photonSkimForest_v85_fromPromptReco_partialmerge/*.root
-# do
-#     ./makeGammaJetNTuple.exe $file 4 pA_promptRECO/$(basename $file)
-# done
-# hadd -f "gammaJets_pA_Data.root" pA_promptRECO/*.root
-# echo "Done pA data"
+# pA
+./makeGammaJetNTuple.exe "/mnt/hadoop/cms/store/user/luck/2014-photon-forests/pPb_DATA_photon30trig_localJEC_v1.root" 4 "gammaJets_pA_Data.root"
+echo "Done pA data"
 
 # # PbPb
 # ./makeGammaJetNTuple.exe "SAMPLES/pbpbPhotonDATA.root" 0 "gammaJets_PbPb_Data.root"

@@ -37,18 +37,18 @@ int makeGammaJetNTuple(const char *inFile, sampleType sType, const char *outName
 
   // prepares photonTree, jetTree, and mJetTree
   initGammaSkim(montecarlo); //see alexGammaSkim.h
-  
+
   HiForest *c = new HiForest(inFile, "Forest", cType, montecarlo);
   c->InitTree(); //could be redundant, but doesn't hurt
   if( cType == cPbPb )
     c->GetEnergyScaleTable((char*)"photonEnergyScaleTable_lowPt_v6.root");
-  
+
   c->LoadNoTrees(); // turns off trees I'm not using: loops faster
   c->hasPhotonTree = true;
   c->hasSkimTree = true; // required for selectEvent()
   c->hasEvtTree = true;
 
-  
+
   // if(sType == kHIDATA || sType == kHIMC || sType == kPADATA || sType == kPAMC)
   // {
   //   c->hasAkPu3JetTree = true;
@@ -67,28 +67,28 @@ int makeGammaJetNTuple(const char *inFile, sampleType sType, const char *outName
   Float_t         jetPtImb[MAXJETS];
   Float_t         jetEtaImb[MAXJETS];
   Float_t         jetPhiImb[MAXJETS];
- 
+
   int nCentBins =  nCentBinSkim;
   TChain *tjmb[100][nVtxBin+1];
-  Long64_t nMB[100][nVtxBin+1] ; 
+  Long64_t nMB[100][nVtxBin+1] ;
   Long64_t mbItr[100][nVtxBin+1];
   if ( sType==kHIDATA ) {
     for( int icent = 0 ; icent< nCentBins ; icent++) {
-      for( int ivz = 1 ; ivz<=nVtxBin ; ivz++) {	
+      for( int ivz = 1 ; ivz<=nVtxBin ; ivz++) {
   	tjmb[icent][ivz] = new TChain(Form("trkAndJets_first_cBin2icent%d_ivz%d",icent,ivz));
   	tjmb[icent][ivz]->Add(MinbiasFname.Data());
   	tjmb[icent][ivz]->SetBranchAddress("nJet",   &nJetImb);
   	tjmb[icent][ivz]->SetBranchAddress("jetPt",  jetPtImb);
 	tjmb[icent][ivz]->SetBranchAddress("jetEta", jetEtaImb);
 	tjmb[icent][ivz]->SetBranchAddress("jetPhi", jetPhiImb);
-	
+
   	nMB[icent][ivz] = tjmb[icent][ivz]->GetEntries();
 	mbItr[icent][ivz] = rand.Integer(nMB[icent][ivz]);
       }
     }
   }
   ///////////////////////////////////////////////
-  
+
   //loop over events in each file
   Long64_t nentries = c->GetEntries();
   for(Long64_t jentry = 0; jentry<nentries; ++jentry)
@@ -96,11 +96,18 @@ int makeGammaJetNTuple(const char *inFile, sampleType sType, const char *outName
     if (jentry % 1000 == 0)  {
       printf("%lld / %lld\n",jentry,nentries);
     }
-    
+
     c->GetEntry(jentry);
 
     //event selection
-    if( !c->selectEvent() )
+    // if( !c->selectEvent() )
+    //   continue;
+
+    if(! (
+	 (montecarlo || c->skim.pHBHENoiseFilter)
+	 && c->skim.pPAcollisionEventSelectionPA
+	 )
+      )
       continue;
 
     if( TMath::Abs(c->evt.vz) > vzCut )
@@ -121,7 +128,7 @@ int makeGammaJetNTuple(const char *inFile, sampleType sType, const char *outName
 	(!(c->isLoosePhoton(i)))
 	)
 	continue;
-      
+
       Float_t correctedPt = c->getCorrEt(i);
       if(correctedPt > leadingCorrectedPt)
       {
@@ -129,7 +136,7 @@ int makeGammaJetNTuple(const char *inFile, sampleType sType, const char *outName
 	leadingIndex = i;
       }
     }
-      
+
     if(leadingIndex == -1)
       continue;
 
@@ -171,15 +178,15 @@ int makeGammaJetNTuple(const char *inFile, sampleType sType, const char *outName
     ///////////////////////////////////////////
     nJets_ = 0;
     Jets jetCollection;
-    // if(sType == kHIDATA || sType == kHIMC || sType == kPADATA || sType == kPAMC)
-    // {
-    //   jetCollection = c->akPu3PF;
-    // }
-    // else //pp
-    // {
-    //   jetCollection = c->ak3PF;
-    // }
-    jetCollection = c->akPu3PF; //pp mc currently missing ak3PF
+    if(sType == kHIDATA || sType == kHIMC || sType == kPADATA || sType == kPAMC)
+    {
+      jetCollection = c->akPu3PF;
+    }
+    else //pp
+    {
+      jetCollection = c->ak3PF;
+    }
+    //jetCollection = c->akPu3PF; //pp mc currently missing ak3PF
 
     for(Int_t i = 0; i<jetCollection.nref; ++i)
     {
@@ -193,7 +200,7 @@ int makeGammaJetNTuple(const char *inFile, sampleType sType, const char *outName
       Float_t deltaR = TMath::Sqrt(deltaPhi*deltaPhi + deltaEta*deltaEta);
 
       if(deltaR < 0.3) continue; // avoid finding the photon itself
-      
+
       Float_t averageEta = (c->photon.eta[leadingIndex] + jetCollection.jteta[i])/2.0;
 
       jPt_[nJets_] = jetCollection.jtpt[i];
@@ -224,7 +231,7 @@ int makeGammaJetNTuple(const char *inFile, sampleType sType, const char *outName
       nMjet_ = 0;
       int cBin = c->evt.hiBin;
       int vzBin = 1;
-    
+
       for(int k = 0; k < nMixing; k++)
       {
     	mbItr[cBin][vzBin] = mbItr[cBin][vzBin] + 1;
@@ -232,18 +239,18 @@ int makeGammaJetNTuple(const char *inFile, sampleType sType, const char *outName
 	{
 	  mbItr[cBin][vzBin] = 0;
 	}
-      
+
     	/// Load the minbias event
 	//printf("cBin: %d, mbItr: %lld.\n",cBin,mbItr[cBin][vzBin]);
     	tjmb[cBin][vzBin]->GetEntry(mbItr[cBin][vzBin]);
-      
-    	// Jet mixing 
+
+    	// Jet mixing
     	for (int it = 0 ; it < nJetImb ; it++) {
-    	  // if ( jetPtImb[it] < cutjetPtSkim ) 
+    	  // if ( jetPtImb[it] < cutjetPtSkim )
     	  //   continue;
-    	  if ( TMath::Abs( jetEtaImb[it] ) > jetEtaCut ) 
+    	  if ( TMath::Abs( jetEtaImb[it] ) > jetEtaCut )
     	    continue;
-	
+
     	  mJetPt_[nMjet_]    = jetPtImb[it];
     	  mJetEta_[nMjet_]   = jetEtaImb[it];
     	  mJetPhi_[nMjet_]   = jetPhiImb[it];
@@ -264,7 +271,7 @@ int makeGammaJetNTuple(const char *inFile, sampleType sType, const char *outName
     jetTree_->Fill();
     mJetTree_->Fill();
   }
-  
+
   outfile->cd();
   photonTree_->Write();
   jetTree_->Write();
@@ -291,7 +298,7 @@ collisionType getCType(sampleType sType)
   }
   return cPbPb; //probably a bad guess
 }
-			
+
 int main(int argc, char *argv[])
 {
   if(argc != 4 && argc != 5)

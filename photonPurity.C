@@ -34,16 +34,16 @@ using namespace std;
 // const TCut sampleIsolation = "ecalRecHitSumEtConeDR04 < 4.2  &&  hcalTowerSumEtConeDR04 < 2.2  &&  trkSumPtHollowConeDR04 < 2 && hadronicOverEm<0.1";
 
 //PbPb
-const TString DATA_FILE = "gammaJets_PbPb_Data.root";
-const TString MC_FILE = "gammaJets_PbPb_MC_allQCDPhoton.root";
-const TString LABEL = "PbPb Data";
-const TCut sampleIsolation = "(cc4+cr4+ct4PtCut20<1) && hadronicOverEm<0.1";
+// const TString DATA_FILE = "gammaJets_PbPb_Data.root";
+// const TString MC_FILE = "gammaJets_PbPb_MC_allQCDPhoton.root";
+// const TString LABEL = "PbPb Data";
+// const TCut sampleIsolation = "(cc4+cr4+ct4PtCut20<1) && hadronicOverEm<0.1";
 
 //pPb
-// const TString DATA_FILE = "gammaJets_pA_Data.root";
-// const TString MC_FILE = "gammaJets_pA_MC_allQCDPhoton.root";
-// const TString LABEL = "pPb #sqrt{s}_{_{NN}}=5.02 TeV";
-// const TCut sampleIsolation = "ecalRecHitSumEtConeDR04 < 4.2  &&  hcalTowerSumEtConeDR04 < 2.2  &&  trkSumPtHollowConeDR04 < 2 && hadronicOverEm<0.1";
+const TString DATA_FILE = "gammaJets_pA_Data.root";
+const TString MC_FILE = "gammaJets_pA_MC_allQCDPhoton.root";
+const TString LABEL = "pPb #sqrt{s}_{_{NN}}=5.02 TeV";
+const TCut sampleIsolation = "ecalRecHitSumEtConeDR04 < 4.2  &&  hcalTowerSumEtConeDR04 < 2.2  &&  trkSumPtHollowConeDR04 < 2 && hadronicOverEm<0.1";
 
 
 //const Double_t sigShifts[] = {-0.0000989, -0.000131273, -0.00016207, -0.000170555};
@@ -52,7 +52,7 @@ const Double_t sigShifts[] = {0, 0, 0, 0};
 const TString SAVENAME = "photonPurity_PbPb_example";
 
 // last entry is upper bound on last bin
-const Int_t CENTBINS[] = {0, 12};//, 40};
+const Int_t CENTBINS[] = {0, 200};//, 40};
 //const Int_t CENTBINS[] = {0, 100};
 const Int_t nCENTBINS = sizeof(CENTBINS)/sizeof(Int_t) -1;
 
@@ -81,8 +81,8 @@ void photonPurity()
 
   //TFile *outFile = new TFile("photonPurity_sys_bkgshift.root","RECREATE");
 
-  const TCut sidebandIsolation = "(cc4+cr4+ct4PtCut20>10) && (cc4+cr4+ct4PtCut20<20) && hadronicOverEm<0.1";
-  //const TCut sidebandIsolation = "(cc4+cr4+ct4PtCut20>5) && (cc4+cr4+ct4PtCut20<10) && hadronicOverEm<0.1";
+  const TCut sidebandIsolation = "((cc4+cr4+ct4PtCut20)/0.9>10) && ((cc4+cr4+ct4PtCut20)/0.9<20) && hadronicOverEm<0.1";
+  //const TCut sidebandIsolation = "((cc4+cr4+ct4PtCut20)/0.9>5) && ((cc4+cr4+ct4PtCut20)/0.9<10) && hadronicOverEm<0.1";
   const TCut mcIsolation = "genCalIsoDR04<5 && abs(genMomId)<=22";
 
   //TCanvas *cPurity[nPTBINS];
@@ -135,40 +135,40 @@ void photonPurity()
 
 	TString name = "mcfit_total_ptbin";
 	name += i;
-	
+
 	// outFile->cd();
 	// hSigPdf->SetName(name);
 	// hSigPdf->Write();
 
-	
-	TH1D *err = (TH1D*)hSigPdf->Clone("error");
-	TH1D *tempErr[4];
-	err->Reset();
-	for(int s = 0; s < 4; s++)
-	{
-	  if(s == 0)
-	    tempErr[s] = (TH1D*)TFile::Open("photonPurity_sys_loose.root")->Get(name);
-	  else if(s ==1)
-	    tempErr[s] = (TH1D*)TFile::Open("photonPurity_sys_tight.root")->Get(name);
-	  else if(s ==2)
-	    tempErr[s] = (TH1D*)TFile::Open("photonPurity_sys_sigshift.root")->Get(name);
-	  else if(s ==3)
-	    tempErr[s] = (TH1D*)TFile::Open("photonPurity_sys_bkgshift.root")->Get(name);
-	  tempErr[s]->Divide(hSigPdf);
-	  for (Int_t l=1; l<=tempErr[s]->GetNbinsX();l++)
-	  {
-	    tempErr[s]->SetBinContent(l, TMath::Abs(tempErr[s]->GetBinContent(l))-1);
-	  }
-	}
-	for (Int_t l=1; l<=err->GetNbinsX();l++)
-	{
-	  Double_t errVal = TMath::Sqrt(tempErr[0]->GetBinContent(l)*tempErr[0]->GetBinContent(l) +
-					tempErr[1]->GetBinContent(l)*tempErr[1]->GetBinContent(l) +
-					tempErr[2]->GetBinContent(l)*tempErr[2]->GetBinContent(l) +
-					tempErr[3]->GetBinContent(l)*tempErr[3]->GetBinContent(l)
-	    );
-	  err->SetBinContent(l, errVal);
-	}
+
+	// TH1D *err = (TH1D*)hSigPdf->Clone("error");
+	// TH1D *tempErr[4];
+	// err->Reset();
+	// for(int s = 0; s < 4; s++)
+	// {
+	//   if(s == 0)
+	//     tempErr[s] = (TH1D*)TFile::Open("photonPurity_sys_loose.root")->Get(name);
+	//   else if(s ==1)
+	//     tempErr[s] = (TH1D*)TFile::Open("photonPurity_sys_tight.root")->Get(name);
+	//   else if(s ==2)
+	//     tempErr[s] = (TH1D*)TFile::Open("photonPurity_sys_sigshift.root")->Get(name);
+	//   else if(s ==3)
+	//     tempErr[s] = (TH1D*)TFile::Open("photonPurity_sys_bkgshift.root")->Get(name);
+	//   tempErr[s]->Divide(hSigPdf);
+	//   for (Int_t l=1; l<=tempErr[s]->GetNbinsX();l++)
+	//   {
+	//     tempErr[s]->SetBinContent(l, TMath::Abs(tempErr[s]->GetBinContent(l))-1);
+	//   }
+	// }
+	// for (Int_t l=1; l<=err->GetNbinsX();l++)
+	// {
+	//   Double_t errVal = TMath::Sqrt(tempErr[0]->GetBinContent(l)*tempErr[0]->GetBinContent(l) +
+	// 				tempErr[1]->GetBinContent(l)*tempErr[1]->GetBinContent(l) +
+	// 				tempErr[2]->GetBinContent(l)*tempErr[2]->GetBinContent(l) +
+	// 				tempErr[3]->GetBinContent(l)*tempErr[3]->GetBinContent(l)
+	//     );
+	//   err->SetBinContent(l, errVal);
+	// }
 
 	// plot stacked histos
 	handsomeTH1(hSigPdf);
@@ -182,7 +182,7 @@ void photonPurity()
 	hSigPdf->SetXTitle("#sigma_{#eta #eta}");
 
 	hSigPdf->DrawCopy("hist");
-	drawSys(hSigPdf, err, kRed, -1, 0.001);
+	//drawSys(hSigPdf, err, kRed, -1, 0.001);
 	hBckPdf->DrawCopy("same hist");
 	hData1->DrawCopy("same");
 
@@ -200,14 +200,14 @@ void photonPurity()
 	t3->SetTextFont(43);
 	t3->SetTextSize(20);
 	//if(i == 0)
-	TH1D *dummyHist = new TH1D("dummyHist","",10,0,10);
-	dummyHist->Fill(1);
-	dummyHist->SetFillColor(kRed);
-	dummyHist->SetLineColor(kRed);
-	dummyHist->SetFillStyle(1001);
-	t3->AddEntry(dummyHist,"MC Sys. Error","f");
-	if(i == 0)
-	  t3->Draw();
+	// TH1D *dummyHist = new TH1D("dummyHist","",10,0,10);
+	// dummyHist->Fill(1);
+	// dummyHist->SetFillColor(kRed);
+	// dummyHist->SetLineColor(kRed);
+	// dummyHist->SetFillStyle(1001);
+	// t3->AddEntry(dummyHist,"MC Sys. Error","f");
+	// if(i == 0)
+	//   t3->Draw();
 
 	if(i == 3)
 	{
@@ -215,8 +215,8 @@ void photonPurity()
 	  drawText("PbPb #sqrt{s}_{_{NN}}=2.76 TeV", xpos, 0.60,1,20);
 	  drawText("#intL = 150 #mub^{-1}", xpos, 0.50,1,20);
 	}
-	  
-	  
+
+
 
 	//drawText("|#eta_{#gamma}| < 1.479",0.5680963,0.9);
 	//drawText(Form("%f shift",fitr.sigMeanShift),0.57,0.82);
@@ -228,7 +228,7 @@ void photonPurity()
 		 xpos, 0.90,1,20);
 	// if(/*nCENTBINS != 1 && */i ==0)
 	drawText(Form("%.0f - %.0f%c",
-		      CENTBINS[j]*100./40., CENTBINS[j+1]*100./40.,'%'),
+		      CENTBINS[j]/2., CENTBINS[j+1]/2.,'%'),
 		 xpos, 0.82,1,20);
 	// if(nETABINS != 1)
 	//   drawText(Form("%.3f < #eta_{#gamma} < %.3f",
@@ -236,9 +236,9 @@ void photonPurity()
 	// 	   xpos, 0.82,1,20);
 	drawText(Form("Purity (#sigma_{#eta#eta} < 0.01) : %.2f", (Float_t)fitr.purity),
 		 xpos, 0.76,1,20);
-	// drawText(Form("#chi^{2}/ndf : %.2f", (Float_t)fitr.chisq),
-	// 	 xpos, 0.45);
-	
+	drawText(Form("#chi^{2}/ndf : %.2f", (Float_t)fitr.chisq),
+		 xpos, 0.45,1,20);
+
 
 	// //plot ratio
 	// cPurity->cd((2*(j+k)+1)*nPTBINS+i+1);
@@ -269,7 +269,7 @@ void photonPurity()
   }
   //cPurity->SaveAs(SAVENAME+".C");
   //cPurity->SaveAs(SAVENAME+".png");
-  cPurity->SaveAs(SAVENAME+".pdf");
+  //cPurity->SaveAs(SAVENAME+".pdf");
 }
 
 int main()

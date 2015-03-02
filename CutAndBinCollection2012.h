@@ -165,11 +165,11 @@ TString fnamePAMC_AllQcdPho80to120   = "yskimmedFiles/yskim_pA_AllQCDPhoton80120
 TString fnamePAMC_AllQcdPho120to170  = "yskimmedFiles/yskim_pA_AllQCDPhoton120170.root";
 TString fnamePAMC_AllQcdPho170to9999 = "yskimmedFiles/yskim_pA_AllQCDPhoton1709999.root";
 
-double  wPAMC_AllQcdPho30to50        = 102400.0 / 102400.0 ;
-double  wPAMC_AllQcdPho50to80        = 39656.0 / 102400.0 ;
-double  wPAMC_AllQcdPho80to120       = 10157.0 / 102400.0 ;
-double  wPAMC_AllQcdPho120to170      = 2517.0 / 102400.0 ;
-double  wPAMC_AllQcdPho170to9999     = 649.0 / 102400.0 ;
+double  wPAMC_AllQcdPho30to50        = 62744. / 62744. ;
+double  wPAMC_AllQcdPho50to80        = 29499. / 107309. ;
+double  wPAMC_AllQcdPho80to120       = 7640. / 106817. ;
+double  wPAMC_AllQcdPho120to170      = 1868. / 104443. ;
+double  wPAMC_AllQcdPho170to9999     = 649. / 139647. ;
 
 ///////////// PbPb Data // File name checked on Oct 20th
 TString fnameHIDATA                  = "yskimmedFiles/yskim_HiForestPhoton-v7-noDuplicate.root";
