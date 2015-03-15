@@ -62,8 +62,6 @@
 
 #void yj_forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonSkimForest_v85_skimPhotonPt50_eta1.5.root",
 #                                   std::string MinbiasFname = "skim_trackJet_minbiasTrackJet_mc.root",
-#                                   float maxpthat=30.,
-#                                   float xSection=102400.0,
 #                                   float cutphotonPt  = 35,  // default value dropped to 35GeV  for later photon energy smearing/scaling
 #                                   std::string outname = "testPhotonSkim.root",
 #                                   sampleType colli=kPADATA,
@@ -71,6 +69,22 @@
 #                                   bool doJetResCorrection = 1,  // = L2L3 * MC nonclosure correction  jet energy correction is done by default from Oct 19th (YS)
 #                                   int smearingCentBin = -1, //0=0-10%, 1=10-30%, 2=30-50%, 3=50-100%, 4=0-30%, 5=30-100%  : Jet pT and phi smearing!
 #                                   bool useGenJetColl = 0
+
+#pA 2015 DATA!
+root -l -q -b 'forest2yskim_jetSkim_forestV3.C++("/u/user/goyeonju/files/forest/pA/pPb_DATA_photon30trig_localJEC_v1.root",	"no min bias", 40, "/u/user/goyeonju/files/yskimfiles/pA/yskim_pPb_DATA_photon30trig_localJEC_v1.root", 4,0)'
+
+
+: << 'comment3'
+# pA MC 2013 //final
+# after removing maxpthat, xSection
+# using NOT ptHatCutted samples.
+root -l -q -b 'forest2yskim_jetSkim_forestV3.C++("/u/user/goyeonju/files/forest/pA/forJEC/HiForest_pPb_MIX_AllQCDPhoton30.root",	"no min bias", 40, "/u/user/goyeonju/files/yskimfiles/pA/yskim_HiForest_pPb_MIX_AllQCDPhoton30to50_akPu3PF_AfterResCorr_final.root", 5,0)'
+root -l -q -b 'forest2yskim_jetSkim_forestV3.C++("/u/user/goyeonju/files/forest/pA/forJEC/HiForest_pPb_MIX_AllQCDPhoton50.root",	"no min bias", 40, "/u/user/goyeonju/files/yskimfiles/pA/yskim_HiForest_pPb_MIX_AllQCDPhoton50to80_akPu3PF_AfterResCorr_final.root", 5,0)'
+root -l -q -b 'forest2yskim_jetSkim_forestV3.C++("/u/user/goyeonju/files/forest/pA/forJEC/HiForest_pPb_MIX_AllQCDPhoton80.root",	"no min bias", 40, "/u/user/goyeonju/files/yskimfiles/pA/yskim_HiForest_pPb_MIX_AllQCDPhoton80to120_akPu3PF_AfterResCorr_final.root", 5,0)'
+root -l -q -b 'forest2yskim_jetSkim_forestV3.C++("/u/user/goyeonju/files/forest/pA/forJEC/HiForest_pPb_MIX_AllQCDPhoton120.root",	"no min bias", 40, "/u/user/goyeonju/files/yskimfiles/pA/yskim_HiForest_pPb_MIX_AllQCDPhoton120to170_akPu3PF_AfterResCorr_final.root", 5,0)'
+root -l -q -b 'forest2yskim_jetSkim_forestV3.C++("/u/user/goyeonju/files/forest/pA/forJEC/HiForest_pPb_MIX_AllQCDPhoton170.root",	"no min bias", 40, "/u/user/goyeonju/files/yskimfiles/pA/yskim_HiForest_pPb_MIX_AllQCDPhoton170to9999_akPu3PF_AfterResCorr_final.root", 5,0)'
+comment3
+
 : << 'comment2'
 # pA MC 2013 for JEC closure
 # after removing maxpthat, xSection
@@ -82,16 +96,6 @@ root -l -q -b 'forest2yskim_jetSkim_forestV3.C++("/u/user/goyeonju/files/forest/
 root -l -q -b 'forest2yskim_jetSkim_forestV3.C++("/u/user/goyeonju/files/forest/pA/merged_allQCDPhoton170to9999_CMSSW538HIp2.root",	"no min bias", 40, "/u/user/goyeonju/files/yskimfiles/pA/yskim_HiForest_pPb_MIX_AllQCDPhoton170to9999_akPu3PF_AfterResCorr.root", 5,0)'
 comment2
 
-#: << 'comment1'
-# pA MC 2013 for JEC closure
-# after removing maxpthat, xSection
-# using NOT ptHatCutted samples.
-root -l -q -b 'forest2yskim_jetSkim_forestV3.C++("/u/user/goyeonju/files/forest/pA/forJEC/HiForest_pPb_MIX_AllQCDPhoton30.root",	"no min bias", 40, "/u/user/goyeonju/files/yskimfiles/pA/yskim_HiForest_pPb_MIX_AllQCDPhoton30to50_akPu3PF_AfterResCorr_final.root", 5,0)'
-root -l -q -b 'forest2yskim_jetSkim_forestV3.C++("/u/user/goyeonju/files/forest/pA/forJEC/HiForest_pPb_MIX_AllQCDPhoton50.root",	"no min bias", 40, "/u/user/goyeonju/files/yskimfiles/pA/yskim_HiForest_pPb_MIX_AllQCDPhoton50to80_akPu3PF_AfterResCorr_final.root", 5,0)'
-root -l -q -b 'forest2yskim_jetSkim_forestV3.C++("/u/user/goyeonju/files/forest/pA/forJEC/HiForest_pPb_MIX_AllQCDPhoton80.root",	"no min bias", 40, "/u/user/goyeonju/files/yskimfiles/pA/yskim_HiForest_pPb_MIX_AllQCDPhoton80to120_akPu3PF_AfterResCorr_final.root", 5,0)'
-root -l -q -b 'forest2yskim_jetSkim_forestV3.C++("/u/user/goyeonju/files/forest/pA/forJEC/HiForest_pPb_MIX_AllQCDPhoton120.root",	"no min bias", 40, "/u/user/goyeonju/files/yskimfiles/pA/yskim_HiForest_pPb_MIX_AllQCDPhoton120to170_akPu3PF_AfterResCorr_final.root", 5,0)'
-root -l -q -b 'forest2yskim_jetSkim_forestV3.C++("/u/user/goyeonju/files/forest/pA/forJEC/HiForest_pPb_MIX_AllQCDPhoton170.root",	"no min bias", 40, "/u/user/goyeonju/files/yskimfiles/pA/yskim_HiForest_pPb_MIX_AllQCDPhoton170to9999_akPu3PF_AfterResCorr_final.root", 5,0)'
-#comment1
 
 : << 'comment'
 # pA MC 2013 for JEC closure
