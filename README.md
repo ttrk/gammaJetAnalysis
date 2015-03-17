@@ -9,6 +9,7 @@ cd CMSSW_5_3_20/src
 cmsenv
 git clone https://github.com/CmsHI/HiForestAnalysis.git
 git clone https://github.com/CmsHI/gammaJetAnalysis.git
+cd gammaJetAnalysis
 cd photonSkimProducer
 yskimmedFiles ./
 cd ..
