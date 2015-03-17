@@ -11,7 +11,7 @@ git clone https://github.com/CmsHI/HiForestAnalysis.git
 git clone https://github.com/CmsHI/gammaJetAnalysis.git
 cd gammaJetAnalysis
 cd photonSkimProducer
-yskimmedFiles ./
+ln -s /export/d00/scratch/luck/yskimmedFiles ./
 cd ..
 cd histogramProducer
 mkdir ffFiles
