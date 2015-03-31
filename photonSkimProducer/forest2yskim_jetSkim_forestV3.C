@@ -135,8 +135,9 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
   float newPt[nMaxPho];  // <<= temporary space
   int order[nMaxPho];
   float corrPt[nMaxPho];
-  newtreePhoton = c->photonTree->CloneTree(0);
-  newtreePhoton->SetName("yPhotonTree");
+  //// newtreePhoton = c->photonTree->CloneTree(0);
+  newtreePhoton = (TTree*)c->photonTree->Clone("yPhotonTree");
+  ////newtreePhoton->SetName("yPhotonTree");
   newtreePhoton->SetMaxTreeSize(MAXTREESIZE);
   newtreePhoton->Branch("order",  order, "order[nPhotons]/I");
   newtreePhoton->Branch("corrPt", corrPt,"corrPt[nPhotons]/F");
@@ -145,12 +146,14 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
   if (   (colli==kPPDATA) || (colli==kPPMC) ) {
   //if (   (colli==kPPDATA) || (colli==kPPMC) ) {
     //treeFullJet = c->ak3jetTree->CloneTree(0);
-    treeFullJet = c->ak3PFJetTree->CloneTree(0);
+    //// treeFullJet = c->ak3PFJetTree->CloneTree(0);
+    treeFullJet = (TTree*)c->ak3PFJetTree->Clone();
     cout << "pp collision.  Using ak3PF Jet Algo" << endl<<endl;
   }
   else {
     //treeFullJet = c->akPu3jetTree->CloneTree(0);
-    treeFullJet = c->akPu3PFJetTree->CloneTree(0);
+    ////treeFullJet = c->akPu3PFJetTree->CloneTree(0);
+    treeFullJet = (TTree*)c->akPu3PFJetTree->Clone();
     cout << "PbPb or pPb collision. Using akPu3PF Jet Algo" << endl<<endl;
   }
   treeFullJet->SetName("fullJet");
@@ -158,8 +161,10 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
 #if 1
   TTree* treeGenp;
   if (   (colli==kHIMC ) || (colli==kPPMC) || (colli==kPAMC) ) {
-    treeGenp =  c->genParticleTree->CloneTree(0);
-    treeGenp->SetName("genparTree");
+    ////treeGenp =  c->genParticleTree->CloneTree(0);
+    ////treeGenp->SetName("genparTree");
+    treeGenp =  (TTree*)c->genParticleTree->Clone("genparTree");
+
     //treeGenp =  c->genpTree->CloneTree(0);
     //treeGenp->SetName("genparTree");
     treeGenp->SetMaxTreeSize(MAXTREESIZE);

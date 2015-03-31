@@ -22,7 +22,8 @@ void drawPtDependencePA(TString dirName="nominal", int prodDate=20131021, int je
     TH1D* meanJetPt[7][10];      // [Collisi on][centrality]
 
     TH1D* rjg[7][5];     //  [Collision][centrality]
-    for (int icoll=0 ; icoll<6  ; icoll++) {
+    //    for (int icoll=0 ; icoll<6  ; icoll++) {
+    for (int icoll=4 ; icoll<6  ; icoll++) {
         for (int icent=1 ; icent<= 10 ; icent++) {
             meanXjg[icoll][icent] = new TH1D( Form("meanXjg_icoll%d_icent%d",icoll,icent), ";p_{T}^{#gamma} (GeV); <X_{J#gamma}>",nPtBin,ptBinPaDraw);
             meanJetPt[icoll][icent] = new TH1D( Form("meanJetPt_icoll%d_icent%d",icoll,icent), ";p_{T}^{#gamma} (GeV); <p_{T}^{Jet}>",nPtBin,ptBinPaDraw);
@@ -40,7 +41,8 @@ void drawPtDependencePA(TString dirName="nominal", int prodDate=20131021, int je
 
     TFile* histFile[7][6];  // [Collision][pt]
     for (int ipt=1 ; ipt<=nPtBin ; ipt++) {
-        for (int icoll=0 ; icoll<6 ; icoll++) {
+      //        for (int icoll=0 ; icoll<6 ; icoll++) {
+        for (int icoll=4 ; icoll<6 ; icoll++) {
 	  TString sampleName = getSampleName( icoll ) ;
 	  char* fname =  Form("ffFiles/%s/photonTrackCorr_%s_output_photonPtThr%d_to_%d_jetPtThr%d_%d.root",dirName.Data(), sampleName.Data(), (int)ptBin[ipt-1], (int)ptBin[ipt], (int)jetPtCut, prodDate);
 
@@ -101,7 +103,8 @@ void drawPtDependencePA(TString dirName="nominal", int prodDate=20131021, int je
     }
 
     for (int ipt=1 ; ipt<=nPtBin ; ipt++) {
-        for (int icoll=0 ; icoll<6 ; icoll++) {
+      //        for (int icoll=0 ; icoll<6 ; icoll++) {
+        for (int icoll=4 ; icoll<6 ; icoll++) {
             for (int icent=1 ; icent<= 10 ; icent++ ) {
                 if ( hxjg[icoll][icent][ipt] == NULL )
                     continue;   // emtpy histogram
@@ -128,6 +131,7 @@ void drawPtDependencePA(TString dirName="nominal", int prodDate=20131021, int je
 
         c1->cd(ipt);
 
+	cout<<"l134"<<endl;
         handsomeTH1(hDphi[kPAMC][1][ipt], 1);
         hDphi[kPAMC][1][ipt]->SetXTitle("#Delta#phi_{J#gamma}");
         hDphi[kPAMC][1][ipt]->SetYTitle("Normalized entries");
@@ -137,6 +141,7 @@ void drawPtDependencePA(TString dirName="nominal", int prodDate=20131021, int je
         hDphi[kPAMC][1][ipt]->SetAxisRange(0.01,30,"Y");
         hDphi[kPAMC][1][ipt]->Draw();
 
+	cout<<"l144"<<endl;
 	handsomeTH1(hDphi[kPADATA][1][ipt], kRed);
 	hDphi[kPADATA][1][ipt]->Scale(1./hDphi[kPADATA][1][ipt]->Integral("width"));
 	hDphi[kPADATA][1][ipt]->Draw("same");
@@ -176,15 +181,18 @@ void drawPtDependencePA(TString dirName="nominal", int prodDate=20131021, int je
         hTempPt->SetAxisRange(10,150,"X");
 	//        hTempPt->SetAxisRange(0,0.025,"Y");
 	hTempPt->SetAxisRange(0,0.08,"Y");
+	cout<<"l184"<<endl;
         handsomeTH1(hTempPt,0);
         hTempPt->DrawCopy();
 
 	//	hJetPt[kPAMC][1][ipt]->Scale(1./rjg[kPAMC][1]->GetBinContent(ipt)); // rjg normalization
 
+	cout<<"l190"<<endl;
         handsomeTH1(hJetPt[kPAMC][1][ipt], 1);
         hJetPt[kPAMC][1][ipt]->SetMarkerStyle(24);
 	hJetPt[kPAMC][1][ipt]->Draw("same");
 
+	cout<<"l195"<<endl;
 	handsomeTH1(hJetPt[kPADATA][1][ipt],kRed);
 	//	hJetPt[kPADATA][1][ipt]->Scale(1./rjg[kPADATA][1]->GetBinContent(ipt));
 
@@ -213,13 +221,14 @@ void drawPtDependencePA(TString dirName="nominal", int prodDate=20131021, int je
 
 
     TCanvas* c21 = new TCanvas("c21","",500,500);
+	cout<<"l224"<<endl;
     handsomeTH1(meanJetPt[kPAMC][1], 1);
     meanJetPt[kPAMC][1]->SetYTitle("<p_{T}^{Jet}>  (>30GeV)");
     meanJetPt[kPAMC][1]->SetMarkerStyle(24);
     //  meanJetPt[kPAMC][1]->SetAxisRange(-2,2,"X");
     meanJetPt[kPAMC][1]->SetAxisRange(40,115,"Y");
     meanJetPt[kPAMC][1]->Draw();
-
+	cout<<"l231"<<endl;
     handsomeTH1(meanJetPt[kPADATA][1],kRed);
     meanJetPt[kPADATA][1]->Draw("same");
 
@@ -233,6 +242,7 @@ void drawPtDependencePA(TString dirName="nominal", int prodDate=20131021, int je
 
         c3->cd(ipt);
 
+	cout<<"l245"<<endl;
         handsomeTH1(hxjg[kPAMC][1][ipt], 1);
         hxjg[kPAMC][1][ipt]->SetXTitle("x_{J#gamma}");
         hxjg[kPAMC][1][ipt]->SetYTitle("#frac{dN}{dp_{T}} #frac{1}{N}");

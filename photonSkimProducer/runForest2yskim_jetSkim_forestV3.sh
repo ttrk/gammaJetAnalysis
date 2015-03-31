@@ -48,10 +48,10 @@
 
 
 #  pA data, photon hiForest
-#root -l -q -b 'forest2yskim_jetSkim_forestV3.C++("/mnt/hadoop/cms/store/user/luck/2014-photon-forests/pPb_DATA_photon30trig_localJEC_v1.root", "", 0, 1, 35,  "yskimmedFiles/yskim_pA_DATA_photonForest.root",4,0)'
+root -l -q -b 'forest2yskim_jetSkim_forestV3.C++("/mnt/hadoop/cms/store/user/luck/2014-photon-forests/pPb_DATA_photon30trig_localJEC_v2.root", "", 35,  "yskim_pA_DATA_photonForest_kaya.root",4,0)'
 # pA MC.  photon hiForest
 #root -l -q -b 'forest2yskim_jetSkim_forestV3.C++("/mnt/hadoop/cms/store/user/luck/2014-photon-forests/pPb_MIX_localJEC_v1/HiForest_pPb_MIX_AllQCDPhoton30.root", "", 50,  102400, 35, "yskimmedFiles/yskim_pA_AllQCDPhoton3050.root", 5,0)'
 #root -l -q -b 'forest2yskim_jetSkim_forestV3.C+("/mnt/hadoop/cms/store/user/luck/2014-photon-forests/pPb_MIX_localJEC_v1/HiForest_pPb_MIX_AllQCDPhoton50.root", "", 80, 39656, 35, "yskimmedFiles/yskim_pA_AllQCDPhoton5080.root", 5,0)'
 #root -l -q -b 'forest2yskim_jetSkim_forestV3.C+("/mnt/hadoop/cms/store/user/luck/2014-photon-forests/pPb_MIX_localJEC_v1/HiForest_pPb_MIX_AllQCDPhoton80.root", "", 120, 10157, 35, "yskimmedFiles/yskim_pA_AllQCDPhoton80120.root", 5,0)'
-root -l -q -b 'forest2yskim_jetSkim_forestV3.C+("/mnt/hadoop/cms/store/user/luck/2014-photon-forests/pPb_MIX_localJEC_v1/HiForest_pPb_MIX_AllQCDPhoton120.root", "", 170, 2517,35, "yskimmedFiles/yskim_pA_AllQCDPhoton120170.root", 5,0)'
+#root -l -q -b 'forest2yskim_jetSkim_forestV3.C+("/mnt/hadoop/cms/store/user/luck/2014-photon-forests/pPb_MIX_localJEC_v1/HiForest_pPb_MIX_AllQCDPhoton120.root", "", 170, 2517,35, "yskimmedFiles/yskim_pA_AllQCDPhoton120170.root", 5,0)'
 #root -l -q -b 'forest2yskim_jetSkim_forestV3.C+("/mnt/hadoop/cms/store/user/luck/2014-photon-forests/pPb_MIX_localJEC_v1/HiForest_pPb_MIX_AllQCDPhoton170.root", "", 9999, 649, 35, "yskimmedFiles/yskim_pA_AllQCDPhoton1709999.root", 5,0)'
