@@ -16,6 +16,9 @@
 #include <TMath.h>
 #include "../../HiForestAnalysis/hiForest.h"
 #include "../CutAndBinCollection2012.h"
+//////// Kaya's modificiation ////////
+#include "EventMatchingCMS.h"
+//////// Kaya's modificiation - END ////////
 #include <time.h>
 #include <TRandom3.h>
 
@@ -300,6 +303,12 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
   genJetTree = &(c->akPu3PF);
 
 
+  //////// Kaya's modificiation ////////
+  EventMatchingCMS* eventMatcher=new EventMatchingCMS();
+  bool eventAdded;
+  Long64_t duplicateEvents = 0;
+  //////// Kaya's modificiation - END ////////
+
   // Loop starts.
   int nentries = c->GetEntries();
   cout << "number of entries = " << nentries << endl;
@@ -310,6 +319,17 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
     }
 
     c->GetEntry(jentry);
+
+    //////// Kaya's modificiation ////////
+    eventAdded = eventMatcher->addEvent(c->evt.evt, c->evt.lumi, c->evt.run, jentry);
+    if(!eventAdded)	// this event is duplicate, skip this one.
+    {
+    	duplicateEvents++;
+    	continue;
+    }
+    //////// Kaya's modificiation - END ////////
+
+
     // Select events with a generated photon in mid-rapidity
     bool genPhotonFlag=false;
     if ( !isMC )   // fixed the most stupid error
@@ -815,4 +835,7 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
   //   newfile_data->Close();   // <<=== If there is close() function. writing stucks in the middle of looping.. I don't know why!!
   cout << " Done! "<< endl;
   cout << "    " << eSel<<" out of total "<<eTot<<" events were analyzed."<<endl;
+  //////// Kaya's modificiation ////////
+  cout << "Duplicate events  = " << duplicateEvents << endl;
+  //////// Kaya's modificiation - END ////////
 }
