@@ -160,6 +160,16 @@ void gammaJetHistProducer(sampleType collision = kPADATA, float photonPtThr=60, 
     fitResult fitr = getPurity(fname, collision, evtSeltCut, sbSeltCut, canvasName, photonPtThr, photonPtThrUp);
     purity = fitr.purity010;
 
+    //////// Kaya's modificiation ////////
+    cout << "fnamePADATA = "   << fnamePADATA   << endl;
+    cout << "photonPtThr = "   << photonPtThr   << ", "
+         << "photonPtThrUp = " << photonPtThrUp << ", "
+		 << "jetPtThr = "      << jetPtThr      << ", "
+		 << "icent = "         << icent         << ", "
+    	 << endl;
+    cout << "purity = " << purity << endl;
+    //////// Kaya's modificiation - END ////////
+
     /*
       float originalP = purity;
       if (collision==kPPDATA)
