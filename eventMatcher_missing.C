@@ -4,6 +4,8 @@
  *
  * 10.04.2015
  * 	forget about using yPhotonTree which is huge and probably broken.
+ * 	plot the sigmaIetaIeta distribution of events that are in file2 (old sample) but not in file1 (new sample)
+ * 	in the old file only events that pass the isolation cut will be considered.
  * */
 #include "photonSkimProducer/EventMatchingCMS.h"
 #include "../HiForestAnalysis/hiForest.h"
