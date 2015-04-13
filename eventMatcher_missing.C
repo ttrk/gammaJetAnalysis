@@ -67,28 +67,12 @@ void eventMatcher_missing(const TString fileName1, const TString fileName2)
 	  float photonEt1;
 	  float photonEta1;
 	  b_lpho1 = tgj1->GetBranch("lpho");
-//	  b_lpho->SetBasketSize(128000);
 
 	  TBranch* b_iso1;
 	  float ecalIso1;
 	  float hcalIso1;
 	  float trackIso1;
 	  b_iso1 = tgj1->GetBranch("isolation");
-//	  b_iso->SetBasketSize(128000);
-
-	  /* GARBAGE
-//	  tgj1->SetBranchAddress("evt.run",&run1, &b_run1);		// not working
-//	  tgj1->SetBranchAddress("evt.evt",&evt1, &b_evt1);		// not working
-
-//	  yPhotonTree1->SetBranchAddress("run",&run1, &b_run1);
-//	  yPhotonTree1->SetBranchAddress("event",&evt1, &b_evt1);
-//	  yPhotonTree1->SetBranchAddress("luminosityBlock",&lumi1, &b_lumi1);
-
-//	  b_run1->SetAutoDelete(kTRUE);
-//	  b_evt1->SetAutoDelete(kTRUE);
-//	  b_lumi1->SetAutoDelete(kTRUE);
-	  */
-
 
 	  TBranch* b_tgj_evt2;
 	  Int_t run2;
@@ -101,40 +85,14 @@ void eventMatcher_missing(const TString fileName1, const TString fileName2)
 	  float photonEt2;
 	  float photonEta2;
 	  b_lpho2 = tgj2->GetBranch("lpho");
-//	  b_lpho->SetBasketSize(128000);
 
 	  TBranch* b_iso2;
 	  float ecalIso2;
 	  float hcalIso2;
 	  float trackIso2;
 	  b_iso2 = tgj2->GetBranch("isolation");
-//	  b_iso->SetBasketSize(128000);
 
 	  float sigmaIetaIeta2;
-
-	  /* GARBAGE
-//	  TBranch* b_run2;
-//	  TBranch* b_evt2;
-//	  TBranch* b_lumi2;		// ignore lumi
-
-//	  yPhotonTree2->SetBranchAddress("run",&run2, &b_run2);
-//	  yPhotonTree2->SetBranchAddress("event",&evt2, &b_evt2);
-//	  yPhotonTree2->SetBranchAddress("luminosityBlock",&lumi2, &b_lumi2);
- */
-
-	  /* GARBAGE
-//	  tgj2->SetBranchAddress("lpho.photonEt",&photonEt, );
-//	  tgj2->SetBranchAddress("lpho",&photonEt, &b_lpho);
-//	  b_lpho->GetLeaf("photonEt");
-
-
-//	  tgj2->SetBranchAddress("lpho.photonEta",&photonEta);
-//	  tgj2->SetBranchAddress("lpho.ecalIso",&ecalIso);
-//	  tgj2->SetBranchAddress("lpho.hcalIso",&hcalIso);
-//	  tgj2->SetBranchAddress("lpho.trackIso2",&trackIso);
-
-//	  Long64_t entries1 = yPhotonTree1->GetEntries();
-//	  Long64_t entries2 = yPhotonTree2->GetEntries(); */
 
 	  Long64_t entries1 = tgj1->GetEntries();
 	  Long64_t entries2 = tgj2->GetEntries();
@@ -154,9 +112,7 @@ void eventMatcher_missing(const TString fileName1, const TString fileName2)
 	  bool passed_photon1;
 	  for( Long64_t i = 0; i < entries1; ++i)
 	  {
-//		  cout << "entry = " << i << endl;
 //		  yPhotonTree1->GetEntry(i);	// do not use this.
-//		  tgj1->GetEntry(i);
 		  b_tgj_evt1->GetEntry(i);
 		  run1 = (int) ((TLeaf*)b_tgj_evt1->GetListOfLeaves()->At(0))->GetValue();
 		  evt1 = (int) ((TLeaf*)b_tgj_evt1->GetListOfLeaves()->At(1))->GetValue();
