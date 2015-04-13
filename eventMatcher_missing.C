@@ -9,13 +9,17 @@
  * */
 #include "photonSkimProducer/EventMatchingCMS.h"
 #include "../HiForestAnalysis/hiForest.h"
+#include "CutAndBinCollection2012.h"
 
 #include <TLeaf.h>
 #include <TObject.h>
 
+using namespace std;
+
 // necessary for GCC C++ Compiler to work
 #include <string>
 #include <iostream>
+#include <iomanip>			// setprecision()
 using  std::string;
 using  std::cout;
 using  std::endl;
@@ -30,14 +34,22 @@ const float cut_hcalIso = 2.2;
 const float cut_trackIso = 2.0;
 //const float cut_hadronicOverEm = 0.1;
 const bool addEvents_passing_Iso = true;	// true : in the old file only events that pass the isolation cut will be considered.
-const bool plot_sigmaIetaIeta    = true;	// true : plot the sigmaIetaIeta distribution of events
+const bool plot_sigmaIetaIeta    = false;	// true : plot the sigmaIetaIeta distribution of events
 											// that are in file2 (old sample) but not in file1 (new sample)
 											// sigmaIetaIeta ratio of new and old samples was <1 for sigmaIetaIeta > 0.01
 											// this implied there could be missing events in the new sample
 											// https://twiki.cern.ch/twiki/pub/CMS/PhotonAnalyses2015/150407_forest2yskim.pdf, slide 9
 
+const bool check_forest = true ;			// look for missing events in Forest
+
 // 34342
 // 33635
+
+int eventMatcher_missing_forest(TString inputFile_forest,
+				   EventMatchingCMS* eventMatcherYSKIM,
+				   int hlt_triggers_fired[3],
+				   sampleType colli=kPADATA
+				   );
 
 void eventMatcher_missing(const TString fileName1, const TString fileName2)
 {
@@ -104,6 +116,7 @@ void eventMatcher_missing(const TString fileName1, const TString fileName2)
 
 	  EventMatchingCMS* eventMatcher1=new EventMatchingCMS();
 	  EventMatchingCMS* eventMatcher2=new EventMatchingCMS();
+	  EventMatchingCMS* eventsNotInFile1=new EventMatchingCMS();
 
 	  cout << "creating the map of events in the new sample" << endl;
 	  bool     eventAdded1;
@@ -211,6 +224,7 @@ void eventMatcher_missing(const TString fileName1, const TString fileName2)
 					  notRetrievedEvents++;
 
 					  entriesNotInFile1.push_back(i);
+					  eventsNotInFile1->addEvent(evt2, lumi2, run2, i);
 				  }
 
 				  eventAdded2 = eventMatcher2->addEvent(evt2, lumi2, run2, i);
@@ -242,6 +256,7 @@ void eventMatcher_missing(const TString fileName1, const TString fileName2)
 				  notRetrievedEvents++;
 
 				  entriesNotInFile1.push_back(i);
+				  eventsNotInFile1->addEvent(evt2, lumi2, run2, i);
 			  }
 
 			  eventAdded2 = eventMatcher2->addEvent(evt2, lumi2, run2, i);
@@ -281,6 +296,145 @@ void eventMatcher_missing(const TString fileName1, const TString fileName2)
 
 	  file1->Close();
 	  file2->Close();
+
+	  if(check_forest)
+	  {
+		  // count of the times these triggers are fired.
+		  int HLT_PAPhoton20_NoCaloIdVL_v1_count = 0;
+		  int HLT_PAPhoton30_NoCaloIdVL_v1_count = 0;
+		  int HLT_PAPhoton40_NoCaloIdVL_v1_count = 0;
+
+		  int hlt_triggers_fired [3] = {0, 0, 0};
+
+		  TString inputForest_name;
+		  int match_count     = 0;
+		  int match_count_tmp = 0;
+		  const char* inputForest_prefix = "/mnt/hadoop/cms/store/user/luck/pA_photonSkimForest_v85_fromPromptReco_partialmerge";
+		  for (int i=0; i<=89; i++)	// forest file names go from 0.root to 89.root
+		  {
+			  inputForest_name = Form("%s/%d.root",inputForest_prefix,i);
+			  match_count_tmp = eventMatcher_missing_forest(inputForest_name, eventsNotInFile1, hlt_triggers_fired, kPADATA);
+			  match_count    += match_count_tmp;
+
+			  HLT_PAPhoton20_NoCaloIdVL_v1_count += hlt_triggers_fired[0];
+			  HLT_PAPhoton30_NoCaloIdVL_v1_count += hlt_triggers_fired[1];
+			  HLT_PAPhoton40_NoCaloIdVL_v1_count += hlt_triggers_fired[2];
+		  }
+
+		  cout << "events in new sample = " << entries1 << endl;
+		  cout << "events in old sample = " << entries2 << endl;
+		  cout << "Duplicate events in new sample = " << duplicateEvents1 << endl;
+		  cout << "Duplicate events in old sample = " << duplicateEvents2 << endl;
+
+		  cout << "events in new sample that pass isolation cut = "    << entries1_after_iso << endl;
+		  cout << "events in old sample that pass isolation cut = "    << entries2_after_iso << endl;
+		  cout << "events in old sample that are not in new sample = " << notRetrievedEvents << endl;
+
+		  cout << "number of missing events matched in the whole forest = " << match_count      << endl;
+		  cout << "Count of HLT Trigger fire values for events in old sample that are not in new sample :" <<endl;
+		  cout << "HLT_PAPhoton20_NoCaloIdVL_v1_count = " << HLT_PAPhoton20_NoCaloIdVL_v1_count << endl;
+		  cout << "HLT_PAPhoton30_NoCaloIdVL_v1_count = " << HLT_PAPhoton30_NoCaloIdVL_v1_count << endl;
+		  cout << "HLT_PAPhoton40_NoCaloIdVL_v1_count = " << HLT_PAPhoton40_NoCaloIdVL_v1_count << endl;
+	  }
+}
+
+/*
+ check HLT values of events that are missing from the new sample : events that are in old sample but not in new sample
+ * */
+int eventMatcher_missing_forest(TString inputFile_forest,
+				   EventMatchingCMS* eventMatcherYSKIM,
+				   int hlt_triggers_fired[3],
+				   sampleType colli /* =kPADATA */
+				   )
+{
+  bool isMC=true;
+  if ((colli==kPPDATA)||(colli==kPADATA)||(colli==kHIDATA))
+    isMC=false;
+
+  HiForest *c;
+  if((colli==kPADATA)||(colli==kPAMC)) {
+    c = new HiForest(inputFile_forest.Data(), "forest", cPPb, isMC );
+  }
+  else if  ((colli==kPPDATA)||(colli==kPPMC)) {
+    c = new HiForest(inputFile_forest.Data(), "forest", cPP, isMC );
+  }
+  else if  ((colli==kHIDATA)||(colli==kHIMC)) {
+    c = new HiForest(inputFile_forest.Data(), "forest", cPbPb, isMC );
+    c->GetEnergyScaleTable("../photonEnergyScaleTable_lowPt_v6.root");
+  }
+  else {
+    cout << " Error!  No such collision type" << endl;
+    return -1;
+  }
+
+  //////// Kaya's modificiation ////////
+  cout << "inputFile_forest         = " << inputFile_forest		<< endl;
+  //////// Kaya's modificiation - END ////////
+
+  c->LoadNoTrees();
+  c->hasEvtTree = true;
+  c->hasHltTree = true;
+
+  c->InitTree();
+
+  // Loop starts.
+  int nentries = c->GetEntries();
+  cout << "number of entries = " << nentries << endl;
+  long long    eventRetrieved;
+  int match_count = 0;
+  int HLT_PAPhoton20_NoCaloIdVL_v1_count=0;
+  int HLT_PAPhoton30_NoCaloIdVL_v1_count=0;
+  int HLT_PAPhoton40_NoCaloIdVL_v1_count=0;
+
+  for (Long64_t jentry = 0 ; jentry < nentries; jentry++) {
+
+    if (jentry% 200000 == 0)  {
+      cout <<jentry<<" / "<<nentries<<" "<<setprecision(2)<<(double)jentry/nentries*100<<endl;
+    }
+
+    c->GetEntry(jentry);
+
+    //////// Kaya's modificiation ////////
+    eventRetrieved = eventMatcherYSKIM->retrieveEventNoErase(c->evt.evt, 0, c->evt.run);	// eventMatcherYSKIM is not created using lumi values
+    																						// "evt" and "run" should be enough to match the events.
+    if(eventRetrieved>0)	// this event is inside eventMatcherYSKIM
+    {
+    	match_count++;
+
+    	// get HLT triggers
+    	cout << "this event is inside eventMatcherYSKIM" << endl;
+    	cout << "jentry = " << jentry     << endl;
+    	cout << "evt    = " << c->evt.evt << endl;
+    	cout << "run    = " << c->evt.run << endl;
+    	cout << "HLT_PAPhoton20_NoCaloIdVL_v1 = " << c->hlt.HLT_PAPhoton20_NoCaloIdVL_v1 << endl;
+    	cout << "HLT_PAPhoton30_NoCaloIdVL_v1 = " << c->hlt.HLT_PAPhoton30_NoCaloIdVL_v1 << endl;
+    	cout << "HLT_PAPhoton40_NoCaloIdVL_v1 = " << c->hlt.HLT_PAPhoton40_NoCaloIdVL_v1 << endl;
+
+    	if(c->hlt.HLT_PAPhoton20_NoCaloIdVL_v1 > 0)
+    	{
+    		HLT_PAPhoton20_NoCaloIdVL_v1_count++;
+    	}
+    	if(c->hlt.HLT_PAPhoton30_NoCaloIdVL_v1 > 0)
+    	{
+    		HLT_PAPhoton30_NoCaloIdVL_v1_count++;
+    	}
+    	if(c->hlt.HLT_PAPhoton40_NoCaloIdVL_v1 > 0)
+    	{
+    		HLT_PAPhoton40_NoCaloIdVL_v1_count++;
+    	}
+    }
+    //////// Kaya's modificiation - END ////////
+  }
+  hlt_triggers_fired[0]=HLT_PAPhoton20_NoCaloIdVL_v1_count;
+  hlt_triggers_fired[1]=HLT_PAPhoton30_NoCaloIdVL_v1_count;
+  hlt_triggers_fired[2]=HLT_PAPhoton40_NoCaloIdVL_v1_count;
+
+  cout << "number of events matched = " << match_count      << endl;
+  cout << "closing file             = " << inputFile_forest << endl;
+
+  c->inf->Close();
+
+  return match_count;
 }
 
 int main()
