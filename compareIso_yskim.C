@@ -87,3 +87,36 @@ void save(TH1D* h1, TH1D* h2, TCanvas* c, TString var)
 	c->SaveAs(Form("%s/%s.%s" ,outDir , var.Data(), "pdf"));
 }
 //////// Kaya's modificiation - END ////////
+
+//////// Kaya's modificiation ////////
+void compareTwo_ExcludeMissing()
+{
+	const char* outDir1 = "~/output/out_gammaJetAnalysis";
+	const char* outDir2 = "~/output/out_gammaJetAnalysis";
+	TFile* out_compareIso_yskim    =new TFile(Form("%s/compareIso_yskim_out.root", outDir1), "READ");
+	TFile* out_eventMatcher_missing=new TFile(Form("%s/eventMatcher_missing.root", outDir2), "READ");
+
+	TH1D* h1 = (TH1D*)out_compareIso_yskim->Get("h1_sigmaIetaIeta");
+	TH1D* h2 = (TH1D*)out_compareIso_yskim->Get("h2_sigmaIetaIeta");
+	TH1D* h_missing = (TH1D*)out_eventMatcher_missing->Get("sigmaIetaIeta");
+
+	h1->Add(h_missing, -1);	// h1 = h1 - h_missing
+
+    // plot them
+	TString var = "sigmaIetaIeta";
+	  TCanvas* c=  new TCanvas(Form("c_%s",var.Data()),"", 400,800);
+	  c->Divide(1,2);
+	  c->cd(1);
+	  h2->SetMarkerStyle(8);
+	  h2->DrawCopy();
+	  h1->DrawCopy("hist same");
+	  c->cd(2);
+	  h2->SetAxisRange(0,3,"Y");
+	  h2->Divide(h1);
+	  h2->SetYTitle("New/Old Ratio");
+	  h2->DrawCopy();
+	  jumSun(0,1,0.025,1);
+
+	  c->SaveAs(Form("%s/%s_excludeMissing.%s" ,outDir1 , var.Data(), "pdf"));
+}
+//////// Kaya's modificiation - END ////////
