@@ -300,11 +300,13 @@ void eventMatcher_missing(const TString fileName1, const TString fileName2)
 	  if(check_forest)
 	  {
 		  // count of the times these triggers are fired.
+		  int HLT_PAPhoton10_NoCaloIdVL_v1_count = 0;
+		  int HLT_PAPhoton15_NoCaloIdVL_v1_count = 0;
 		  int HLT_PAPhoton20_NoCaloIdVL_v1_count = 0;
 		  int HLT_PAPhoton30_NoCaloIdVL_v1_count = 0;
 		  int HLT_PAPhoton40_NoCaloIdVL_v1_count = 0;
 
-		  int hlt_triggers_fired [3] = {0, 0, 0};
+		  int hlt_triggers_fired [5] = {0, 0, 0, 0, 0};
 
 		  TString inputForest_name;
 		  int match_count     = 0;
@@ -316,9 +318,11 @@ void eventMatcher_missing(const TString fileName1, const TString fileName2)
 			  match_count_tmp = eventMatcher_missing_forest(inputForest_name, eventsNotInFile1, hlt_triggers_fired, kPADATA);
 			  match_count    += match_count_tmp;
 
-			  HLT_PAPhoton20_NoCaloIdVL_v1_count += hlt_triggers_fired[0];
-			  HLT_PAPhoton30_NoCaloIdVL_v1_count += hlt_triggers_fired[1];
-			  HLT_PAPhoton40_NoCaloIdVL_v1_count += hlt_triggers_fired[2];
+			  HLT_PAPhoton10_NoCaloIdVL_v1_count += hlt_triggers_fired[0];
+			  HLT_PAPhoton15_NoCaloIdVL_v1_count += hlt_triggers_fired[1];
+			  HLT_PAPhoton20_NoCaloIdVL_v1_count += hlt_triggers_fired[2];
+			  HLT_PAPhoton30_NoCaloIdVL_v1_count += hlt_triggers_fired[3];
+			  HLT_PAPhoton40_NoCaloIdVL_v1_count += hlt_triggers_fired[4];
 		  }
 
 		  cout << "events in new sample = " << entries1 << endl;
@@ -332,6 +336,8 @@ void eventMatcher_missing(const TString fileName1, const TString fileName2)
 
 		  cout << "number of missing events matched in the whole forest = " << match_count      << endl;
 		  cout << "Count of HLT Trigger fire values for events in old sample that are not in new sample :" <<endl;
+		  cout << "HLT_PAPhoton10_NoCaloIdVL_v1_count = " << HLT_PAPhoton10_NoCaloIdVL_v1_count << endl;
+		  cout << "HLT_PAPhoton15_NoCaloIdVL_v1_count = " << HLT_PAPhoton15_NoCaloIdVL_v1_count << endl;
 		  cout << "HLT_PAPhoton20_NoCaloIdVL_v1_count = " << HLT_PAPhoton20_NoCaloIdVL_v1_count << endl;
 		  cout << "HLT_PAPhoton30_NoCaloIdVL_v1_count = " << HLT_PAPhoton30_NoCaloIdVL_v1_count << endl;
 		  cout << "HLT_PAPhoton40_NoCaloIdVL_v1_count = " << HLT_PAPhoton40_NoCaloIdVL_v1_count << endl;
@@ -343,7 +349,7 @@ void eventMatcher_missing(const TString fileName1, const TString fileName2)
  * */
 int eventMatcher_missing_forest(TString inputFile_forest,
 				   EventMatchingCMS* eventMatcherYSKIM,
-				   int hlt_triggers_fired[3],
+				   int hlt_triggers_fired[5],
 				   sampleType colli /* =kPADATA */
 				   )
 {
@@ -382,6 +388,8 @@ int eventMatcher_missing_forest(TString inputFile_forest,
   cout << "number of entries = " << nentries << endl;
   long long    eventRetrieved;
   int match_count = 0;
+  int HLT_PAPhoton10_NoCaloIdVL_v1_count=0;
+  int HLT_PAPhoton15_NoCaloIdVL_v1_count=0;
   int HLT_PAPhoton20_NoCaloIdVL_v1_count=0;
   int HLT_PAPhoton30_NoCaloIdVL_v1_count=0;
   int HLT_PAPhoton40_NoCaloIdVL_v1_count=0;
@@ -406,10 +414,20 @@ int eventMatcher_missing_forest(TString inputFile_forest,
     	cout << "jentry = " << jentry     << endl;
     	cout << "evt    = " << c->evt.evt << endl;
     	cout << "run    = " << c->evt.run << endl;
+    	cout << "HLT_PAPhoton10_NoCaloIdVL_v1 = " << c->hlt.HLT_PAPhoton10_NoCaloIdVL_v1 << endl;
+    	cout << "HLT_PAPhoton15_NoCaloIdVL_v1 = " << c->hlt.HLT_PAPhoton15_NoCaloIdVL_v1 << endl;
     	cout << "HLT_PAPhoton20_NoCaloIdVL_v1 = " << c->hlt.HLT_PAPhoton20_NoCaloIdVL_v1 << endl;
     	cout << "HLT_PAPhoton30_NoCaloIdVL_v1 = " << c->hlt.HLT_PAPhoton30_NoCaloIdVL_v1 << endl;
     	cout << "HLT_PAPhoton40_NoCaloIdVL_v1 = " << c->hlt.HLT_PAPhoton40_NoCaloIdVL_v1 << endl;
 
+    	if(c->hlt.HLT_PAPhoton10_NoCaloIdVL_v1 > 0)
+    	{
+    		HLT_PAPhoton10_NoCaloIdVL_v1_count++;
+    	}
+    	if(c->hlt.HLT_PAPhoton15_NoCaloIdVL_v1 > 0)
+    	{
+    		HLT_PAPhoton15_NoCaloIdVL_v1_count++;
+    	}
     	if(c->hlt.HLT_PAPhoton20_NoCaloIdVL_v1 > 0)
     	{
     		HLT_PAPhoton20_NoCaloIdVL_v1_count++;
@@ -425,9 +443,11 @@ int eventMatcher_missing_forest(TString inputFile_forest,
     }
     //////// Kaya's modificiation - END ////////
   }
-  hlt_triggers_fired[0]=HLT_PAPhoton20_NoCaloIdVL_v1_count;
-  hlt_triggers_fired[1]=HLT_PAPhoton30_NoCaloIdVL_v1_count;
-  hlt_triggers_fired[2]=HLT_PAPhoton40_NoCaloIdVL_v1_count;
+  hlt_triggers_fired[0]=HLT_PAPhoton10_NoCaloIdVL_v1_count;
+  hlt_triggers_fired[1]=HLT_PAPhoton15_NoCaloIdVL_v1_count;
+  hlt_triggers_fired[2]=HLT_PAPhoton20_NoCaloIdVL_v1_count;
+  hlt_triggers_fired[3]=HLT_PAPhoton30_NoCaloIdVL_v1_count;
+  hlt_triggers_fired[4]=HLT_PAPhoton40_NoCaloIdVL_v1_count;
 
   cout << "number of events matched = " << match_count      << endl;
   cout << "closing file             = " << inputFile_forest << endl;
