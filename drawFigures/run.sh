@@ -20,11 +20,11 @@ mv resultHistograms.root  resultHistograms_noJetResCorr.root
 
 root -l -q 'drawPtDependenceMC.C+("genOrReco0",20131023)'  #DONE // vertex centrality reweighted
 root -l -q 'drawPtDependencePAMC.C+("genOrReco0",20131023)' 
-mv resultHistograms.root  resultHistograms_MCgenIso.root
+mv resultHistograms.root  resultHistograms_MCrecoIso.root
 
 root -l -q 'drawPtDependenceMC.C+("genOrReco1",20131023)'   #DONE
 root -l -q 'drawPtDependencePAMC.C+("genOrReco1",20131023)'
-mv resultHistograms.root  resultHistograms_MCrecoIso.root
+mv resultHistograms.root  resultHistograms_MCgenIso.root
 
 root -l -q 'drawPtDependence.C+("photonPurityVaried",20131021)'
 root -l -q 'drawPtDependencePA.C+("photonPurityVaried",20131021)'
