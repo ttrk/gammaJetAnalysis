@@ -46,19 +46,7 @@ void gammaTrkSingle(     GjSpectra* gjSpec_=nullGj,
 fitResult getPurity(TString fname="", sampleType collision=kHIDATA, TCut candEvtCut = "", TCut sbEvtCut="", TString ccanvasName="",float photonPtThr=60, float photonPtThrUp=9999);
 
 
-void gammaJetHistProducer(sampleType collision = kPADATA, float photonPtThr=60, float photonPtThrUp=9999, float jetPtThr=30, int icent =1,
-		int smearingCentBin = -1, //0=0-10%, 1=10-30%, 2=30-50%, 3=50-100%, 4=0-30%, 5=30-100%  : Jet pT and phi smearing!
-) {
-	//////// Kaya's modificiation ////////
-	// check consistency of collision type and smearing request
-	if (smearingCentBin > 0 && collision != kPPDATA)
-	{
-		cout<<"Error : collision is not pp. But smearing is applied." <<endl;
-		exit(1);
-	}
-	//////// Kaya's modificiation - END ////////
-
-
+void gammaJetHistProducer(sampleType collision = kPADATA, float photonPtThr=60, float photonPtThrUp=9999, float jetPtThr=30, int icent =1) {
   TH1::SetDefaultSumw2();
 
   TString stringSampleType = getSampleName(collision); //"";
@@ -286,47 +274,6 @@ void gammaJetHistProducer(sampleType collision = kPADATA, float photonPtThr=60, 
   TH1D* hJetPt = new TH1D(Form("jetPt_icent%d",icent),";Jet p_{T} (GeV) ;dN/dp_{T} (GeV^{-1})",28, 20,300);
   corrFunctionTrk* cJetPt = new corrFunctionTrk();
   TString varJetPt         = Form("pt");
-
-  //////// Kaya's modificiation ////////
-  // do smearing during histogramming
-  int   nJet;
-  float jetPt;
-  float jetPhi;
-
-
-  int nSmear = 1;
-  if(smearingCentBin != -1)
-    nSmear = 100;
-
-  // jet Phi and jet PT are to be smeared. They are in tree "yJet" from file "fname"
-  // first tree in "tObj[kTrkRaw]" is tree "yJet" from file "fname"
-  TTree* yJet = ((TTree*) tObj[kTrkRaw]->trees_.at(0))->Clone("yJet_smearing");
-  yJet->SetBranchAddress("nJet", &nJet);
-  yJet->SetBranchAddress("pt", &jetPt);
-  yJet->SetBranchAddress("phi", &jetPhi);
-
-  int nentries = yJet->GetEntries();
-  for (Long64_t jentry = 0 ; jentry < nentries; jentry++) {
-  {
-	  yJet->GetEntry(jentry);
-
-	  for(int iSmear =0; iSmear < nSmear; iSmear++){ // iSmear loop have to be here, before Jet loop. mis-ordered for loops ruins jetrefpt values.
-		  for (int ij=0; ij< nJet ; ij++) {
-			  // smear the jet pT
-			  //float smeared = jetPt[nJet] * rand.Gaus(1,addJetEnergyRes/jetPt[nJet])   *  rand.Gaus(1, addFlatJetEnergyRes) ;
-			  Double_t smeared = jetPt[ij];
-			  if( smearingCentBin != -1 )
-			  {
-				  Double_t smearSigma = TMath::Sqrt((c_pbpb[smearingCentBin]*c_pbpb[smearingCentBin] - c_pp*c_pp)
-						  + (s_pbpb[smearingCentBin]*s_pbpb[smearingCentBin] - s_pp*s_pp)/jetPt[ij]
-																								+ (n_pbpb[smearingCentBin]*n_pbpb[smearingCentBin] - n_pp*n_pp)/(jetPt[ij]*jetPt[ij]));
-				  smeared = jetPt[ij] * rand.Gaus(1, smearSigma);
-			  }
-			  jetPt[ij] = smeared;
-		  }
-	  }
-  }
-  //////// Kaya's modificiation - END ////////
 
   gammaTrkSingle( gSpec,  tObj, cJetPt,  purity,
 		  collision, varJetPt, jetCutDphi, vtxCentReweight,
