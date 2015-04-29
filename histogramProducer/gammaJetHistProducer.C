@@ -293,38 +293,73 @@ void gammaJetHistProducer(sampleType collision = kPADATA, float photonPtThr=60, 
   float jetPt;
   float jetPhi;
 
-
   int nSmear = 1;
+  bool doSmear = false;
   if(smearingCentBin != -1)
-    nSmear = 100;
-
-  // jet Phi and jet PT are to be smeared. They are in tree "yJet" from file "fname"
-  // first tree in "tObj[kTrkRaw]" is tree "yJet" from file "fname"
-  TTree* yJet = ((TTree*) tObj[kTrkRaw]->trees_.at(0))->Clone("yJet_smearing");
-  yJet->SetBranchAddress("nJet", &nJet);
-  yJet->SetBranchAddress("pt", &jetPt);
-  yJet->SetBranchAddress("phi", &jetPhi);
-
-  int nentries = yJet->GetEntries();
-  for (Long64_t jentry = 0 ; jentry < nentries; jentry++) {
   {
-	  yJet->GetEntry(jentry);
+    nSmear = 100;
+    doSmear = true;
+  }
 
-	  for(int iSmear =0; iSmear < nSmear; iSmear++){ // iSmear loop have to be here, before Jet loop. mis-ordered for loops ruins jetrefpt values.
-		  for (int ij=0; ij< nJet ; ij++) {
-			  // smear the jet pT
-			  //float smeared = jetPt[nJet] * rand.Gaus(1,addJetEnergyRes/jetPt[nJet])   *  rand.Gaus(1, addFlatJetEnergyRes) ;
-			  Double_t smeared = jetPt[ij];
-			  if( smearingCentBin != -1 )
-			  {
-				  Double_t smearSigma = TMath::Sqrt((c_pbpb[smearingCentBin]*c_pbpb[smearingCentBin] - c_pp*c_pp)
-						  + (s_pbpb[smearingCentBin]*s_pbpb[smearingCentBin] - s_pp*s_pp)/jetPt[ij]
-																								+ (n_pbpb[smearingCentBin]*n_pbpb[smearingCentBin] - n_pp*n_pp)/(jetPt[ij]*jetPt[ij]));
-				  smeared = jetPt[ij] * rand.Gaus(1, smearSigma);
-			  }
-			  jetPt[ij] = smeared;
+  if (doSmear)
+  {
+	  // jet Phi and jet PT are to be smeared. They are in tree "yJet" from file "fname"
+	  // first tree in "tObj[kTrkRaw]" is tree "yJet" from file "fname"
+	  TTree* yJet = ((TTree*) tObj[kTrkRaw]->trees_.at(0))->Clone("yJet_smearing");
+	  yJet->SetBranchAddress("nJet", &nJet);
+	  yJet->SetBranchAddress("pt", &jetPt);
+	  yJet->SetBranchAddress("phi", &jetPhi);
+
+	  int nentries = yJet->GetEntries();
+	  for (Long64_t jentry = 0 ; jentry < nentries; jentry++) {
+		  {
+			  yJet->GetEntry(jentry);
+
+			  for(int iSmear =0; iSmear < nSmear; iSmear++){ // iSmear loop have to be here, before Jet loop. mis-ordered for loops ruins jetrefpt values.
+				  for (int ij=0; ij< nJet ; ij++) {
+
+					  // Smear phi
+					  Double_t newPhi = jetPhi[ij] ;
+					  if( smearingCentBin != -1 )
+					  {
+						  Double_t phiSmear  = TMath::Sqrt((cphi_pbpb[smearingCentBin]*cphi_pbpb[smearingCentBin] - cphi_pp*cphi_pp)
+								  + (sphi_pbpb[smearingCentBin]*sphi_pbpb[smearingCentBin] - sphi_pp*sphi_pp)/jetPt[ij]
+																													+ (nphi_pbpb[smearingCentBin]*nphi_pbpb[smearingCentBin] - nphi_pp*nphi_pp)/(jetPt[ij]*jetPt[ij]));
+						  newPhi  =  jetPhi[ij] +   rand.Gaus(0, phiSmear);
+						  while ( fabs(newPhi) > PI )  {
+							  if ( newPhi > PI )  newPhi = newPhi - 2*PI;
+							  if ( newPhi < -PI )  newPhi = newPhi + 2*PI;
+						  }
+					  }
+					  jetPhi[ij] = newPhi;
+
+					  // smear the jet pT
+					  //float smeared = jetPt[nJet] * rand.Gaus(1,addJetEnergyRes/jetPt[nJet])   *  rand.Gaus(1, addFlatJetEnergyRes) ;
+					  Double_t smeared = jetPt[ij];
+					  if( smearingCentBin != -1 )
+					  {
+						  Double_t smearSigma = TMath::Sqrt((c_pbpb[smearingCentBin]*c_pbpb[smearingCentBin] - c_pp*c_pp)
+								  + (s_pbpb[smearingCentBin]*s_pbpb[smearingCentBin] - s_pp*s_pp)/jetPt[ij]
+																										+ (n_pbpb[smearingCentBin]*n_pbpb[smearingCentBin] - n_pp*n_pp)/(jetPt[ij]*jetPt[ij]));
+						  smeared = jetPt[ij] * rand.Gaus(1, smearSigma);
+					  }
+					  jetPt[ij] = smeared;
+				  }
+			  }// all jets are smeared "nSmear" times
+
+				if ( jetPt[nJet] < cutjetPtSkim)  // double cutjetPtSkim = 15; Oct 19th
+				  continue;
+				if ( fabs( jetEta[nJet] ) > cutjetEtaSkim )     // double cutjetEtaSkim = 3.0; Oct 19th
+				  continue;
+				if ( getDR( jetEta[nJet], jetPhi[nJet], gj.photonEta, gj.photonPhi) < 0.5 )
+				  continue;
+
+
+				if (jetPt[nJet] >0)
+				  jetDphi[nJet] = getAbsDphi( jetPhi[nJet], gj.photonPhi) ;
+				else
+				  jetDphi[nJet] = -1;
 		  }
-	  }
   }
   //////// Kaya's modificiation - END ////////
 
