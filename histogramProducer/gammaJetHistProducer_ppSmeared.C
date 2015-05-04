@@ -108,7 +108,7 @@ void gammaJetHistProducer_ppSmeared(sampleType collision = kPADATA, float photon
   
   
   TString fname = "";
-  if ( collision == kHIDATA)      fname = fnameHIDATA_jetResCorrected; //fnameHIDATA;
+  if ( collision == kHIDATA)      fname = fnameHIDATA; //fnameHIDATA_jetResCorrected;
   else if ( collision == kPADATA) fname = fnamePADATA;
   else if ( collision == kPPDATA) {
     if ( icent == 7 ) fname = fnamePPDATA;
@@ -274,7 +274,7 @@ void gammaJetHistProducer_ppSmeared(sampleType collision = kPADATA, float photon
 	  yJet->SetBranchAddress("eta", &jetEta);
 
 	  // leading photon is stored in branch "lpho" of TTree "tgj"
-	  TTree* newtgj = ((TTree*) newtgj->trees_.at(0))->Clone("tgj_smearing");
+	  TTree* newtgj = ((TTree*) tgj->trees_.at(0))->Clone("tgj_smearing");
 
 	  TBranch* b_evt;
 	  TBranch* b_lpho;
