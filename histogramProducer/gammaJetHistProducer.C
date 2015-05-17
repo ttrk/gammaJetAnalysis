@@ -46,9 +46,7 @@ void gammaTrkSingle(     GjSpectra* gjSpec_=nullGj,
 fitResult getPurity(TString fname="", sampleType collision=kHIDATA, TCut candEvtCut = "", TCut sbEvtCut="", TString ccanvasName="",float photonPtThr=60, float photonPtThrUp=9999);
 
 
-void gammaJetHistProducer(sampleType collision = kPADATA, float photonPtThr=60, float photonPtThrUp=9999, float jetPtThr=30, int icent =1,
-        int smearingCentBin = -1, //0=0-10%, 1=10-30%, 2=30-50%, 3=50-100%, 4=0-30%, 5=30-100%  : Jet pT and phi smearing!
-) {
+void gammaJetHistProducer(sampleType collision = kPADATA, float photonPtThr=60, float photonPtThrUp=9999, float jetPtThr=30, int icent =1) {
   TH1::SetDefaultSumw2();
 
   TString stringSampleType = getSampleName(collision); //"";
@@ -254,178 +252,6 @@ void gammaJetHistProducer(sampleType collision = kPADATA, float photonPtThr=60, 
 
   tObj[kTrkRaw]->AddFriend("tgj");
   tObj[kTrkBkg]->AddFriend("tgj");
-
-  //////// Kaya's modificiation ////////
-   // do smearing during histogramming
-
-   int nSmear = 1;
-   bool doSmear = false;
-   if(smearingCentBin != -1)
-   {
-       nSmear = 100;
-       doSmear = true;
-   }
-
-   if (doSmear)
-   {
-       int   jetEntries;
-       float jetPt;
-       float jetPhi;
-       float jetEta;
-       // jet Phi and jet PT are to be smeared. They are in tree "yJet" from file "fname"
-       // first tree in "tObj[kTrkRaw]" is tree "yJet" from file "fname"
-       TTree* yJet = ((TTree*) tObj[kTrkRaw]->trees_.at(0))->Clone("yJet_smearing");
-       yJet->SetBranchAddress("nJet", &jetEntries);
-       yJet->SetBranchAddress("pt", &jetPt);
-       yJet->SetBranchAddress("phi", &jetPhi);
-       yJet->SetBranchAddress("eta", &jetEta);
-
-       // leading photon is stored in branch "lpho" of TTree "tgj"
-       TTree* newtgj = ((TTree*) tgj->trees_.at(0))->Clone("tgj_smearing");
-
-       TBranch* b_evt;
-       TBranch* b_lpho;
-       TBranch* b_isolation;
-
-       EvtSel evt;
-       GammaJet gj;
-       Isolation isol;
-
-       float photonEta;
-       float photonPhi;
-
-       b_evt = newtgj->GetBranch("evt");
-       b_lpho = newtgj->GetBranch("lpho");
-       b_isolation = newtgj->GetBranch("isolation");
-
-       b_evt->SetAddress(&evt);
-       b_lpho->SetAddress(&gj);
-       b_isolation->SetAddress(&isol);
-
-       int nJet;
-       const int MAXJET = 50000; // to accomodate 100 smeared jets, need to be careful with ram
-       float jetPt_smeared[MAXJET];
-       float jetPhi_smeared[MAXJET];
-       float jetEta_smeared[MAXJET];
-       float jetDphi_smeared[MAXJET];
-       int jetSubid_smeared[MAXJET];
-       TTree *treeJet_smeared = new TTree("yJet","jets");
-       treeJet_smeared->SetMaxTreeSize(newtgj->GetMaxTreeSize());
-       treeJet_smeared->Branch("nJet",&nJet,"nJet/I");
-       treeJet_smeared->Branch("pt",jetPt_smeared,"pt[nJet]/F");
-       treeJet_smeared->Branch("eta",jetEta_smeared,"eta[nJet]/F");
-       treeJet_smeared->Branch("phi",jetPhi_smeared,"phi[nJet]/F");
-       treeJet_smeared->Branch("dphi",jetDphi_smeared,"dphi[nJet]/F");
-
-       TTree* tgj_smeared = new TTree("tgj_smeared","gamma jet tree");
-       tgj_smeared->SetMaxTreeSize(yJet->GetMaxTreeSize());
-       tgj_smeared->Branch("evt",&evt.run,"run/I:evt:cBin:pBin:trig/O:offlSel:noiseFilt:anaEvtSel:vz/F:vtxCentWeight/F:hf4Pos:hf4Neg:hf4Sum:ptHat:ptHatWeight");
-       tgj_smeared->Branch("lpho",&gj.photonEt,"photonEt/F:photonRawEt:photonEta:photonPhi:hovere:r9:sigmaIetaIeta:sumIso:genIso:genPhotonEt:genMomId/I:lJetPt/F:lJetEta:lJetPhi:lJetDphi:lJetSubid/I");
-       tgj_smeared->Branch("isolation",&isol.cc1,"cc1:cc2:cc3:cc4:cc5:cr1:cr2:cr3:cr4:cr5:ct1PtCut20:ct2PtCut20:ct3PtCut20:ct4PtCut20:ct5PtCut20:ecalIso:hcalIso:trackIso");  // ecalIso,hcalIso,trackIso are the pp style isolation
-
-       int nentries = yJet->GetEntries();
-       for (Long64_t jentry = 0 ; jentry < nentries; jentry++) {
-           yJet->GetEntry(jentry);
-           nJet=0;
-
-           b_evt->GetEntry(jentry);
-           b_lpho->GetEntry(jentry);
-           b_isolation->GetEntry(jentry);
-
-           photonEta = (float) ((TLeaf*)b_lpho->GetListOfLeaves()->At(2))->GetValue();
-           photonPhi = (float) ((TLeaf*)b_lpho->GetListOfLeaves()->At(3))->GetValue();
-
-           for(int iSmear =0; iSmear < nSmear; iSmear++){ // iSmear loop have to be here, before Jet loop. mis-ordered for loops ruins jetrefpt values.
-               for (int i=0; i< jetEntries ; i++) {
-
-                   jetPt_smeared[nJet] = jetPt[i];
-                   jetEta_smeared[nJet] = jetEta[i];
-                   jetPhi_smeared[nJet] = jetPhi[i];
-
-                   // Smear phi
-                   Double_t smearedPhi = jetPhi_smeared[nJet];
-                   if( smearingCentBin != -1 )
-                   {
-                       Double_t phiSmear  = TMath::Sqrt((cphi_pbpb[smearingCentBin]*cphi_pbpb[smearingCentBin] - cphi_pp*cphi_pp)
-                               + (sphi_pbpb[smearingCentBin]*sphi_pbpb[smearingCentBin] - sphi_pp*sphi_pp)/jetPt[i]
-                                                                                                                 + (nphi_pbpb[smearingCentBin]*nphi_pbpb[smearingCentBin] - nphi_pp*nphi_pp)/(jetPt[i]*jetPt[i]));
-                       smearedPhi  =  jetPhi[i] +   rand.Gaus(0, phiSmear);
-                       while ( fabs(smearedPhi) > PI )  {
-                           if ( smearedPhi > PI )  smearedPhi = smearedPhi - 2*PI;
-                           if ( smearedPhi < -PI )  smearedPhi = smearedPhi + 2*PI;
-                       }
-                   }
-                   jetPhi_smeared[nJet] = smearedPhi;
-
-                   // smear the jet pT
-                   Double_t smearedPt = jetPt_smeared[nJet];
-                   if( smearingCentBin != -1 )
-                   {
-                       Double_t smearSigma = TMath::Sqrt((c_pbpb[smearingCentBin]*c_pbpb[smearingCentBin] - c_pp*c_pp)
-                               + (s_pbpb[smearingCentBin]*s_pbpb[smearingCentBin] - s_pp*s_pp)/jetPt[i]
-                                                                                                     + (n_pbpb[smearingCentBin]*n_pbpb[smearingCentBin] - n_pp*n_pp)/(jetPt[i]*jetPt[i]));
-                       smearedPt = jetPt[i] * rand.Gaus(1, smearSigma);
-                   }
-                   jetPt_smeared[nJet] = smearedPt;
-
-                   /*
-                     if ( jetPt[nJet] < cutjetPtSkim)  // double cutjetPtSkim = 15; Oct 19th
-                       continue;
-                     if ( fabs( jetEta[nJet] ) > cutjetEtaSkim )     // double cutjetEtaSkim = 3.0; Oct 19th
-                       continue;
-                     if ( getDR( jetEta[nJet], jetPhi[nJet], photonEta, photonPhi) < 0.5 )
-                       continue;
-                    */
-
-                   if (jetPt[nJet] >0)
-                       jetDphi_smeared[nJet] = getAbsDphi( jetPhi[nJet], gj.photonPhi) ;
-                   else
-                       jetDphi_smeared[nJet] = -1;
-
-                   nJet++;
-               } // each jet is smeared once.
-           } // smearing done : each jet is smeared 100 times.
-
-           //////// Leading jet kinematics in dphi>7pi/8
-           float maxJpt = 0;
-           int jetLeadingIndex = -1;
-
-           for (int ij=0; ij< nJet ; ij++) {
-               if ( jetDphi_smeared[ij] < awayRange )  // const float awayRange= PI * 7./8.;
-                   continue;
-               if ( fabs( jetEta_smeared[ij] ) > cutjetEta )  // double cutjetEta = 1.6;
-                   continue;
-               if ( jetPt_smeared[ij] > maxJpt) {
-                   maxJpt = jetPt_smeared[ij] ;
-                   jetLeadingIndex = ij;
-               }
-           }
-           if ( jetLeadingIndex > -1 ) {
-               gj.lJetPt = jetPt_smeared[jetLeadingIndex];
-               gj.lJetEta = jetEta_smeared[jetLeadingIndex];
-               gj.lJetPhi = jetPhi_smeared[jetLeadingIndex];
-               gj.lJetDphi =  jetDphi_smeared[jetLeadingIndex];
-               gj.lJetSubid=  jetSubid_smeared[jetLeadingIndex];
-           }
-           else {
-               gj.lJetPt = -1;
-               gj.lJetEta = 999;
-               gj.lJetPhi = 999;
-               gj.lJetDphi = 0;
-               gj.lJetSubid=  -99;
-           }
-
-           treeJet_smeared->Fill();
-           tgj_smeared->Fill();
-
-
-           // reassign the trees in tObj with the smeared trees
-           tObj[kTrkRaw]->trees_[0] = treeJet_smeared;
-           tObj[kTrkRaw]->trees_[0]->AddFriend("tgj_smeared");
-       }
-   }
-   //////// Kaya's modificiation - END ////////
-
   TCut jetCut     =  Form("abs(eta)<%f && pt>%f", (float)cutjetEta, (float)jetPtThr );
   TCut jetCutDphi =  jetCut && (TCut)(Form("abs(dphi)>%f",(float)awayRange));
   TCut jetCutSBcut =  jetCut && (TCut)("abs(dphi)>0.5 && abs(dphi)<2");
@@ -436,13 +262,6 @@ void gammaJetHistProducer(sampleType collision = kPADATA, float photonPtThr=60, 
 
 
   //  TString jetWeight = ""
-  //////// Kaya's modificiation ////////
-  if(doSmear)
-  {
-      //jetWeight="1/100";
-      vtxCentReweight="1/100";
-  }
-  //////// Kaya's modificiation - END ////////
 
   TH1D* hJetDphi = new TH1D(Form("jetDphi_icent%d",icent),";#Delta#phi_{Jet,#gamma} ;dN/d#Delta#phi",20,0,3.141592);
   corrFunctionTrk* cJetDphi = new corrFunctionTrk();
