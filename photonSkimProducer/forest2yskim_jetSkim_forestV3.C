@@ -42,6 +42,7 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
 		bool doJetResCorrection = 1,  // = L2L3 * MC nonclosure correction  jet energy correction is done by default from Oct 19th (YS)
 		int smearingCentBin = -1, //0=0-10%, 1=10-30%, 2=30-50%, 3=50-100%, 4=0-30%, 5=30-100%  : Jet pT and phi smearing!
 		int jetEnergyScale = 1, 
+		float addFlatJetEnergyRes = 0, 
 		bool useGenJetColl = 0
 		)
 {
@@ -388,12 +389,12 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
 		//if ( ( (colli==kHIDATA)||(colli==kHIMC)||(colli==kPADATA)||(colli==kPAMC) || (colli==kPPMC) ) && ( c->selectEvent() == 0 ))
 		if ( ( (colli==kHIDATA)||(colli==kHIMC) ) && ( c->skim.pcollisionEventSelection == 0 ))
 			continue;
-		if ( ( (colli==kPADATA)||(colli==kPAMC) ) && ( c->skim.pPAcollisionEventSelectionPA == 0 ))
+		if ( ( (colli==kPADATA)||(colli==kPAMC)||(colli==kPPDATA) ) && ( c->skim.pPAcollisionEventSelectionPA == 0 )) // yeonju included pp data
 			continue;
 		if ( ( (colli==kPPMC) ) && ( c->skim.pcollisionEventSelection == 0 ))
 			continue;
-		if ( ( (colli==kPADATA)||(colli==kPPDATA) ) && ( c->skim.pVertexFilterCutGplus ==0 ) ) // No Pile up events
-			continue;
+	//	if ( ( (colli==kPADATA)||(colli==kPPDATA) ) && ( c->skim.pVertexFilterCutGplus ==0 ) ) // No Pile up events
+	//		continue;
 		if ( (vzBin<1) || ( vzBin > nVtxBin) )
 			continue;
 
@@ -555,7 +556,7 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
 
 				// smear the jet pT
 				//float smeared = jetPt[nJet] * rand.Gaus(1,addJetEnergyRes/jetPt[nJet])   *  rand.Gaus(1, addFlatJetEnergyRes) ;
-				Double_t smeared = jetPt[nJet];
+				Double_t smeared = jetPt[nJet] * rand.Gaus(1, addFlatJetEnergyRes);
 				if( smearingCentBin != -1 )
 				{
 					Double_t smearSigma = TMath::Sqrt((c_pbpb[smearingCentBin]*c_pbpb[smearingCentBin] - c_pp*c_pp)
@@ -742,7 +743,7 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
 
 				// smear the jet pT
 				//float smeared = jetPtImb[it] * rand.Gaus(1,addJetEnergyRes/jetPtImb[it]) *  rand.Gaus(1, addFlatJetEnergyRes) ;
-				Double_t smeared = jetPtImb[it];
+				Double_t smeared = jetPtImb[it] *  rand.Gaus(1, addFlatJetEnergyRes);
 				if( smearingCentBin != -1 )
 				{
 					Double_t smearSigma = TMath::Sqrt((c_pbpb[smearingCentBin]*c_pbpb[smearingCentBin] - c_pp*c_pp)
