@@ -41,8 +41,8 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
 		bool doMix = false,
 		bool doJetResCorrection = 1,  // = L2L3 * MC nonclosure correction  jet energy correction is done by default from Oct 19th (YS)
 		int smearingCentBin = -1, //0=0-10%, 1=10-30%, 2=30-50%, 3=50-100%, 4=0-30%, 5=30-100%  : Jet pT and phi smearing!
-		int jetEnergyScale = 1, 
-		float addFlatJetEnergyRes = 0, 
+		float jetEnergyScale = 1.0, 
+		float addFlatJetEnergyRes = 0.0, 
 		bool useGenJetColl = 0
 		)
 {
