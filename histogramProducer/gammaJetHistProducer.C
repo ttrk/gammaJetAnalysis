@@ -271,7 +271,7 @@ void gammaJetHistProducer(sampleType collision = kPADATA, float photonPtThr=60, 
 		  collision, varJetDphi, jetCut, vtxCentReweight,
 		  phoCandCut, phoDecayCut,  hJetDphi, outName);
 
-  TH1D* hJetPt = new TH1D(Form("jetPt_icent%d",icent),";Jet p_{T} (GeV) ;dN/dp_{T} (GeV^{-1})",28, 20,300);
+  TH1D* hJetPt = new TH1D(Form("jetPt_icent%d",icent),";Jet p_{T} (GeV) ;dN/dp_{T} (GeV^{-1})",280, 20,300);
   corrFunctionTrk* cJetPt = new corrFunctionTrk();
   TString varJetPt         = Form("pt");
 
@@ -285,9 +285,27 @@ void gammaJetHistProducer(sampleType collision = kPADATA, float photonPtThr=60, 
   //		  collision, varJetPt, jetCutSBcut, vtxCentReweight,
   //		  phoCandCut, phoDecayCut,  hJetPtSB, outName);
 
-
-  const int nJetIaaBin = 7;
-  double jetIaaBin[nJetIaaBin+1] = {30,40,50,60,80,100,120,200};
+  cout << "IaaBin START" << endl;
+  int nJetIaaBin;
+  if (photonPtThr==40 || photonPtThr==50) nJetIaaBin = 4;
+  else if (photonPtThr==60 || photonPtThr==80) nJetIaaBin = 5;
+  double jetIaaBin[nJetIaaBin+1];
+  //const int nJetIaaBin = 7;
+  //double jetIaaBin[nJetIaaBin+1] = {30,40,50,70,100,150};
+  if (photonPtThr==40 || photonPtThr==50) {
+      jetIaaBin[0] = 30;
+      jetIaaBin[1] = 40;
+      jetIaaBin[2] = 50;
+      jetIaaBin[3] = 70;
+      jetIaaBin[4] = 150;
+  } else if (photonPtThr==60 || photonPtThr==80) {
+      jetIaaBin[0] = 30;
+      jetIaaBin[1] = 40;
+      jetIaaBin[2] = 50;
+      jetIaaBin[3] = 70;
+      jetIaaBin[4] = 100;
+      jetIaaBin[5] = 150;
+  }
   TH1D* hJetPtForIaa = new TH1D(Form("jetPtForIaa_icent%d",icent),";Jet p_{T} (GeV) ;dN/dp_{T} (GeV^{-1})",nJetIaaBin, jetIaaBin);
   corrFunctionTrk* cJetIaaPt = new corrFunctionTrk();
   gammaTrkSingle( gSpec,  tObj, cJetIaaPt,  purity,

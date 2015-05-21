@@ -106,7 +106,7 @@ void gammaJetHistProducer_ppSmeared(sampleType collision = kPADATA, float photon
   
   
   TString fname = "";
-  if ( collision == kHIDATA)      fname = fnameHIDATA_jetResCorrected; //fnameHIDATA;
+  if ( collision == kHIDATA)      fname = fnameHIDATA; //fnameHIDATA;
   else if ( collision == kPADATA) fname = fnamePADATA;
   else if ( collision == kPPDATA) {
     if ( icent == 7 ) fname = fnamePPDATA;
@@ -255,7 +255,7 @@ void gammaJetHistProducer_ppSmeared(sampleType collision = kPADATA, float photon
   TCut jetCut2   = Form("abs(dphi)>%f && pt>%f", (float)awayRange, (float)jetPtThr ) ;
   
   
-  TString jetWeight = "";
+  TString jetWeight = "1/100";
   
   TH1D* hJetDphi = new TH1D(Form("jetDphi_icent%d",icent),";#Delta#phi_{Jet,#gamma} ;dN/d#Delta#phi",20,0,3.141592);
   corrFunctionTrk* cJetDphi = new corrFunctionTrk();
@@ -272,9 +272,29 @@ void gammaJetHistProducer_ppSmeared(sampleType collision = kPADATA, float photon
   gammaTrkSingle( gSpec,  tObj, cJetPt,  purity, 
 		  collision, varJetPt, jetCutDphi, jetWeight,
 		  phoCandCut, phoDecayCut,  hJetPt, outName);
-  
-  const int nJetIaaBin = 7;
-  double jetIaaBin[nJetIaaBin+1] = {30,40,50,60,80,100,120,200};
+ 
+  cout << "IaaBin START" << endl;
+  int nJetIaaBin;
+  if (photonPtThr==40 || photonPtThr==50) nJetIaaBin = 4;
+  else if (photonPtThr==60 || photonPtThr==80) nJetIaaBin = 5;
+  double jetIaaBin[nJetIaaBin+1];
+  //const int nJetIaaBin = 7;
+  //double jetIaaBin[nJetIaaBin+1] = {30,40,50,70,100,150};
+  if (photonPtThr==40 || photonPtThr==50) {
+      jetIaaBin[0] = 30;
+      jetIaaBin[1] = 40;
+      jetIaaBin[2] = 50;
+      jetIaaBin[3] = 70;
+      jetIaaBin[4] = 150;
+  } else if (photonPtThr==60 || photonPtThr==80) {
+      jetIaaBin[0] = 30;
+      jetIaaBin[1] = 40;
+      jetIaaBin[2] = 50;
+      jetIaaBin[3] = 70;
+      jetIaaBin[4] = 100;
+      jetIaaBin[5] = 150;
+  }
+ 
   TH1D* hJetPtForIaa = new TH1D(Form("jetPtForIaa_icent%d",icent),";Jet p_{T} (GeV) ;dN/dp_{T} (GeV^{-1})",nJetIaaBin, jetIaaBin);
   corrFunctionTrk* cJetIaaPt = new corrFunctionTrk();
   gammaTrkSingle( gSpec,  tObj, cJetIaaPt,  purity,
