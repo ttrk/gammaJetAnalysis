@@ -389,10 +389,10 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
 		//if ( ( (colli==kHIDATA)||(colli==kHIMC)||(colli==kPADATA)||(colli==kPAMC) || (colli==kPPMC) ) && ( c->selectEvent() == 0 ))
 		if ( ( (colli==kHIDATA)||(colli==kHIMC) ) && ( c->skim.pcollisionEventSelection == 0 ))
 			continue;
-		if ( ( (colli==kPADATA)||(colli==kPAMC)||(colli==kPPDATA) ) && ( c->skim.pPAcollisionEventSelectionPA == 0 )) // yeonju included pp data
+		if ( ( (colli==kPADATA)||(colli==kPAMC)||(colli==kPPDATA)||(colli==kPPMC)) && ( c->skim.pPAcollisionEventSelectionPA == 0 )) // yeonju included pp data and pp mc
 			continue;
-		if ( ( (colli==kPPMC) ) && ( c->skim.pcollisionEventSelection == 0 ))
-			continue;
+	//	if ( ( (colli==kPPMC) ) && ( c->skim.pcollisionEventSelection == 0 ))
+	//		continue;
 	//	if ( ( (colli==kPADATA)||(colli==kPPDATA) ) && ( c->skim.pVertexFilterCutGplus ==0 ) ) // No Pile up events
 	//		continue;
 		if ( (vzBin<1) || ( vzBin > nVtxBin) )
