@@ -159,7 +159,7 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
   treeFullJet->SetMaxTreeSize(MAXTREESIZE);
 #if 1
   TTree* treeGenp;
-  if (   (colli==kHIMC ) || (colli==kPPMC) || (colli==kPAMC) ) {
+  if (   /*(colli==kHIMC ) || */(colli==kPPMC) || (colli==kPAMC) ) {
     treeGenp =  c->genParticleTree->CloneTree(0);
     treeGenp->SetName("genparTree");
     //treeGenp =  c->genpTree->CloneTree(0);
@@ -317,11 +317,14 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
     c->GetEntry(jentry);
 
     //////// Kaya's modificiation ////////
-    eventAdded = eventMatcher->addEvent(c->evt.evt, c->evt.lumi, c->evt.run, jentry);
-    if(!eventAdded) // this event is duplicate, skip this one.
+    if( ! isMC )
     {
-      duplicateEvents++;
-      continue;
+      eventAdded = eventMatcher->addEvent(c->evt.evt, c->evt.lumi, c->evt.run, jentry);
+      if(!eventAdded) // this event is duplicate, skip this one.
+      {
+	duplicateEvents++;
+	continue;
+      }
     }
     //////// Kaya's modificiation - END ////////
 
@@ -329,6 +332,8 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
     bool genPhotonFlag=false;
     if ( !isMC )   // fixed the most stupid error
       genPhotonFlag = true;
+    else if ( (colli==kHIMC) )
+      genPhotonFlag = true; // old PbPb MC doesn't have gentree?
     else {
 #if 0 // there is no genp tree, but is higentree
       for ( int g=0 ; g< c->genp.nPar ; g++)
@@ -824,7 +829,7 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
     tmixJet->Fill();
     newtreePhoton->Fill();
     treeFullJet->Fill();
-    if (   (colli==kHIMC ) || (colli==kPPMC) || (colli==kPAMC) )
+    if (   /*(colli==kHIMC ) || */(colli==kPPMC) || (colli==kPAMC) )
       treeGenp->Fill();
   }
 

@@ -1,16 +1,5 @@
-#void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonSkimForest_v85_skimPhotonPt50_eta1.5.root",
-#                                   std::string MinbiasFname = "skim_trackJet_minbiasTrackJet_mc.root",
-#                                   float cutphotonPt  = 35,  // default value dropped to 35GeV  for later photon energy smearing/scaling
-#                                   std::string outname = "testPhotonSkim.root",
-#                                   sampleType colli=kPADATA,
-#                                   bool doMix = false,
-#                                   bool doJetResCorrection = 1,  // jet energy correction is done by default from Oct 19th (YS)
-#				    int smearingCentBin = -1, //0=0-10%, 1=10-30%, 2=30-50%, 3=50-100%, 4=0-30%, 5=30-100%  : Jet pT and phi smearing!
-#                                   float addFlatJetEnergyRes = 0,
-#                                   bool useGenJetColl = 0
-#                                   )
-
-
+# shell script to skim all of the required files for HIN-13-006, using
+# the nominal settings (not for systematic studies).
 
 #enum sampleType { kHIDATA, kHIMC, kPPDATA, kPPMC, kPADATA, kPAMC};
 #                       0    1      2       3       4        5
@@ -19,15 +8,16 @@ g++ forest2yskim_minbias_forestV3.C $(root-config --cflags --libs) -Wall -Wextra
 g++ forest2yskim_jetSkim_forestV3.C $(root-config --cflags --libs) -Wall -Wextra -g -o forest2yskim_jetSkim_forestV3.exe
 
 # # pbpb minbias skim, for mixing
-./forest2yskim_minbias_forestV3.exe "/mnt/hadoop/cms/store/user/luck/PbPb2011_photons_Data/HIMinBias_merged_1_1000.root" "yskimmedFiles/minbiasSkim_HIMinBias_merged_1_1000.root" 0 -1
+#./forest2yskim_minbias_forestV3.exe "/mnt/hadoop/cms/store/user/luck/PbPb2011_photons_Data/HIMinBias_merged_1_1000.root" "yskimmedFiles/minbiasSkim_HIMinBias_merged_1_1000.root" 0 -1
+#./forest2yskim_minbias_forestV3.exe "/mnt/hadoop/cms/store/user/yetkin/MC_Production/HydjetDrum03/HydjetDrum03_HiForest_v05_merged_test02.root" "yskimmedFiles/minbiasSkim_HydjetDrum03_HiForest_v05_merged_test02.root" 1 -1
 
 # # pbpb data
-./forest2yskim_jetSkim_forestV3.exe "/mnt/hadoop/cms/store/user/luck/PbPb2011_photons_Data/HiForestPhoton-v7-noDuplicate.root" "yskimmedFiles/minbiasSkim_HIMinBias_merged_1_1000.root" 35 "yskimmedFiles/yskim_HiForestPhoton-v7-noDuplicate.root" 0 1
+#./forest2yskim_jetSkim_forestV3.exe "/mnt/hadoop/cms/store/user/luck/PbPb2011_photons_Data/HiForestPhoton-v7-noDuplicate.root" "yskimmedFiles/minbiasSkim_HIMinBias_merged_1_1000.root" 35 "yskimmedFiles/yskim_HiForestPhoton-v7-noDuplicate.root" 0 1
 
 # # pbpb MC
-# root -l -q -b 'forest2yskim_jetSkim_forestV3.C+("forestFiles/pbpb/qcdAllPhoton30to50_genPhotonPtCut40_allCent.root",       "yskimmedFiles/minbiasSkim_HydjetDrum03_HiForest_v05_merged_test02.root",    35,  "yskim_qcdAllPhoton30to50_genPhotonPtCut40_allCent.root", 1, 1)'
-# root -l -q -b 'forest2yskim_jetSkim_forestV3.C+("forestFiles/pbpb/qcdAllPhoton50to80_genPhotonPtCut40_allCent.root",       "yskimmedFiles/minbiasSkim_HydjetDrum03_HiForest_v05_merged_test02.root" ,   35,  "yskim_qcdAllPhoton50to80_genPhotonPtCut40_allCent.root", 1, 1)'
-# root -l -q -b 'forest2yskim_jetSkim_forestV3.C+("forestFiles/pbpb/qcdAllPhoton80to9999_genPhotonPtCut40_allCent.root",       "yskimmedFiles/minbiasSkim_HydjetDrum03_HiForest_v05_merged_test02.root",    35,  "yskim_qcdAllPhoton80to9999_genPhotonPtCut40_allCent.root", 1, 1)'
+./forest2yskim_jetSkim_forestV3.exe "/mnt/hadoop/cms/store/user/jazzitup/forestFiles/pbpb/qcdAllPhoton30to50_genPhotonPtCut40_allCent.root" "yskimmedFiles/minbiasSkim_HydjetDrum03_HiForest_v05_merged_test02.root" 35 "yskim_qcdAllPhoton30to50_genPhotonPtCut40_allCent.root" 1 1
+./forest2yskim_jetSkim_forestV3.exe "/mnt/hadoop/cms/store/user/jazzitup/forestFiles/pbpb/qcdAllPhoton50to80_genPhotonPtCut40_allCent.root" "yskimmedFiles/minbiasSkim_HydjetDrum03_HiForest_v05_merged_test02.root" 35 "yskim_qcdAllPhoton50to80_genPhotonPtCut40_allCent.root" 1 1
+./forest2yskim_jetSkim_forestV3.exe "/mnt/hadoop/cms/store/user/jazzitup/forestFiles/pbpb/qcdAllPhoton80to9999_genPhotonPtCut40_allCent.root" "yskimmedFiles/minbiasSkim_HydjetDrum03_HiForest_v05_merged_test02.root" 35 "yskim_qcdAllPhoton80to9999_genPhotonPtCut40_allCent.root" 1 1
 
 # # pp data
 # root -l -q -b 'forest2yskim_jetSkim_forestV3.C+("forestFiles/pp/pp_photonSKimForest_v85.root",       "no minbias", 35,   "yskimmedFiles/yskim_pp_photonSKimForest_v85_jetNoSmearing.root",2,0,1)'
