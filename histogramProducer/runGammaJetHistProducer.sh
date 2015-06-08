@@ -3,6 +3,7 @@
 #void gammaJetHistProducer(sampleType collision = kHIDATA,
 #float photonPtThr=60, float photonPtThrUp=1000000, float jetPtThr=30, int icent =1)
 
+g++ gammaJetHistProducer.C $(root-config --cflags --libs) -Wall -Wextra -g -o gammaJetHistProducer.exe
 
 # #pp data
 # for i in  2 #3

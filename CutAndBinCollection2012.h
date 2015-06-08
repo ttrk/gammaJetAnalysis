@@ -158,7 +158,7 @@ double wPPMC_emDijet120to9999      = 4284./130444.;
 /* double  wPAMC_AllQcdPho120to9999     = 4481. / 151511.; */
 
 ////////////////////////// pA datasets 2015-01-21
-TString fnamePADATA = "yskimmedFiles/yskim_pA_DATA_photonForest.root";
+TString fnamePADATA = "yskimmedFiles/yskim_pPb_Data_all_localJEC_v3_HiForest_nodupes.root";
 TString fnamePAMC_AllQcdPho30to50    = "yskimmedFiles/yskim_pA_AllQCDPhoton3050.root";
 TString fnamePAMC_AllQcdPho50to80    = "yskimmedFiles/yskim_pA_AllQCDPhoton5080.root";
 TString fnamePAMC_AllQcdPho80to120   = "yskimmedFiles/yskim_pA_AllQCDPhoton80120.root";
