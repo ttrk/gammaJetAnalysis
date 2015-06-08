@@ -255,9 +255,12 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
 
 
 	nMB[icent][ivz] = tjmb[icent][ivz]->GetEntries();
-	cout << "number of evetns in (icent = " << icent << ", ivtxZ = "<< ivz << ")  = " << nMB[icent][ivz] << endl;
+	cout << "number of events in (icent = " << icent << ", ivtxZ = "<< ivz << ")  = " << nMB[icent][ivz] << endl;
 	int primeSeed = rand.Integer(37324);
-	mbItr[icent][ivz] = primeSeed%(nMB[icent][ivz]);
+	if(nMB[icent][ivz] != 0)
+	  mbItr[icent][ivz] = primeSeed%(nMB[icent][ivz]);
+	else
+	  mbItr[icent][ivz] = 0;
 	cout <<" initial itr = " << mbItr[icent][ivz] << endl;
       }
     }
@@ -830,4 +833,36 @@ void forest2yskim_jetSkim_forestV3(TString inputFile_="forestFiles/pA/pA_photonS
   cout << " Done! "<< endl;
   cout << "    " << eSel<<" out of total "<<eTot<<" events were analyzed."<<endl;
   cout << "Duplicate events  = " << duplicateEvents << endl;
+}
+
+
+int main(int argc, char *argv[])
+{
+  if(argc == 12)
+  {
+    forest2yskim_jetSkim_forestV3(argv[1],
+				  argv[2],
+				  atof(argv[3]),
+				  argv[4],
+				  (sampleType) atoi(argv[5]),
+				  (bool) atoi(argv[6]),
+				  (bool) atoi(argv[7]),
+				  atoi(argv[8]),
+				  atof(argv[9]),
+				  atof(argv[10]),
+				  (bool) atoi(argv[11])
+      );
+    return 0;
+  } else if (argc == 7) {
+    forest2yskim_jetSkim_forestV3(argv[1],
+				  argv[2],
+				  atof(argv[3]),
+				  argv[4],
+				  (sampleType) atoi(argv[5]),
+				  (bool) atoi(argv[6])
+      );
+    return 0;
+  } else {
+    return 1;
+  }
 }

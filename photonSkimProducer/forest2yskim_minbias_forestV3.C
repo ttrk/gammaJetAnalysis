@@ -60,6 +60,7 @@ void forest2yskim_minbias_forestV3(TString inputFile_="mergedFiles/forest_minbia
     return;
   }
   c->LoadNoTrees();
+  c->hasEvtTree = true;
   c->hasPhotonTree = true;
   c->hasSkimTree = true;
   c->hasAkPu3JetTree = true;
@@ -272,4 +273,28 @@ void forest2yskim_minbias_forestV3(TString inputFile_="mergedFiles/forest_minbia
   newfile_data->Write();
   cout << " Done! "<< endl;
   cout << nSelEvt << " out of " << nentries << " events were selected " << endl;
+}
+
+int main(int argc, char *argv[])
+{
+  if(argc == 6)
+  {
+    forest2yskim_minbias_forestV3(argv[1],
+				  argv[2],
+				  (sampleType) atoi(argv[3]),
+				  atoi(argv[4]),
+				  (bool) atoi(argv[5])
+      );
+    return 0;
+  } else if (argc == 5)
+  {
+    forest2yskim_minbias_forestV3(argv[1],
+				  argv[2],
+				  (sampleType) atoi(argv[3]),
+				  atoi(argv[4])
+      );
+    return 0;
+  } else {
+    return 1;
+  }
 }
