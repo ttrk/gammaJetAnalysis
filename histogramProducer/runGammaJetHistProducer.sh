@@ -8,41 +8,41 @@ g++ gammaJetHistProducer.C $(root-config --cflags --libs) -Wall -Wextra -g -o ga
 # #pp data
 # for i in  2 #3
 # do
-# root -l -b -q 'gammaJetHistProducer.C+('$i', 40, 50, 30, 7)'
-# root -l -b -q 'gammaJetHistProducer.C+('$i', 50, 60, 30, 7)'
-# root -l -b -q 'gammaJetHistProducer.C+('$i', 60, 80, 30, 7)'
-# root -l -b -q 'gammaJetHistProducer.C+('$i', 80,9999, 30, 7)'
-# root -l -b -q 'gammaJetHistProducer.C+('$i', 60,9999, 30, 7)'
-# root -l -b -q 'gammaJetHistProducer.C+('$i', 50,9999, 30, 7)'
-# root -l -b -q 'gammaJetHistProducer.C+('$i', 40,9999, 30, 7)'
+#     ./gammaJetHistProducer.exe $i 40 50 30 7
+#     ./gammaJetHistProducer.exe $i 50 60 30 7
+#     ./gammaJetHistProducer.exe $i 60 80 30 7
+#     ./gammaJetHistProducer.exe $i 80 9999 30 7
+#     ./gammaJetHistProducer.exe $i 60 9999 30 7
+#     ./gammaJetHistProducer.exe $i 50 9999 30 7
+#     ./gammaJetHistProducer.exe $i 40 9999 30 7
 # done
 
-# #PbPb data, MC
-# for i in  0 #1
-# do
-#     for icent in 10030 13099
-#     do
-#         root -l -b -q 'gammaJetHistProducer.C+('$i', 40,50, 30, '$icent')'
-#         root -l -b -q 'gammaJetHistProducer.C+('$i', 50,60, 30,'$icent')'
-#         root -l -b -q 'gammaJetHistProducer.C+('$i', 60,80, 30, '$icent')'
-#         root -l -b -q 'gammaJetHistProducer.C+('$i', 80,9999, 30, '$icent')'
-#         root -l -b -q 'gammaJetHistProducer.C+('$i', 60,9999, 30, '$icent')'
-#         root -l -b -q 'gammaJetHistProducer.C+('$i', 50,9999, 30, '$icent')'
-#         root -l -b -q 'gammaJetHistProducer.C+('$i', 40,9999, 30, '$icent')'
-#      done
-# done
-
-
-
-#pPb data and MC
-
-for i in 4 5
+#PbPb data MC
+for i in  0 1
 do
-    for icent in 1 #2 3
-   do
-root -l -b -q 'gammaJetHistProducer.C++('$i', 40,50, 30, '$icent')'
-root -l -b -q 'gammaJetHistProducer.C+('$i', 50,60, 30, '$icent')'
-root -l -b -q 'gammaJetHistProducer.C+('$i', 60,80, 30, '$icent')'
-root -l -b -q 'gammaJetHistProducer.C+('$i', 80,9999, 30, '$icent')'
-   done
+    for icent in 10030 13099
+    do
+        ./gammaJetHistProducer.exe $i 40 50 30 $icent
+        ./gammaJetHistProducer.exe $i 50 60 30 $icent
+        ./gammaJetHistProducer.exe $i 60 80 30 $icent
+        ./gammaJetHistProducer.exe $i 80 9999 30 $icent
+        ./gammaJetHistProducer.exe $i 60 9999 30 $icent
+        ./gammaJetHistProducer.exe $i 50 9999 30 $icent
+        ./gammaJetHistProducer.exe $i 40 9999 30 $icent
+    done
 done
+
+
+
+# #pPb data and MC
+
+# for i in 4 5
+# do
+#     for icent in 1 #2 3
+#     do
+# 	./gammaJetHistProducer.exe $i 40 50 30 $icent
+# 	./gammaJetHistProducer.exe $i 50 60 30 $icent
+# 	./gammaJetHistProducer.exe $i 60 80 30 $icent
+# 	./gammaJetHistProducer.exe $i 80 9999 30 $icent
+#     done
+# done

@@ -58,11 +58,12 @@ void gammaJetHistProducer(sampleType collision = kPADATA, float photonPtThr=60, 
   int lowerCent(0),  upperCent(0);
   TCut centCut  = "";
   if ( (collision ==kHIDATA) || (collision==kHIMC) )   {
-    lowerCent = centBin1[icent-1];
-    upperCent = centBin1[icent]-1;
     if ( icent > 9999) {
       lowerCent = ((icent/100)%100)/2.5;
       upperCent =  (icent%100)/2.5 -1;
+    } else {
+      lowerCent = centBin1[icent-1];
+      upperCent = centBin1[icent]-1;
     }
     centCut = Form("cBin >= %d && cBin<= %d",lowerCent,upperCent);
   }
@@ -197,11 +198,11 @@ void gammaJetHistProducer(sampleType collision = kPADATA, float photonPtThr=60, 
   gSpec->hPtPhoSig->Add(gSpec->hPtPhoDecay, -(1. - purity) * candInt / candDecay);
   gSpec->hPtPhoSig->Scale(1./purity ) ;
 
-  TFile outf = TFile(Form("ffFiles/%s",outName.Data()),"update");
+  TFile *outf = TFile::Open(Form("ffFiles/%s",outName.Data()),"update");
   gSpec->hPtPhoCand->Write();
   gSpec->hPtPhoDecay->Write();
   gSpec->hPtPhoSig->Write();
-  outf.Close();
+  outf->Close();
 
 
 
@@ -449,7 +450,7 @@ void gammaTrkSingle(     GjSpectra* gSpec,  multiTreeUtil* tObj[3],   corrFuncti
   corr->Func[kPhoSig][kTrkSig]->Draw();
   c1->SaveAs(Form("gifs/%s_%s.gif",outfName.Data(),c1->GetName()) );
 
-  TFile outf = TFile(Form("ffFiles/%s",outfName.Data()),"update");
+  TFile *outf = TFile::Open(Form("ffFiles/%s",outfName.Data()),"update");
   corr->Func[kPhoCand][kTrkRaw]->Write();
   corr->Func[kPhoCand][kTrkBkg]->Write();
   corr->Func[kPhoCand][kTrkSig]->Write();
@@ -460,7 +461,7 @@ void gammaTrkSingle(     GjSpectra* gSpec,  multiTreeUtil* tObj[3],   corrFuncti
   corr->Func[kPhoSig][kTrkBkg]->Write();
   corr->Func[kPhoSig][kTrkSig]->Write();
 
-  outf.Close();
+  outf->Close();
 }
 
 
@@ -529,4 +530,20 @@ fitResult getPurity(TString fname, sampleType collision, TCut evtSeltCut, TCut s
   return fitr;
 
 
+}
+
+int main(int argc, char *argv[])
+{
+  if(argc == 6)
+  {
+    gammaJetHistProducer((sampleType) atoi(argv[1]),
+			 atof(argv[2]),
+			 atof(argv[3]),
+			 atof(argv[4]),
+			 atoi(argv[5]));
+    return 0;
+  } else {
+    std::cout << "Wrong number of arguments" << std::endl;
+    return 1;
+  }
 }
