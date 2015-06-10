@@ -8,16 +8,16 @@ g++ forest2yskim_minbias_forestV3.C $(root-config --cflags --libs) -Wall -Wextra
 g++ forest2yskim_jetSkim_forestV3.C $(root-config --cflags --libs) -Wall -Wextra -g -o forest2yskim_jetSkim_forestV3.exe
 
 # # pbpb minbias skim, for mixing
-./forest2yskim_minbias_forestV3.exe "/mnt/hadoop/cms/store/user/luck/PbPb2011_photons_Data/HIMinBias_merged_1_1000.root" "yskimmedFiles/minbiasSkim_HIMinBias_merged_1_1000.root" 0 -1
-./forest2yskim_minbias_forestV3.exe "/mnt/hadoop/cms/store/user/yetkin/MC_Production/HydjetDrum03/HydjetDrum03_HiForest_v05_merged_test02.root" "yskimmedFiles/minbiasSkim_HydjetDrum03_HiForest_v05_merged_test02.root" 1 -1
+###./forest2yskim_minbias_forestV3.exe "/mnt/hadoop/cms/store/user/luck/PbPb2011_photons_Data/HIMinBias_merged_1_1000.root" "yskimmedFiles/minbiasSkim_HIMinBias_merged_1_1000.root" 0 -1
+###./forest2yskim_minbias_forestV3.exe "/mnt/hadoop/cms/store/user/yetkin/MC_Production/HydjetDrum03/HydjetDrum03_HiForest_v05_merged_test02.root" "yskimmedFiles/minbiasSkim_HydjetDrum03_HiForest_v05_merged_test02.root" 1 -1
 
 # # pbpb data
-./forest2yskim_jetSkim_forestV3.exe "/mnt/hadoop/cms/store/user/luck/PbPb2011_photons_Data/HiForestPhoton-v7-noDuplicate.root" "yskimmedFiles/minbiasSkim_HIMinBias_merged_1_1000.root" 35 "yskimmedFiles/yskim_HiForestPhoton-v7-noDuplicate.root" 0 1
+###./forest2yskim_jetSkim_forestV3.exe "/mnt/hadoop/cms/store/user/luck/PbPb2011_photons_Data/HiForestPhoton-v7-noDuplicate.root" "yskimmedFiles/minbiasSkim_HIMinBias_merged_1_1000.root" 35 "yskimmedFiles/yskim_HiForestPhoton-v7-noDuplicate.root" 0 1
 
 # # pbpb MC
-./forest2yskim_jetSkim_forestV3.exe "/mnt/hadoop/cms/store/user/jazzitup/forestFiles/pbpb/qcdAllPhoton30to50_genPhotonPtCut40_allCent.root" "yskimmedFiles/minbiasSkim_HydjetDrum03_HiForest_v05_merged_test02.root" 35 "yskimmedFiles/yskim_qcdAllPhoton30to50_genPhotonPtCut40_allCent.root" 1 1
-./forest2yskim_jetSkim_forestV3.exe "/mnt/hadoop/cms/store/user/jazzitup/forestFiles/pbpb/qcdAllPhoton50to80_genPhotonPtCut40_allCent.root" "yskimmedFiles/minbiasSkim_HydjetDrum03_HiForest_v05_merged_test02.root" 35 "yskimmedFiles/yskim_qcdAllPhoton50to80_genPhotonPtCut40_allCent.root" 1 1
-./forest2yskim_jetSkim_forestV3.exe "/mnt/hadoop/cms/store/user/jazzitup/forestFiles/pbpb/qcdAllPhoton80to9999_genPhotonPtCut40_allCent.root" "yskimmedFiles/minbiasSkim_HydjetDrum03_HiForest_v05_merged_test02.root" 35 "yskimmedFiles/yskim_qcdAllPhoton80to9999_genPhotonPtCut40_allCent.root" 1 1
+###./forest2yskim_jetSkim_forestV3.exe "/mnt/hadoop/cms/store/user/jazzitup/forestFiles/pbpb/qcdAllPhoton30to50_genPhotonPtCut40_allCent.root" "yskimmedFiles/minbiasSkim_HydjetDrum03_HiForest_v05_merged_test02.root" 35 "yskimmedFiles/yskim_qcdAllPhoton30to50_genPhotonPtCut40_allCent.root" 1 1
+###./forest2yskim_jetSkim_forestV3.exe "/mnt/hadoop/cms/store/user/jazzitup/forestFiles/pbpb/qcdAllPhoton50to80_genPhotonPtCut40_allCent.root" "yskimmedFiles/minbiasSkim_HydjetDrum03_HiForest_v05_merged_test02.root" 35 "yskimmedFiles/yskim_qcdAllPhoton50to80_genPhotonPtCut40_allCent.root" 1 1
+###./forest2yskim_jetSkim_forestV3.exe "/mnt/hadoop/cms/store/user/jazzitup/forestFiles/pbpb/qcdAllPhoton80to9999_genPhotonPtCut40_allCent.root" "yskimmedFiles/minbiasSkim_HydjetDrum03_HiForest_v05_merged_test02.root" 35 "yskimmedFiles/yskim_qcdAllPhoton80to9999_genPhotonPtCut40_allCent.root" 1 1
 
 # # pp data
 # root -l -q -b 'forest2yskim_jetSkim_forestV3.C+("forestFiles/pp/pp_photonSKimForest_v85.root",       "no minbias", 35,   "yskimmedFiles/yskim_pp_photonSKimForest_v85_jetNoSmearing.root",2,0,1)'
@@ -49,3 +49,23 @@ g++ forest2yskim_jetSkim_forestV3.C $(root-config --cflags --libs) -Wall -Wextra
 #root -l -q -b 'forest2yskim_jetSkim_forestV3.C+("/mnt/hadoop/cms/store/user/luck/2014-photon-forests/pPb_MIX_localJEC_v1/HiForest_pPb_MIX_AllQCDPhoton80.root", "", 120, 10157, 35, "yskimmedFiles/yskim_pA_AllQCDPhoton80120.root", 5,0)'
 #root -l -q -b 'forest2yskim_jetSkim_forestV3.C+("/mnt/hadoop/cms/store/user/luck/2014-photon-forests/pPb_MIX_localJEC_v1/HiForest_pPb_MIX_AllQCDPhoton120.root", "", 170, 2517,35, "yskimmedFiles/yskim_pA_AllQCDPhoton120170.root", 5,0)'
 #root -l -q -b 'forest2yskim_jetSkim_forestV3.C+("/mnt/hadoop/cms/store/user/luck/2014-photon-forests/pPb_MIX_localJEC_v1/HiForest_pPb_MIX_AllQCDPhoton170.root", "", 9999, 649, 35, "yskimmedFiles/yskim_pA_AllQCDPhoton1709999.root", 5,0)'
+
+# 06/08/2015
+# pA data, sample="2013 pPb photon-triggered", https://twiki.cern.ch/twiki/bin/viewauth/CMS/PhotonAnalyses2015#Data
+###root -l -q -b 'forest2yskim_jetSkim_forestV3.C++("/mnt/hadoop/cms/store/user/luck/2014-photon-forests/pPb_Data_all_localJEC_v3_HiForest_nodupes.root", "", 35,  "/export/d00/scratch/luck/yskimmedFiles/yskim_pPb_Data_all_localJEC_v3_HiForest_nodupes.root",4,0)'
+## for g++ compiled code
+./forest2yskim_jetSkim_forestV3.exe "/mnt/hadoop/cms/store/user/luck/2014-photon-forests/pPb_Data_all_localJEC_v3_HiForest_nodupes.root" "" 35 "/export/d00/scratch/luck/yskimmedFiles/yskim_pPb_Data_all_localJEC_v3_HiForest_nodupes_g++.root" 4 0
+# pp data, sample=" 2013 pp photon-triggered", https://twiki.cern.ch/twiki/bin/viewauth/CMS/PhotonAnalyses2015#Data
+### root -l -q -b 'forest2yskim_jetSkim_forestV3.C++("/mnt/hadoop/cms/store/user/luck/2014-photon-forests/pp_Data_localJEC_v3_HiForest_nodupes.root", "", 35, "/export/d00/scratch/luck/yskimmedFiles/yskim_pp_Data_localJEC_v3_HiForest_nodupes_smearingCentBin0.root",2,0,1,0)'
+### root -l -q -b 'forest2yskim_jetSkim_forestV3.C++("/mnt/hadoop/cms/store/user/luck/2014-photon-forests/pp_Data_localJEC_v3_HiForest_nodupes.root", "", 35, "/export/d00/scratch/luck/yskimmedFiles/yskim_pp_Data_localJEC_v3_HiForest_nodupes_smearingCentBin1.root",2,0,1,1)'
+### root -l -q -b 'forest2yskim_jetSkim_forestV3.C++("/mnt/hadoop/cms/store/user/luck/2014-photon-forests/pp_Data_localJEC_v3_HiForest_nodupes.root", "", 35, "/export/d00/scratch/luck/yskimmedFiles/yskim_pp_Data_localJEC_v3_HiForest_nodupes_smearingCentBin2.root",2,0,1,2)'
+### root -l -q -b 'forest2yskim_jetSkim_forestV3.C++("/mnt/hadoop/cms/store/user/luck/2014-photon-forests/pp_Data_localJEC_v3_HiForest_nodupes.root", "", 35, "/export/d00/scratch/luck/yskimmedFiles/yskim_pp_Data_localJEC_v3_HiForest_nodupes_smearingCentBin3.root",2,0,1,3)'
+### root -l -q -b 'forest2yskim_jetSkim_forestV3.C++("/mnt/hadoop/cms/store/user/luck/2014-photon-forests/pp_Data_localJEC_v3_HiForest_nodupes.root", "", 35, "/export/d00/scratch/luck/yskimmedFiles/yskim_pp_Data_localJEC_v3_HiForest_nodupes_smearingCentBin4.root",2,0,1,4)'
+### root -l -q -b 'forest2yskim_jetSkim_forestV3.C++("/mnt/hadoop/cms/store/user/luck/2014-photon-forests/pp_Data_localJEC_v3_HiForest_nodupes.root", "", 35, "/export/d00/scratch/luck/yskimmedFiles/yskim_pp_Data_localJEC_v3_HiForest_nodupes_smearingCentBin5.root",2,0,1,5)'
+## for g++ compiled code
+# ./forest2yskim_jetSkim_forestV3.exe "/mnt/hadoop/cms/store/user/luck/2014-photon-forests/pp_Data_localJEC_v3_HiForest_nodupes.root" "" 35 "/export/d00/scratch/luck/yskimmedFiles/yskim_pp_Data_localJEC_v3_HiForest_nodupes_smearingCentBin0_g++.root" 2 0 1 0 1 0 0
+# ./forest2yskim_jetSkim_forestV3.exe "/mnt/hadoop/cms/store/user/luck/2014-photon-forests/pp_Data_localJEC_v3_HiForest_nodupes.root" "" 35 "/export/d00/scratch/luck/yskimmedFiles/yskim_pp_Data_localJEC_v3_HiForest_nodupes_smearingCentBin1_g++.root" 2 0 1 1 1 0 0
+# ./forest2yskim_jetSkim_forestV3.exe "/mnt/hadoop/cms/store/user/luck/2014-photon-forests/pp_Data_localJEC_v3_HiForest_nodupes.root" "" 35 "/export/d00/scratch/luck/yskimmedFiles/yskim_pp_Data_localJEC_v3_HiForest_nodupes_smearingCentBin2_g++.root" 2 0 1 2 1 0 0
+# ./forest2yskim_jetSkim_forestV3.exe "/mnt/hadoop/cms/store/user/luck/2014-photon-forests/pp_Data_localJEC_v3_HiForest_nodupes.root" "" 35 "/export/d00/scratch/luck/yskimmedFiles/yskim_pp_Data_localJEC_v3_HiForest_nodupes_smearingCentBin3_g++.root" 2 0 1 3 1 0 0
+# ./forest2yskim_jetSkim_forestV3.exe "/mnt/hadoop/cms/store/user/luck/2014-photon-forests/pp_Data_localJEC_v3_HiForest_nodupes.root" "" 35 "/export/d00/scratch/luck/yskimmedFiles/yskim_pp_Data_localJEC_v3_HiForest_nodupes_smearingCentBin4_g++.root" 2 0 1 4 1 0 0
+# ./forest2yskim_jetSkim_forestV3.exe "/mnt/hadoop/cms/store/user/luck/2014-photon-forests/pp_Data_localJEC_v3_HiForest_nodupes.root" "" 35 "/export/d00/scratch/luck/yskimmedFiles/yskim_pp_Data_localJEC_v3_HiForest_nodupes_smearingCentBin5 _g++.root" 2 0 1 5 1 0 0
