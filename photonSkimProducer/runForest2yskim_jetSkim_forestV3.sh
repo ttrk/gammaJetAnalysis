@@ -80,12 +80,13 @@ g++ forest2yskim_jetSkim_forestV3.C $(root-config --cflags --libs) -Wall -Wextra
 # ./forest2yskim_jetSkim_forestV3.exe $inputDir"pp_MC_AllQCDPhoton80to120_localJEC_53X.root" "" 35 $outputDir"yskim_pp_MC_AllQCDPhoton80to120_localJEC_53X.root" 3 0
 # ./forest2yskim_jetSkim_forestV3.exe $inputDir"pp_MC_AllQCDPhoton120to999_localJEC_53X.root" "" 35 $outputDir"yskim_pp_MC_AllQCDPhoton120to999_localJEC_53X.root" 3 0
 
-# 06/11/2015
+# 06/12/2015
 # pA MC, sample="AllQCDPhoton", https://twiki.cern.ch/twiki/bin/view/CMS/PhotonAnalyses2015#pPb_centrally_produced
 inputDir="/mnt/hadoop/cms/store/user/tatar/2015-photon-forests/pPb_Pbp_MIX_localJEC_v3_pthatsorted/";
 outputDir="/export/d00/scratch/luck/yskimmedFiles/";
 ./forest2yskim_jetSkim_forestV3.exe $inputDir"merged_pPb_Pbp_MIX_AllQCDPhoton30_50_80_120_170_localJEC_v3_ptHat_30_50.root" "" 35 $outputDir"yskim_merged_pPb_Pbp_MIX_AllQCDPhoton30_50_80_120_170_localJEC_v3_ptHat_30_50.root" 5 0
 ./forest2yskim_jetSkim_forestV3.exe $inputDir"merged_pPb_Pbp_MIX_AllQCDPhoton30_50_80_120_170_localJEC_v3_ptHat_50_80.root" "" 35 $outputDir"yskim_merged_pPb_Pbp_MIX_AllQCDPhoton30_50_80_120_170_localJEC_v3_ptHat_50_80.root" 5 0
 ./forest2yskim_jetSkim_forestV3.exe $inputDir"merged_pPb_Pbp_MIX_AllQCDPhoton30_50_80_120_170_localJEC_v3_ptHat_80_120.root" "" 35 $outputDir"yskim_merged_pPb_Pbp_MIX_AllQCDPhoton30_50_80_120_170_localJEC_v3_ptHat_80_120.root" 5 0
-./forest2yskim_jetSkim_forestV3.exe $inputDir"merged_pPb_Pbp_MIX_AllQCDPhoton30_50_80_120_170_localJEC_v3_ptHat_120_9999.root" "" 35 $outputDir"yskim_merged_pPb_Pbp_MIX_AllQCDPhoton30_50_80_120_170_localJEC_v3_ptHat_120_9999.root" 5 0
+./forest2yskim_jetSkim_forestV3.exe $inputDir"merged_pPb_Pbp_MIX_AllQCDPhoton30_50_80_120_170_localJEC_v3_ptHat_120_170.root" "" 35 $outputDir"yskim_merged_pPb_Pbp_MIX_AllQCDPhoton30_50_80_120_170_localJEC_v3_ptHat_120_170.root" 5 0
+./forest2yskim_jetSkim_forestV3.exe $inputDir"merged_pPb_Pbp_MIX_AllQCDPhoton30_50_80_120_170_localJEC_v3_ptHat_170_999.root" "" 35 $outputDir"yskim_merged_pPb_Pbp_MIX_AllQCDPhoton30_50_80_120_170_localJEC_v3_ptHat_170_999.root" 5 0
 

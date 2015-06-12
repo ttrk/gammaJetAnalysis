@@ -12,5 +12,6 @@ colli=2;
 ./ptHatCutter.exe "${input}" $output"_ptHat_30_50.root" $colli 30 50
 ./ptHatCutter.exe "${input}" $output"_ptHat_50_80.root" $colli 50 80
 ./ptHatCutter.exe "${input}" $output"_ptHat_80_120.root" $colli 80 120
-./ptHatCutter.exe "${input}" $output"_ptHat_120_9999.root" $colli 120 9999
+./ptHatCutter.exe "${input}" $output"_ptHat_120_170.root" $colli 120 170
+./ptHatCutter.exe "${input}" $output"_ptHat_170_999.root" $colli 170 9999
 
